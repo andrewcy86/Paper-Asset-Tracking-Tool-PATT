@@ -1,0 +1,21 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly
+}
+
+global $current_user,$wpscfunction;
+if (!($current_user->ID && $current_user->has_cap('manage_options'))) {
+	exit;
+}
+
+// Allow Tinymce
+$wpsc_allow_rich_text_editor = isset($_POST) && isset($_POST['wpsc_allow_rte']) ? $wpscfunction->sanitize_array($_POST['wpsc_allow_rte']) : array();
+update_option('wpsc_allow_rich_text_editor',$wpsc_allow_rich_text_editor);
+
+// Toolbar active
+$wpsc_tinymce_toolbar_active = isset($_POST) && isset($_POST['wpsc_tinymce_toolbar']) ? $wpscfunction->sanitize_array($_POST['wpsc_tinymce_toolbar']) : array();
+update_option('wpsc_tinymce_toolbar_active',$wpsc_tinymce_toolbar_active);
+
+do_action('wpsc_set_tinymce_settings');
+
+echo '{ "sucess_status":"1","messege":"'.__('Settings saved.','supportcandy').'" }';

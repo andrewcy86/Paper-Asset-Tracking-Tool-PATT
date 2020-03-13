@@ -506,7 +506,7 @@ function wpsc_get_change_ticket_status(ticket_id){
 }
     
 function wpsc_get_change_ticket_fields(ticket_id){
-  wpsc_modal_open('Change Ticket Fields');
+  wpsc_modal_open('Change Request Fields');
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_change_ticket_fields',

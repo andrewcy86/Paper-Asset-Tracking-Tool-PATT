@@ -86,10 +86,6 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
     	<button type="button" id="wpsc_individual_delete_btn" onclick="wpsc_get_delete_ticket(<?php echo $ticket_id ?>);" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-trash"></i> <?php _e('Delete','supportcandy')?></button>
 		<?php endif;?>
 		
-		<?php if ($wpscfunction->has_permission('add_note',$ticket_id) && $ticket_status):?>
-    	<button type="button" id="wpsc_individual_clone_btn" onclick="wpsc_get_clone_ticket(<?php echo $ticket_id ?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="far fa-clone"></i> <?php _e('Clone','supportcandy')?></button>
-		<?php endif;?>
-		
 		<?php do_action('wpsc_after_indidual_ticket_action_btn',$ticket_id);?>
 		
   </div>

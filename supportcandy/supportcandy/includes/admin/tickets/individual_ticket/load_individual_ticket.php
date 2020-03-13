@@ -99,7 +99,11 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
     <div class="row wpsc_it_subject_widget">
       <h4>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[<?php echo get_option('wpsc_ticket_alice').$ticket_id?>] <?php echo stripcslashes($ticket['ticket_subject']); ?>
+        	[Request # <?php
+$num = $ticket_id;
+$str_length = 7;
+$padded_request_id = substr("000000{$num}", -$str_length);
+echo $padded_request_id; ?>] <?php echo stripcslashes($ticket['ticket_subject']); ?>
         	<?php if ($wpscfunction->has_permission('change_ticket_fields',$ticket_id) && $ticket_status):?>
 					<button id="wpsc_individual_edit_ticket_subject" onclick="wpsc_edit_ticket_subject(<?php echo $ticket_id;?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
 				<?php endif;?>

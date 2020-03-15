@@ -42,7 +42,7 @@ ob_start();
     $('#grid_table').jsGrid({
 
      width: "90%",
-     height: "300px",
+     height: "250px",
 
      filtering: true,
      inserting:true,

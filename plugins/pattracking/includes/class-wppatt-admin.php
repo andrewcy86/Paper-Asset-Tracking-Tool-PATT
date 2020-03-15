@@ -24,6 +24,8 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 	$ticket_id = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ;
 	$ticket_data = $wpscfunction->get_ticket($ticket_id);
 	$status_id   	= $ticket_data['ticket_status'];
+	$wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
+    $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'].' !important;color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'].' !important;border-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'].'!important';
 
     $get_shipping_count = $wpdb->get_var('SELECT COUNT(*) FROM ' .$wpdb->prefix .'wpsc_epa_shipping_tracking WHERE ticket_id = ' . $ticket_id );
      
@@ -43,8 +45,8 @@ if ($status_id != 3) {
 	echo 'border-color:' . $wpsc_appearance_individual_ticket_page[ 'wpsc_ticket_widgets_border_color' ] . ' !important;';
 	echo '">';
 
-	echo '<h4 class="widget_header"><i class="fa fa-truck"></i> ' . $ticket_widget_name . '</h4>';
-	echo '<hr class="widget_devider">';
+	echo '<h4 class="widget_header"><i class="fa fa-truck"></i> ' . $ticket_widget_name . ' <button id="wpsc_individual_change_agent_fields" onclick="wpsc_get_shipping_details(' . $ticket_id .')" class="btn btn-sm wpsc_action_btn" style="' . $edit_btn_css . '" ><i class="fas fa-edit"></i></button></h4>';
+	echo '<hr style="margin-top: 4px; margin-bottom: 6px" class="widget_devider">';
 	
   if ($get_shipping_count > 0) {
       
@@ -81,13 +83,11 @@ switch ($company_name) {
     if (++$i == 10) break;
     }
     echo '</ul>';
-     if ($get_shipping_count > 10) {echo '... <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a>';}
+     if ($get_shipping_count > 10) {echo '... <i class="fas fa-plus-square"></i> <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a>';}
   } else {
     echo '<strong>No Tracking Numbers Assigned.</strong><br /><br />';
   }
     ?>
-    
-    <p><a href="#" onclick="wpsc_get_shipping_details(<?php echo $ticket_id?>)"><i class="fas fa-plus-square"></i> View/Edit Shipping Info</a></p>
 
 	<script>
 		function wpsc_get_shipping_details(ticket_id){

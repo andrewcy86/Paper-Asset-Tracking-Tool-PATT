@@ -343,3 +343,16 @@ function remove_footer_admin ()
 }
  
 add_filter('admin_footer_text', 'remove_footer_admin');
+
+
+/**
+ * Add jsgrid css and JavaScript.
+ */
+
+function jsgrid_load_scripts() {
+
+    wp_enqueue_style('admin-jsgrid-css', get_template_directory_uri().'/jsgrid/css/jsgrid.min.css');
+    wp_enqueue_style('admin-jsgrid-css-theme', get_template_directory_uri().'/jsgrid/css/jsgrid-theme.min.css');
+	wp_enqueue_script('admin-jsgrid', get_template_directory_uri().'/jsgrid/js/jsgrid.min.js');
+}
+add_action('admin_enqueue_scripts', 'jsgrid_load_scripts');

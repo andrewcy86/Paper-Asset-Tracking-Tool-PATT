@@ -88,6 +88,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
+          add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
         }
         if ($this->is_request('frontend')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-frontend.php' );

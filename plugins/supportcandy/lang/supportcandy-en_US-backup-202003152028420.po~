@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: supportcandy\n"
 "POT-Creation-Date: 2020-02-17 10:14+0530\n"
-"PO-Revision-Date: 2020-03-08 03:50+0000\n"
-"Last-Translator: admin <yuen.andrew@epa.gov>\n"
+"PO-Revision-Date: 2020-03-08 12:48+0000\n"
+"Last-Translator: admin <admin@086.info>\n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
 "MIME-Version: 1.0\n"
@@ -3544,7 +3544,7 @@ msgstr ""
 #: includes/class-wpsc-admin.php:52 includes/class-wpsc-frontend.php:51
 #: includes/class-wpsc-functions.php:1154 includes/class-wpsc-install.php:921
 msgid "Assign Agent"
-msgstr "Assign Digitization Staff"
+msgstr "Assign Staff"
 
 #: includes/admin/tickets/ticket_list/load_list.php:55
 msgid "Change Status"

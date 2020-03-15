@@ -19,6 +19,16 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
 					$this->list_item = $list_item;
 					$this->ticket    = $ticket;
 					$get_all_meta_keys = $wpscfunction->get_all_meta_keys();
+					
+					        $assigned_agent = $wpscfunction->get_ticket_meta( $ticket['id'], assigned_agent, true);
+                 			$request_data = $wpscfunction->get_ticket($ticket['id']);
+                            $request_status = $request_data['ticket_status'];
+
+                  			if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
+                  			{
+                  			  $wpscfunction->change_status($ticket['id'], 64);
+                  			}
+                  			
 					if ($list_item->slug == 'ticket_id') {
 							$list_item->slug ='id';
 					}
@@ -34,6 +44,11 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
             switch ($list_item->slug) {
               
               case 'id':
+                                $num = $ticket['id'];
+                                $str_length = 7;
+                                $padded_request_id = substr("000000{$num}", -$str_length);
+                                echo $padded_request_id;
+                                break;
               case 'customer_name':
               case 'customer_email':
               case 'ticket_subject':
@@ -80,6 +95,7 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
 						switch ($this->type) {
 							
 							case '1':
+							    $this->print_meta_value();
               case '2':
               case '4':
               case '7':

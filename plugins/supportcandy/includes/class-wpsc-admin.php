@@ -236,6 +236,13 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       $wpscfunction->display_ad_banner();
       include WPSC_ABSPATH.'includes/admin/ticket_list/ticket_list.php';
     }
+
+    // Box List settings
+    public function box_list(){
+      global $wpscfunction;
+      $wpscfunction->display_ad_banner();
+      include WPSC_ABSPATH.'includes/admin/box_list.php';
+    }
     
     // Email Notification Settings
     public function email_notifications(){

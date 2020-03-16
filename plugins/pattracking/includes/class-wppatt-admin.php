@@ -6,6 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'wppatt_Admin' ) ) :
   
   final class wppatt_Admin {
+    
+    // CRON for shipping
+    public function wpatt_shipping_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/shipping_cron.php';
+    }
+    
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    

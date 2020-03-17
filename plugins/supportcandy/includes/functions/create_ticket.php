@@ -98,7 +98,18 @@ if(!$wpsc_ticket_id_type){
 		$values['id'] = $id;
 }
 
+// Update database to include PATT specific Record Schedule ID
+
 $ticket_id = $wpscfunction->create_new_ticket($values);
+
+$str_length = 7;
+$request_id = substr("000000{$ticket_id}", -$str_length);
+
+$data_update = array('request_id' => $request_id);
+$data_where = array('id' => $ticket_id);
+$wpdb->update($wpdb->prefix . 'wpsc_ticket', $data_update, $data_where);
+
+// END
 
 $wpscfunction->add_ticket_meta($ticket_id,'assigned_agent','0');
 

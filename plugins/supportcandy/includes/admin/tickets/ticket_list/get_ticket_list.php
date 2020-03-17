@@ -157,7 +157,8 @@ $offset = ($filter['page']-1)*$post_per_page;
 						$wpsc_tf_type = get_term_meta( $field->term_id,'wpsc_tf_type', true);
 						   if ($filter_type=='string' || $filter_type=='number') {
 							if($field->slug == 'ticket_id'){
-								$field->slug = 'id';
+							    //advanced filter now searches for request_id instead of ticket_id
+								$field->slug = 'request_id';
 							}
 							?>
 							<div id="tf_<?php echo $field->slug?>" class="form-group col-sm-12">

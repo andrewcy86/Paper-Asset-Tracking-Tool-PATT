@@ -114,10 +114,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
         	$num = $ticket_id;
             $str_length = 7;
             $padded_request_id = substr("000000{$num}", -$str_length);
-            echo $padded_request_id; ?>] <?php echo stripcslashes($ticket['ticket_subject']); ?>
-        	<?php if ($wpscfunction->has_permission('change_ticket_fields',$ticket_id) && $ticket_status):?>
-					<button id="wpsc_individual_edit_ticket_subject" onclick="wpsc_edit_ticket_subject(<?php echo $ticket_id;?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
-				<?php endif;?>
+            echo $padded_request_id; ?>]
 		  <?php } ?>		
       </h4>
     </div>

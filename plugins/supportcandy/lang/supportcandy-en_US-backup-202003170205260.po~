@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: supportcandy\n"
 "POT-Creation-Date: 2020-02-17 10:14+0530\n"
-"PO-Revision-Date: 2020-03-15 20:28+0000\n"
+"PO-Revision-Date: 2020-03-16 02:04+0000\n"
 "Last-Translator: admin <admin@086.info>\n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
@@ -3948,7 +3948,7 @@ msgstr ""
 
 #: includes/class-wpsc-functions.php:229 includes/class-wpsc-install.php:210
 msgid "Closed"
-msgstr ""
+msgstr "Digitized"
 
 #: includes/class-wpsc-functions.php:234
 msgid "Deleted"

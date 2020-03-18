@@ -6,6 +6,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'wppatt_Admin' ) ) :
   
   final class wppatt_Admin {
+    
+    // CRON for shipping
+    public function wpatt_shipping_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/shipping_cron.php';
+    }
+    
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    
@@ -53,7 +59,7 @@ if ($status_id != 3) {
     echo '<ul>';
 
 
-    $shipping_rows = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix .'wpsc_epa_shipping_tracking WHERE ticket_id = ' . $ticket_id );
+    $shipping_rows = $wpdb->get_results('SELECT * FROM ' . $wpdb->prefix .'wpsc_epa_shipping_tracking WHERE ticket_id = ' . $ticket_id . ' ORDER BY id DESC' );
     
     $i = 0;
 
@@ -63,18 +69,24 @@ if ($status_id != 3) {
     $tracking_num_display = mb_strimwidth($tracking_num, 0, 25, "...");
     $company_name = $row->company_name;
 
+    if ($row->shipped == 1) {
+        $shipped_status = ' <i class="fa fa-check-circle" style="color:#008000;"></i>';
+    } else {
+        $shipped_status = '';
+    }
+
 switch ($company_name) {
     case "ups":
-        echo '<li><i class="fab fa-ups fa-lg"></i> <a href="https://www.ups.com/track?loc=en_US&tracknum=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a> </li>';
+        echo '<li><i class="fab fa-ups fa-lg"></i> <a href="https://www.ups.com/track?loc=en_US&tracknum=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . '</li>';
         break;
     case "fedex":
-        echo '<li><i class="fab fa-fedex fa-lg"></i> <a href="https://www.fedex.com/apps/fedextrack/?tracknumbers=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a></li>';
+        echo '<li><i class="fab fa-fedex fa-lg"></i> <a href="https://www.fedex.com/apps/fedextrack/?tracknumbers=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . '</li>';
         break;
     case "usps":
-        echo '<li><i class="fab fa-usps fa-lg"></i> <a href="https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a></li>';
+        echo '<li><i class="fab fa-usps fa-lg"></i> <a href="https://tools.usps.com/go/TrackConfirmAction?qtc_tLabels1=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . '</li>';
         break;
     case "dhl":
-        echo '<li><i class="fab fa-dhl fa-lg"></i> <a href="https://www.logistics.dhl/global-en/home/tracking.html?tracking-id=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a></li>';
+        echo '<li><i class="fab fa-dhl fa-lg"></i> <a href="https://www.logistics.dhl/global-en/home/tracking.html?tracking-id=' . $tracking_num . '" target="_blank">'. $tracking_num_display .'</a>' . $shipped_status . '</li>';
         break;
     default:
         echo $tracking_num;
@@ -83,7 +95,7 @@ switch ($company_name) {
     if (++$i == 10) break;
     }
     echo '</ul>';
-     if ($get_shipping_count > 10) {echo '... <i class="fas fa-plus-square"></i> <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a>';}
+     if ($get_shipping_count > 10) {echo '... <i class="fas fa-plus-square"></i> <a href="#" onclick="wpsc_get_shipping_details(' . $ticket_id . ')">[View More]</a><br /><br />';}
   } else {
     echo '<strong>No Tracking Numbers Assigned.</strong><br /><br />';
   }

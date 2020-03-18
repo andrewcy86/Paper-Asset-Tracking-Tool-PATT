@@ -150,7 +150,7 @@ foreach ($fields as $field) {
         case '9':
           $number = isset($fields_data->{$field->slug}) ? intval($fields_data->{$field->slug}) : '';
           if($number) $args[$field->slug] = $number;
-          break;
+          break;/
 
         default:	
           $args = apply_filters('wpsc_after_create_ticket_custom_field', $args, $field, $tf_type );

@@ -506,7 +506,7 @@ function wpsc_get_change_ticket_status(ticket_id){
 }
     
 function wpsc_get_change_ticket_fields(ticket_id){
-  wpsc_modal_open('Change Ticket Fields');
+  wpsc_modal_open('Change Request Fields');
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_change_ticket_fields',
@@ -544,7 +544,7 @@ function wpsc_set_change_ticket_status(ticket_id){
 }
 
 function wpsc_get_change_assign_agent(ticket_id){
-  wpsc_modal_open('Assign Agent'); 
+  wpsc_modal_open('Assign Staff'); 
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_change_assign_agent',
@@ -558,7 +558,7 @@ function wpsc_get_change_assign_agent(ticket_id){
 }
 
 function wpsc_get_delete_ticket(ticket_id){
-  wpsc_modal_open('Delete Ticket'); 
+  wpsc_modal_open('Delete Request'); 
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_delete_ticket',

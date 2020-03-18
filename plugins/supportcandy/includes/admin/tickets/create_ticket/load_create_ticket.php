@@ -45,6 +45,7 @@ $description = get_term_by('slug', 'ticket_description', 'wpsc_ticket_custom_fie
 $wpsc_desc_status = get_term_meta( $description->term_id, 'wpsc_tf_status', true);
 
 ?>
+
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   <div class="col-sm-12">
     <button type="button" id="wpsc_load_new_create_ticket_btn" onclick="wpsc_get_create_ticket();" class="btn btn-sm wpsc_create_ticket_btn" style="<?php echo $create_ticket_btn_css?>"><i class="fa fa-plus"></i> <?php _e('New Ticket','supportcandy')?></button>
@@ -57,6 +58,24 @@ $wpsc_desc_status = get_term_meta( $description->term_id, 'wpsc_tf_status', true
 do_action('wpsc_before_create_ticket');
 if(apply_filters('wpsc_print_create_ticket_html',true)):
 ?>
+
+<!-- Beginning of new datatable -->
+<div id="boxdisplaydiv" style="width:90%;display: none">
+<table id="boxinfodatatable" class="boxdisplay">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Job Title</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+
+<!-- End of new datatable -->
+
+
+
 <div id="create_ticket_body" class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 	<form id="wpsc_frm_create_ticket" onsubmit="return wpsc_submit_ticket();" method="post">
 		<div class="row create_ticket_fields_container">
@@ -163,7 +182,14 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		
 	</form>
 </div>
+<!-- New imports below -->
+<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.5/xlsx.full.min.js"></script>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+<!-- End of new imports -->
 <script type="text/javascript">
 	jQuery(document).ready(function(){
 		
@@ -176,7 +202,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		});
     });
 		
-		jQuery( "#customer_name" ).autocomplete({
+		/*jQuery( "#customer_name" ).autocomplete({
       minLength: 1,
       appendTo: jQuery("#wpsc_agent_name").parent(),
       source: function( request, response ) {
@@ -194,7 +220,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
         jQuery('#customer_name').val(ui.item.value);
 				jQuery('#customer_email').val(ui.item.email);
       }
-    });		
+    });*/		
 		jQuery('.wpsc_datetime').datetimepicker({
 			 dateFormat : '<?php echo get_option('wpsc_calender_date_format')?>',
 				showAnim : 'slideDown',
@@ -300,8 +326,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			var flag = false;
 	    var file = this.files[0];
 	    jQuery('#attachment_upload').val('');
-      
-			var allowedExtension = ['exe', 'php'];
+	    
 	    var file_name_split = file.name.split('.');
 	    var file_extension = file_name_split[file_name_split.length-1];
 			file_extension = file_extension.toLowerCase();	
@@ -311,9 +336,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				$attachment_data =  array_map('trim', $attachment_data);
 				$attachment_data =  array_map('strtolower', $attachment_data);
 			?>
-			var allowedExtensionSetting = [<?php echo '"'.implode('","', $attachment_data).'"' ?>];
+			var allowedExtensionSetting = ["xls", "xlsx"];
 
-			if(!flag && (jQuery.inArray(file_extension,allowedExtensionSetting)  <= -1 || jQuery.inArray(file_extension,allowedExtension) > -1)) {
+			if(!flag && (jQuery.inArray(file_extension,allowedExtensionSetting)  <= -1)) {
 				flag = true;
 				alert("<?php _e('Attached file type not allowed!','supportcandy')?>");
 			}
@@ -324,9 +349,9 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				flag = true;
 				alert("<?php _e('File size exceed allowed limit!','supportcandy')?>");
 			}
-
+			
 		if (!flag){
-
+            
 			var html_str = '<div class="row wpsp_attachment">'+
 				'<div class="progress" style="float: none !important; width: unset !important;">'+
 					'<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">'+
@@ -371,6 +396,39 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 								if( parseInt(return_obj.id) != 0 ){
               		jQuery(attachment).append('<input type="hidden" name="'+name+'[]" value="'+return_obj.id+'">');
                   jQuery(attachment).find('.progress-bar').addClass('progress-bar-success');
+                  
+                  /* DO NOT REMOVE Start of new Datatable code
+		    $.noConflict();
+            var datatable = jQuery('#boxinfodatatable').DataTable();
+
+
+            var FR = new FileReader();
+   FR.onload = function(e) {
+     var data = new Uint8Array(e.target.result);
+     var workbook = XLSX.read(data, {type: 'array'});
+     var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+     
+     // header: 1 instructs xlsx to create an 'array of arrays'
+     var result = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+     
+     // data preview
+     var arrayOfData = JSON.stringify(result, null, 2);
+     var parsedData = JSON.parse(arrayOfData);
+     alert(parsedData[1]);
+     
+     
+     datatable.row.add( [
+            parsedData[1][0],
+            parsedData[1][1],
+            parsedData[1][2]
+            ]).draw()
+            .node();
+   };
+     FR.readAsArrayBuffer(file);       
+            document.getElementById("boxdisplaydiv").style.display = "block";
+            
+            End of new Datatable code*/
+                  
                 } else {
                     jQuery(attachment).find('.progress-bar').addClass('progress-bar-danger');
                   }

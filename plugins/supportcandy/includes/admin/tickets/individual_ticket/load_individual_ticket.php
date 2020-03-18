@@ -55,6 +55,15 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
 	$flag = true;
 }
 
+$assigned_agent = $wpscfunction->get_ticket_meta( $ticket_id, assigned_agent, true);
+$request_data = $wpscfunction->get_ticket($ticket_id);
+$request_status = $request_data['ticket_status'];
+
+if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
+        {
+            $wpscfunction->change_status($ticket_id, 64);
+        }
+
 ?>
 
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
@@ -105,10 +114,7 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
         	$num = $ticket_id;
             $str_length = 7;
             $padded_request_id = substr("000000{$num}", -$str_length);
-            echo $padded_request_id; ?>] <?php echo stripcslashes($ticket['ticket_subject']); ?>
-        	<?php if ($wpscfunction->has_permission('change_ticket_fields',$ticket_id) && $ticket_status):?>
-					<button id="wpsc_individual_edit_ticket_subject" onclick="wpsc_edit_ticket_subject(<?php echo $ticket_id;?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
-				<?php endif;?>
+            echo $padded_request_id; ?>]
 		  <?php } ?>		
       </h4>
     </div>

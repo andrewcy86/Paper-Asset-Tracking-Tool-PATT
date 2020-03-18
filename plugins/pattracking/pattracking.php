@@ -82,6 +82,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
 
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
+          
+          update_option('wpsc_tl_agent_unresolve_statuses',array(3,4,5,63,64,6,65));
+          update_option('wpsc_tl_customer_unresolve_statuses',array(3,4,5,63,64,6,65));
+          update_option('wpsc_close_ticket_group',array(66,67,68,69));
+          
           // PDF Label Add Button
           $backend  = new wppatt_Admin();
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
@@ -89,6 +94,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
+          // Add Shipping CRON
+          add_action( 'wppatt_shipping_cron', array($backend, 'wpatt_shipping_cron_schedule'));
         }
         if ($this->is_request('frontend')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-frontend.php' );

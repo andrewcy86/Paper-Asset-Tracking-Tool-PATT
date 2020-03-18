@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: supportcandy\n"
 "POT-Creation-Date: 2020-02-17 10:14+0530\n"
-"PO-Revision-Date: 2020-03-08 12:48+0000\n"
+"PO-Revision-Date: 2020-03-17 02:05+0000\n"
 "Last-Translator: admin <admin@086.info>\n"
 "Language-Team: English (United States)\n"
 "Language: en_US\n"
@@ -507,7 +507,7 @@ msgstr "Request Form Fields"
 #: includes/admin/custom_fields/get_agentonly_fields.php:28
 #: includes/class-wpsc-install.php:937
 msgid "Agent Only Fields"
-msgstr "Digitization Staff Only Fields"
+msgstr "Staff Only Fields"
 
 #: includes/admin/custom_fields/custom_fields.php:41
 #: includes/admin/tickets/tickets.php:34
@@ -3223,7 +3223,7 @@ msgstr "You are not authorized to view this request."
 #: includes/admin/tickets/individual_ticket/load_individual_ticket.php:427
 #, php-format
 msgid "reported %1$s"
-msgstr ""
+msgstr "submitted %1$s"
 
 #: includes/admin/tickets/individual_ticket/load_guest_individual_ticket.php:127
 #: includes/admin/tickets/individual_ticket/load_guest_individual_ticket.php:203
@@ -3948,7 +3948,7 @@ msgstr ""
 
 #: includes/class-wpsc-functions.php:229 includes/class-wpsc-install.php:210
 msgid "Closed"
-msgstr ""
+msgstr "Digitized"
 
 #: includes/class-wpsc-functions.php:234
 msgid "Deleted"

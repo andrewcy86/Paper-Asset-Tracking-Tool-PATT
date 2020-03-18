@@ -133,6 +133,18 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-tickets',
         array($this,'tickets')
       );
+
+      //Start RM Developer
+       add_submenu_page(
+        'wpsc-tickets',
+        __( 'Boxes', 'supportcandy' ),
+        __( 'Boxes', 'supportcandy' ),
+        'manage_options',
+        'wpsc-boxes',
+        array($this,'boxes')
+      );
+      //End RM Developer  
+
       add_submenu_page(
         'wpsc-tickets',
         __( 'Support Agents', 'supportcandy' ),
@@ -237,11 +249,12 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       include WPSC_ABSPATH.'includes/admin/ticket_list/ticket_list.php';
     }
 
-    // Box List settings
-    public function box_list(){
+    // Boxes settings
+    public function boxes(){
       global $wpscfunction;
       $wpscfunction->display_ad_banner();
-      include WPSC_ABSPATH.'includes/admin/box_list.php';
+      include WPSC_ABSPATH.'includes/admin/boxes/boxes.php';
+
     }
     
     // Email Notification Settings

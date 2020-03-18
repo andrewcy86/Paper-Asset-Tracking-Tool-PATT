@@ -608,15 +608,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			if($wpsc_desc_status){
 				if($flag){
 				?>
-					var description = tinyMCE.get('ticket_description').getContent().trim();
-					dataform.append('ticket_description', description);
-					is_tinymce = true;
+					//var description = tinyMCE.get('ticket_description').getContent().trim();
+					//dataform.append('ticket_description', description);
+					//is_tinymce = true;
 				<?php
 				}else{
 					?>
-					var description = jQuery('#ticket_description').val();
-					dataform.append('ticket_description',description);
-					is_tinymce = false;
+					//var description = jQuery('#ticket_description').val();
+					//dataform.append('ticket_description',description);
+					//is_tinymce = false;
 					<?php
 				}
 			}
@@ -639,7 +639,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				}
 		  });
 			<?php  if($wpsc_desc_status){ ?>
-				if(is_tinymce) tinyMCE.activeEditor.setContent('');
+				//if(is_tinymce) tinyMCE.activeEditor.setContent('');
 			<?php } ?>
 			return false;
 		}

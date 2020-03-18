@@ -27,11 +27,11 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
         
-        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_temp_boxinfo WHERE TICKET_ID = " . $GLOBALS['id']);
+        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
 
         foreach ( $box_result as $box )
             {
-                array_push($array, $box->BOX_ID);
+                array_push($array, $box->box_id);
             }
 
         return $array;
@@ -42,11 +42,60 @@ if (isset($_GET['id']))
     function fetch_location()
     {
         global $wpdb;
-        $box_digitization_center = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_temp_boxinfo WHERE TICKET_ID = " . $GLOBALS['id'] . " limit 1");
+        $array = array();
+        $box_digitization_center = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
+        
+                foreach ( $box_digitization_center as $location )
+            {
+                array_push($array, strtoupper($location->location));
+            }
 
-        $location = $box_digitization_center->LOCATION;
-
-        return strtoupper($location);
+        return $array;
+    }
+    
+    //Function to obtain program office from database
+    function fetch_program_office()
+    {
+        global $wpdb;
+        $array = array();
+        $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
+        
+        foreach($request_program_office as $program_office)
+        {
+            array_push($array, strtoupper($program_office->acronym));
+        }
+        
+        return $array;
+    }
+    
+    //Function to obtain shelf from database
+    function fetch_shelf()
+    {
+        global $wpdb;
+        $array = array();
+        $request_shelf = $wpdb->get_results("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
+        
+        foreach($request_shelf as $shelf)
+        {
+            array_push($array, strtoupper($shelf->shelf));
+        }
+        
+        return $array;
+    }
+    
+    //Function to obtain bay from database
+    function fetch_bay()
+    {
+        global $wpdb;
+        $array = array();
+        $request_bay = $wpdb->get_results("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
+        
+        foreach($request_bay as $bay)
+        {
+            array_push($array, strtoupper($bay->bay));
+        }
+        
+        return $array;
     }
     
     //Function to obtain create month and year from database
@@ -71,7 +120,6 @@ if (isset($_GET['id']))
         
         return $key;
     }
-
 
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
@@ -140,8 +188,11 @@ if (isset($_GET['id']))
         
         //Obtain array of Box ID's
         $box_array = fetch_box_id();
+        $box_location = fetch_location();
+        $box_program_office = fetch_program_office();
+        $box_shelf = fetch_shelf();
+        $box_bay = fetch_bay();
         
-
         //Set count to 0. This count determine odd or even components of the array
         $c = 0;
         
@@ -168,7 +219,7 @@ if (isset($_GET['id']))
                 $y_loc_1d = 60;
                 //QR barcode coordinates
                 $x_loc_2d = 150;
-                $y_loc_2d = 10;
+                $y_loc_2d = 2;
                 //Box x of y text coordinates
                 $x_loc_b = 70;
                 $y_loc_b = 105;
@@ -186,14 +237,14 @@ if (isset($_GET['id']))
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 170;
+                $x_loc_l = 169;
                 $y_loc_l = 80;
                 //Creation Date Coordinates
-                $x_loc_cd = 80;
-                $y_loc_cd = 10;
+                $x_loc_cd = 79;
+                $y_loc_cd = 11;
                 //Request ID Coordinates
                 $x_loc_rid = 163;
-                $y_loc_rid = 53;
+                $y_loc_rid = 47;
                 //RFID Vertical Text Coordinates
                 $x_loc_rfid = 19;
                 $y_loc_rfid = 110;
@@ -203,6 +254,24 @@ if (isset($_GET['id']))
                 //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 160.5;
                 $y_loc_digi_box_dashed = 76;
+                //Black rectangle containing program office and month/year of request
+                $x_loc_black_rectangle = 5;
+                $y_loc_black_rectangle = 5;
+                //White rectangle containing program office
+                $x_loc_white_rectangle = 14;
+                $y_loc_white_rectangle = 10;
+                //Program office
+                $x_loc_program_office = 35;
+                $y_loc_program_office = 13;
+                //Bay
+                $x_loc_bay = 134;
+                $y_loc_bay = 105;
+                //Shelf
+                $x_loc_shelf = 161;
+                $y_loc_shelf = 105;
+                //Dashed border around shelf/bay
+                $x_loc_dashed_border = 130;
+                $y_loc_dashed_border = 103;
             }
             else
             {
@@ -212,7 +281,7 @@ if (isset($_GET['id']))
                 $y_loc_1d = 210;
                 //QR barcode coordinates
                 $x_loc_2d = 150;
-                $y_loc_2d = 160;
+                $y_loc_2d = 152;
                 //Box x of y text coordinates
                 $x_loc_b = 70;
                 $y_loc_b = 255;
@@ -230,14 +299,14 @@ if (isset($_GET['id']))
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 170;
+                $x_loc_l = 169;
                 $y_loc_l = 230;                
                 //Creation Date Coordinates
-                $x_loc_cd = 80;
-                $y_loc_cd = 160;
+                $x_loc_cd = 79;
+                $y_loc_cd = 162;
                 //Request ID Coordinates
                 $x_loc_rid = 163;
-                $y_loc_rid = 203;
+                $y_loc_rid = 197;
                 //RFID Vertical Text Coordinates
                 $x_loc_rfid = 19;
                 $y_loc_rfid = 260;
@@ -247,6 +316,24 @@ if (isset($_GET['id']))
                 //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 160.5;
                 $y_loc_digi_box_dashed = 226;
+                //Black rectangle containing program office and month/year of request
+                $x_loc_black_rectangle = 5;
+                $y_loc_black_rectangle = 155;
+                //White rectangle containing program office
+                $x_loc_white_rectangle = 14;
+                $y_loc_white_rectangle = 160;
+                //Program office
+                $x_loc_program_office = 33;
+                $y_loc_program_office = 163;
+                //Bay
+                $x_loc_bay = 134;
+                $y_loc_bay = 255;
+                //Shelf
+                $x_loc_shelf = 161;
+                $y_loc_shelf = 255;
+                //Dashed border around shelf/bay
+                $x_loc_dashed_border = 130;
+                $y_loc_dashed_border = 253;
             }
             //Determine box count out of total
             $initial_box = $i + 1;
@@ -264,6 +351,40 @@ if (isset($_GET['id']))
             
             //Digitization center box dashed border
             $obj_pdf->RoundedRect($x_loc_digi_box_dashed, $y_loc_digi_box_dashed, 38, 16, 2, '1111', null, $style_box_dash);
+            
+            //Black rectangle containing program office and month/year of request
+            $obj_pdf->Rect($x_loc_black_rectangle, $y_loc_black_rectangle, 140, 35, 'F', '', array(0,0,0));
+            
+            //Rectangle containing bay
+            $txt = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+            
+            //White Rectangle containing program office
+            $obj_pdf->SetLineStyle(array('width' => 5, 'cap' => 'round', 'join' => 'round', 'dash' => 0, 'color' => array(255, 255, 255)));
+            $obj_pdf->SetXY($x_loc_white_rectangle, $y_loc_white_rectangle);
+            $obj_pdf->SetFillColor(255,255,255);
+            $obj_pdf->SetFont('helvetica', 'B', 45);
+            $obj_pdf->Cell(55, 5, $box_program_office[$i], 1, 0, 'C', 1);
+            //$obj_pdf->Cell(w, h = 0, txt = '', border = 0, ln = 0, align = '', fill = 0, link = nil, stretch = 0, ignore_min_height = false, calign = 'T', valign = 'M')
+            
+            //Cell containing bay
+            $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetXY($x_loc_bay, $y_loc_bay);
+            $obj_pdf->SetFont('helvetica', 'B', 30);
+            $obj_pdf->Cell(27, 0, $box_bay[$i], 1, 0, 'C', 1);
+            
+            //Cell containing shelf
+            $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetXY($x_loc_shelf, $y_loc_shelf);
+            $obj_pdf->SetFillColor(0,0,0);
+            $obj_pdf->SetFont('helvetica', 'B', 30);
+            $obj_pdf->SetTextColor(255,255,255);
+            $obj_pdf->Cell(27, 0, $box_shelf[$i], 1, 0, 'C', 1);
+            
+            //set text color back to black
+            $obj_pdf->SetTextColor(0,0,0);
+            
+            //Dashed border around shelf/bay
+            $obj_pdf->RoundedRect($x_loc_dashed_border, $y_loc_dashed_border, 62, 18, 2, '1111', null, $style_box_dash);
             
             //RFID Box Location
             $obj_pdf->RoundedRect($x_loc_ba1, $y_loc_ba1, $x_loc_la2, $y_loc_la2, 5, '1111', null, $style_box_dash);
@@ -299,10 +420,15 @@ if (isset($_GET['id']))
             $obj_pdf->write2DBarcode($url, 'QRCODE,H', $x_loc_2d, $y_loc_2d, '', 50, $style_barcode, 'N');
             //$obj_pdf->Cell(150, 50, $url, 0, 1);
             $obj_pdf->SetFont('helvetica', 'B', 18);
-            $obj_pdf->Text($x_loc_l, $y_loc_l, fetch_location());
-            $obj_pdf->SetFont('helvetica', 'B', 40);
+            //Obtain array of box locations
+            $obj_pdf->Text($x_loc_l, $y_loc_l, $box_location[$i]);
+            //set month/year text color = white
+            $obj_pdf->SetTextColor(255,255,255);
+            $obj_pdf->SetFont('helvetica', 'B', 47);
             $obj_pdf->Text($x_loc_cd, $y_loc_cd, fetch_create_date()); 
-            $obj_pdf->SetFont('helvetica', '', 11);  
+            $obj_pdf->SetFont('helvetica', '', 11);
+            //set text color back to = black
+            $obj_pdf->SetTextColor(0,0,0);
         }
         //Generate PDF
         $obj_pdf->Output('file.pdf', 'I');

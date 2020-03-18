@@ -72,19 +72,19 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 						
 					case 'ticket_subject':
 						if ($this->status == '1') {
-							$this->print_ticket_subject($field);
+							//$this->print_ticket_subject($field);
 						}
 						break;
 						
 					case 'ticket_description':
 						if ($this->status == '1') {
-							$this->print_ticket_description($field);
+							$this->print_ticket_desc($field);
 						}
 						break;
 						
 					case 'ticket_category':
 						if ($this->status == '1') {
-							$this->print_ticket_category($field);
+							//$this->print_ticket_category($field);
 						}
 						break;
 										
@@ -164,6 +164,13 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 			}
 			
 		}
+	    
+	    	function print_ticket_desc($field){
+			?>
+			<input type="hidden" id="<?php echo $this->slug;?>" name="<?php echo $this->slug;?>" value="Request Created: <?php date_default_timezone_set('US/Eastern'); echo date("m/d/Y"); ?>" />
+			<?php
+		}
+	    
         
 		function print_text_field($field){
 			$extra_info_css = 'color:'.$this->wpsc_appearance_create_ticket['wpsc_extra_info_text_color'].' !important;';

@@ -59,28 +59,55 @@ do_action('wpsc_before_create_ticket');
 if(apply_filters('wpsc_print_create_ticket_html',true)):
 ?>
 
-<!-- Beginning of new datatable -->
-<div id="boxdisplaydiv" style="width:90%;display: none">
-<table id="boxinfodatatable" class="boxdisplay">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Full Name</th>
-                <th>Job Title</th>
-            </tr>
-        </thead>
-    </table>
-</div>
-
-<!-- End of new datatable -->
-
-
 
 <div id="create_ticket_body" class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 	<form id="wpsc_frm_create_ticket" onsubmit="return wpsc_submit_ticket();" method="post">
 		<div class="row create_ticket_fields_container">
 			<?php 
 			foreach ($fields as $field) {
+				//echo $field->name . " - ";
+				if ($field->name == "ticket_category")
+				{
+				
+				?>
+				
+				<!-- Beginning of new datatable -->
+                <div class="box-body table-responsive" id="boxdisplaydiv" style="width:100%;padding-bottom: 40px;padding-right:20px;padding-left:20px;margin: 0 auto;">
+                <label class="wpsc_ct_field_label">Box List <span style="color:red;">*</span></label>
+                <table id="boxinfodatatable" class="table table-striped table-bordered nowrap">
+                <thead style="margin: 0 auto !important;">
+                    <tr>
+                        <th>Box</th>
+                        <th>Title</th>
+                        <th>Date</th>
+                        <th>Author/Addressee</th>
+                        <th>Record Type</th>
+                        <th>Record Schedule & Item Number</th>
+                        <th>Site Name</th>
+                        <th>Site ID #</th>
+                        <th>Close Date</th>
+                        <th>EPA Contact</th>
+                        <th>Access Type</th>
+                        <th>Source Format</th>
+                        <th>Rights</th>
+                        <th>Contract #</th>
+                        <th>Grant #</th>
+                        <th>Program Office</th>
+                    </tr>
+                </thead>
+                </table>
+                
+                <div class="row attachment_link">
+				<span onclick="wpsc_spreadsheet_upload('attach_16','spreadsheet_attachment');">Attach spreadsheet</span>
+				</div>
+				<div id="attach_16" class="row spreadsheet_container"></div>
+                </div>
+
+            <!-- End of new datatable -->
+				
+				<?
+				}
+				
 				$form_field->print_field($field);
 			}
 			?>
@@ -183,12 +210,10 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	</form>
 </div>
 <!-- New imports below -->
-<script type="text/javascript" language="javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script type="text/javascript" language="javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
+<script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.14.5/xlsx.full.min.js"></script>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
 <!-- End of new imports -->
 <script type="text/javascript">
 	jQuery(document).ready(function(){
@@ -318,13 +343,14 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		});
 		
 	}
-	
-	function wpsc_attachment_upload(id,name){
+	//Start of new attachment section
+	function wpsc_spreadsheet_upload(id,name){
 		jQuery('#attachment_upload').unbind('change');
     jQuery('#attachment_upload').on('change', function() {
 			
 			var flag = false;
 	    var file = this.files[0];
+	    
 	    jQuery('#attachment_upload').val('');
 	    
 	    var file_name_split = file.name.split('.');
@@ -352,18 +378,22 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			
 		if (!flag){
             
-			var html_str = '<div class="row wpsp_attachment">'+
+            jQuery('.row.wpsp_spreadsheet').each(function(i, obj) {
+            obj.remove();
+            });
+            
+			var html_str = '<div class="row wpsp_spreadsheet">'+
 				'<div class="progress" style="float: none !important; width: unset !important;">'+
 					'<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">'+
 							file.name+
 							'</div>'+
 						'</div>'+
-						'<img onclick="attachment_cancel(this);" class="attachment_cancel" src="<?php echo WPSC_PLUGIN_URL.'asset/images/close.png'?>" style="display:none;" />'+
+						'<img onclick="attachment_cancel(this);clearBoxTable()" class="attachment_cancel" src="<?php echo WPSC_PLUGIN_URL.'asset/images/close.png'?>" style="display:none;" />'+
 					'</div>';
 
 					jQuery('#'+id).append(html_str);
 
-					var attachment = jQuery('#'+id).find('.wpsp_attachment').last();
+					var attachment = jQuery('#'+id).find('.wpsp_spreadsheet').last();
 
 					var data = new FormData();
 						data.append('file', file);
@@ -397,37 +427,83 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
               		jQuery(attachment).append('<input type="hidden" name="'+name+'[]" value="'+return_obj.id+'">');
                   jQuery(attachment).find('.progress-bar').addClass('progress-bar-success');
                   
-                  /* DO NOT REMOVE Start of new Datatable code
-		    $.noConflict();
-            var datatable = jQuery('#boxinfodatatable').DataTable();
+                 //Start of new Datatable code
+		    
+            var datatable = jQuery('#boxinfodatatable').DataTable( {
+        "scrollX": "100%",
+        "scrollXInner": "110%"
+    } );
+            jQuery.fn.dataTable.ext.errMode = 'none';
+            datatable.clear().draw();
 
 
-            var FR = new FileReader();
+   var FR = new FileReader();
    FR.onload = function(e) {
+      
+     
+      
+     var fileTo = event.target.result;
+     
+     var fileLines = fileTo.toString();
+     
      var data = new Uint8Array(e.target.result);
      var workbook = XLSX.read(data, {type: 'array'});
      var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
      
-     // header: 1 instructs xlsx to create an 'array of arrays'
      var result = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
      
-     // data preview
      var arrayOfData = JSON.stringify(result, null, 2);
+     
      var parsedData = JSON.parse(arrayOfData);
-     alert(parsedData[1]);
      
-     
-     datatable.row.add( [
-            parsedData[1][0],
-            parsedData[1][1],
-            parsedData[1][2]
+     if (parsedData[2] !== undefined)
+     {
+    if (parsedData[1][0] !== undefined && parsedData[1][15] !== undefined)
+    {
+     for (var count = 1; count < fileLines.length; count++)
+     {
+         
+     if (parsedData[count] !== undefined && parsedData[count][0].toString().trim() != "Box")
+      {
+            datatable.row.add( [
+         
+            parsedData[count][0],
+            parsedData[count][1],
+            parsedData[count][2],
+            parsedData[count][3],
+            parsedData[count][4],
+            parsedData[count][5],
+            parsedData[count][6],
+            parsedData[count][7],
+            parsedData[count][8],
+            parsedData[count][9],
+            parsedData[count][10],
+            parsedData[count][11],
+            parsedData[count][12],
+            parsedData[count][13],
+            parsedData[count][14],
+            parsedData[count][15]
+            
             ]).draw()
             .node();
+      }
+            
+     }
+     }
+     else
+     {
+        alert("Spreadsheet is not in the correct format! Please try again.");  
+     }
+     }
+     else
+     {
+         alert("Spreadsheet does not contain Box Info. Please try again.");
+     }
    };
      FR.readAsArrayBuffer(file);       
             document.getElementById("boxdisplaydiv").style.display = "block";
             
-            End of new Datatable code*/
+            //End of new Datatable code
                   
                 } else {
                     jQuery(attachment).find('.progress-bar').addClass('progress-bar-danger');
@@ -441,6 +517,12 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		jQuery('#attachment_upload').trigger('click');
 	}
 	
+	function clearBoxTable()
+	{
+	    var datatable = jQuery('#boxinfodatatable').DataTable();
+	    datatable.clear().draw();
+	}
+	
 	function wpsc_submit_ticket(){
 		
 		var validation = true;
@@ -451,6 +533,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		jQuery('.visible.wpsc_required').each(function(e){
 			var field_type = jQuery(this).data('fieldtype');
 			switch (field_type) {
+			    case 'hidden':
 				case 'text':
 				case 'email':
 				case 'number':
@@ -505,8 +588,17 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 						<?php 
 					}?>
 			}
+			
 			if (!validation) return;
 		});
+		
+		    //New DataTable validation check
+			if ( !jQuery('#boxinfodatatable').DataTable().data().any() ) {
+			 
+			 validation=false;
+			    
+			}
+		
 		if (!validation) {
 			alert("<?php _e('Required fields can not be empty!','supportcandy')?>");
 			return false;
@@ -591,6 +683,12 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		?>
 		
 		if (validation) {
+		    
+		    //New get DataTable data in the form of an
+		    var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
+
+            //alert( 'The table contents are ' + data[0] );
+		    
 			var dataform = new FormData(jQuery('#wpsc_frm_create_ticket')[0]);
 			var is_tinymce = true;
 			<?php
@@ -639,7 +737,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 				}
 		  });
 			<?php  if($wpsc_desc_status){ ?>
-				//if(is_tinymce) tinyMCE.activeEditor.setContent('');
+				// if(is_tinymce) tinyMCE.activeEditor.setContent('');
 			<?php } ?>
 			return false;
 		}

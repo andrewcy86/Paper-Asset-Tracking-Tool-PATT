@@ -96,6 +96,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
           // Add Shipping CRON
           add_action( 'wppatt_shipping_cron', array($backend, 'wpatt_shipping_cron_schedule'));
+          // Disable Show Agent Settings Button
+          add_action('wpsc_show_agent_setting_button',false);
         }
         if ($this->is_request('frontend')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-frontend.php' );

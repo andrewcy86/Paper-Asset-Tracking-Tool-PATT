@@ -52,6 +52,7 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 		jQuery('#attachment_upload').unbind('change');
     jQuery('#attachment_upload').on('change', function() {
 			
+			jQuery.fn.dataTable.ext.errMode = 'none';
 			var flag = false;
 	    var file = this.files[0];
 	    
@@ -137,7 +138,7 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
         "scrollX": "100%",
         "scrollXInner": "110%"
     } );
-            jQuery.fn.dataTable.ext.errMode = 'none';
+            
             datatable.clear().draw();
 
 
@@ -196,12 +197,18 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
      }
      else
      {
-        alert("Spreadsheet is not in the correct format! Please try again.");  
+        alert("Spreadsheet is not in the correct format! Please try again.");
+        jQuery('.row.wpsp_spreadsheet').each(function(i, obj) {
+            obj.remove();
+            });
      }
      }
      else
      {
          alert("Spreadsheet does not contain Box Info. Please try again.");
+         jQuery('.row.wpsp_spreadsheet').each(function(i, obj) {
+            obj.remove();
+            });
      }
    };
      FR.readAsArrayBuffer(file);       

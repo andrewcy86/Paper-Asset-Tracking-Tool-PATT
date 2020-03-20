@@ -13,7 +13,7 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
     <?php _e('Boxes','supportcandy');?>
   </h3>
   
-  <div id="wpsc_tickets_container" class="row" style="border-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;"></div>
+  <div id="wpsc_boxes_container" class="row" style="border-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;"></div>
   
   <div id="wpsc_alert_success" class="alert alert-success wpsc_alert" style="display:none;" role="alert">
     <i class="fa fa-check-circle"></i> <span class="wpsc_alert_text"></span>

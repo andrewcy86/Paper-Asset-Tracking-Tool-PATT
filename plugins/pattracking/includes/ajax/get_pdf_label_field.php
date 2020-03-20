@@ -61,8 +61,6 @@ if ($list_array_count>1) {
 
 <?php
 }
-?>
-<?php
 }
 ?>
 

@@ -1,18 +1,37 @@
 
 function wpsc_init(wpsc_setting_action,attrs){
-  
-  jQuery('#wpsc_tickets_container').html(wpsc_admin.loading_html);
-  var data = {
-    action: 'wpsc_tickets',
-    setting_action : wpsc_setting_action
-  };
-  
-   jQuery.each( attrs, function( key, value ) {
-     data[key] = value;
-   });
-  jQuery.post(wpsc_admin.ajax_url, data, function(response) {
-    jQuery('#wpsc_tickets_container').html(response);
-  });
+
+  if(jQuery('#wpsc_boxes_container').length){
+        //alert("wpsc_boxes_container exists");
+    jQuery('#wpsc_boxes_container').html(wpsc_admin.loading_html);
+        var data = {
+        action: 'wpsc_boxes',
+        setting_action : wpsc_setting_action
+        };
+
+       jQuery.each( attrs, function( key, value ) {
+         data[key] = value;
+       });
+      jQuery.post(wpsc_admin.ajax_url, data, function(response) {
+        jQuery('#wpsc_boxes_container').html(response);
+      });
+
+  }else{
+    //alert("wpsc_boxes_container does not exists");
+    jQuery('#wpsc_tickets_container').html(wpsc_admin.loading_html);
+      var data = {
+        action: 'wpsc_tickets',
+        setting_action : wpsc_setting_action
+        };
+
+        jQuery.each( attrs, function( key, value ) {
+         data[key] = value;
+         });
+
+      jQuery.post(wpsc_admin.ajax_url, data, function(response) {
+        jQuery('#wpsc_tickets_container').html(response);
+      });
+  }
   
 }
 

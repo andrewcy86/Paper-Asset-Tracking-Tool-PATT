@@ -3,16 +3,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-global $current_user, $wpscfunction;
+global $current_user, $wpscfunction, $wpdb;
 
 $ticket_id  = isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ;
 
 $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
+$list_array = array();
+        
+$box_index_result = $wpdb->get_results( "SELECT DISTINCT index_level FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
+
+foreach ( $box_index_result as $box_index )
+    {
+        array_push($list_array, $box_index->index_level);
+    }
+        
+        
 ob_start();
 ?>
-
-
 
 <h3>Step 1</h3>
 <p>Print box label and afix it to the side of the box.</p>
@@ -25,7 +33,41 @@ ob_start();
 <h3>Step 3</h3>
 <p>Print folder/file labels. Folder seperate sheets must be placed as the first document in the folder. File labels must be placed on the top right of each document within the box.</p>
 
-<strong><a href="">Folder/File Label</a></strong>
+<?php
+$box_index_value = current($list_array);
+$list_array_count = count($list_array);
+?>
+
+<?php
+if ($box_index_value == 1 && $list_array_count == 1) {
+?>
+    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong>
+<?php
+} elseif ($box_index_value == 2 && $list_array_count == 1) {
+?>
+    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
+<?php
+} else {
+?>
+<?php
+if ($list_array_count>1) {
+    ?>
+    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong><br />
+    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
+<?php
+} else {
+?>
+<strong>Box not assigned to request.</strong>
+
+<?php
+}
+?>
+<?php
+}
+?>
+
+
+
 
 <h3>Step 4</h3>
 <p>Print shipping label and ensure that tracking number is properly entered into the Paper Asset Tracking Tool.</p>

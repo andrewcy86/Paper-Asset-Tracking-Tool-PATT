@@ -28,7 +28,7 @@ if (isset($_GET['id']))
     $obj_pdf->setPrintHeader(false);
     $obj_pdf->setPrintFooter(false);
     $obj_pdf->SetAutoPageBreak(true, 10);
-    $obj_pdf->SetFont('helvetica', '', 9);
+    $obj_pdf->SetFont('helvetica', '', 11);
 
 $record_schedules = $wpdb->get_results("SELECT DISTINCT record_schedule_id FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id =" .$GLOBALS['id']);
 
@@ -42,22 +42,59 @@ INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedu
 INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_folderdocinfo.program_office_id = wpqa_wpsc_epa_program_office.id
 WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = " .$rs_num->record_schedule_id);
 
+$rs_get_rsnum = $wpdb->get_row("SELECT DISTINCT Record_Schedule_Number FROM wpqa_epa_record_schedule WHERE id =" .$rs_num->record_schedule_id);
+$rs_rsnum = $rs_get_rsnum->Record_Schedule_Number;
+
+       $style_barcode = array(
+        'border' => 0,
+        'vpadding' => 'auto',
+        'hpadding' => 'auto',
+        'fgcolor' => array(
+            0,
+            0,
+            0
+        ),
+        'bgcolor' => false,
+        'module_width' => 1,
+         'module_height' => 1 
+         );
+         
+$str_length = 7;
+$request_id = substr("000000{$GLOBALS['id']}", -$str_length);
+
+$request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
+        
+$key = $request_key->ticket_auth_code;
+
+$url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/support-ticket/?support_page=open_ticket&ticket_id=' . $GLOBALS['id'] . '&auth_code=' . $key;
+
+$request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE,H', '', '', '', 30, $style_barcode, 'N'));
+
 $tbl = '
+
+<table style="width:100%">
+  <tr>
+    <td><h1 style="font-size: 40px">Box List</h1></td>
+    <td>Record Schedule: '.$rs_rsnum.'</td>
+    <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" />Request ID: '.$request_id.'</td>
+  </tr>
+</table>
+
 <table style="width: 638px;" cellspacing="0" nobr="true">
   <tr>
-    <th style="border: 1px solid #000000; width: 100px; background-color: #f5f5f5; font-weight: bold;">ID</th>
+    <th style="border: 1px solid #000000; width: 180px; background-color: #f5f5f5; font-weight: bold;">ID</th>
     <th style="border: 1px solid #000000; width: 40px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
     <th style="border: 1px solid #000000; width: 150px; background-color: #f5f5f5; font-weight: bold;">Title</th>
     <th style="border: 1px solid #000000; width: 100px; background-color: #f5f5f5; font-weight: bold;">Date</th>
     <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Record Schedule</th>
     <th style="border: 1px solid #000000; width: 120px; background-color: #f5f5f5; font-weight: bold;">Contact</th>
-    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Source Format</th>
     <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>    
   </tr>
 ';
-        
+
 foreach($box_list as $info){
     $boxlist_id = $info->id;
+    $boxlist_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($boxlist_id, 'C128', '', '', 62, 20, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
     $boxlist_box = $info->box;
     $boxlist_title = $info->title;
     $boxlist_date = $info->date;
@@ -66,15 +103,14 @@ foreach($box_list as $info){
     $boxlist_contact = $info->contact;
     $boxlist_sf = $info->source_format;
     $boxlist_po = $info->program_office;
-
+    
     $tbl .= '<tr>
-            <td style="border: 1px solid #000000; width: 100px;">'.$boxlist_id.'</td>
+            <td style="border: 1px solid #000000; width: 180px;"><tcpdf method="write1DBarcode" params="'.$boxlist_barcode.'" /></td>
             <td style="border: 1px solid #000000; width: 40px;">'.$boxlist_box.'</td>
             <td style="border: 1px solid #000000; width: 150px;">'.$boxlist_title.'</td>
             <td style="border: 1px solid #000000; width: 100px;">'.$boxlist_date.'</td>
             <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_rs.'</td>
             <td style="border: 1px solid #000000; width: 120px;">'.$boxlist_contact.'</td>
-            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_sf.'</td>
             <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_po.'</td>
             </tr>';
     

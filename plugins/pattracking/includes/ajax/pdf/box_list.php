@@ -35,12 +35,23 @@ $record_schedules = $wpdb->get_results("SELECT DISTINCT record_schedule_id FROM 
 foreach($record_schedules as $rs_num)
     {
 
-$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format, wpqa_wpsc_epa_program_office.acronym as program_office
+$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format, wpqa_wpsc_epa_program_office.acronym as program_office
 FROM wpqa_wpsc_epa_folderdocinfo
 INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id
 INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_folderdocinfo.program_office_id = wpqa_wpsc_epa_program_office.id
 WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+
+$box_list_get_count = $wpdb->get_row("SELECT COUNT(folderdocinfo_id) as count
+FROM wpqa_wpsc_epa_folderdocinfo
+WHERE record_schedule_id = " .$rs_num->record_schedule_id);
+$box_list_count = $box_list_get_count->count;
+
+$box_list_get_po = $wpdb->get_row("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_epa_folderdocinfo
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_folderdocinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+$box_list_po = $box_list_get_po->program_office;
 
 $rs_get_rsnum = $wpdb->get_row("SELECT DISTINCT Record_Schedule_Number FROM wpqa_epa_record_schedule WHERE id =" .$rs_num->record_schedule_id);
 $rs_rsnum = $rs_get_rsnum->Record_Schedule_Number;
@@ -72,23 +83,23 @@ $request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE
 
 $tbl = '
 
-<table style="width:100%">
+<table style="width:745px">
   <tr>
     <td><h1 style="font-size: 40px">Box List</h1></td>
-    <td>Record Schedule: '.$rs_rsnum.'</td>
-    <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" />Request ID: '.$request_id.'</td>
+    <td><strong>Record Schedule:</strong> '.$rs_rsnum.'<br /><br /><strong>Total Boxes in Accesson:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$box_list_po.'</td>
+    <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" /><strong>&nbsp; &nbsp; &nbsp; &nbsp; '.$request_id.'</strong><br /></td>
   </tr>
 </table>
 
 <table style="width: 638px;" cellspacing="0" nobr="true">
   <tr>
     <th style="border: 1px solid #000000; width: 180px; background-color: #f5f5f5; font-weight: bold;">ID</th>
-    <th style="border: 1px solid #000000; width: 40px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
+    <th style="border: 1px solid #000000; width: 45px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
     <th style="border: 1px solid #000000; width: 150px; background-color: #f5f5f5; font-weight: bold;">Title</th>
-    <th style="border: 1px solid #000000; width: 100px; background-color: #f5f5f5; font-weight: bold;">Date</th>
+    <th style="border: 1px solid #000000; width: 95px; background-color: #f5f5f5; font-weight: bold;">Date</th>
     <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Record Schedule</th>
     <th style="border: 1px solid #000000; width: 120px; background-color: #f5f5f5; font-weight: bold;">Contact</th>
-    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>    
+    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Source Format</th>    
   </tr>
 ';
 
@@ -103,15 +114,23 @@ foreach($box_list as $info){
     $boxlist_contact = $info->contact;
     $boxlist_sf = $info->source_format;
     $boxlist_po = $info->program_office;
+    $boxlist_il = $info->index_level;
+    $boxlist_il_val = '';
+    if($boxlist_il == 1) {
+        $boxlist_il_val = "(Folder)"; 
+        
+    } else {
+        $boxlist_il_val = "(File)";
+    }
     
     $tbl .= '<tr>
             <td style="border: 1px solid #000000; width: 180px;"><tcpdf method="write1DBarcode" params="'.$boxlist_barcode.'" /></td>
-            <td style="border: 1px solid #000000; width: 40px;">'.$boxlist_box.'</td>
+            <td style="border: 1px solid #000000; width: 45px;">'.$boxlist_box.'<br />'. $boxlist_il_val .'</td>
             <td style="border: 1px solid #000000; width: 150px;">'.$boxlist_title.'</td>
-            <td style="border: 1px solid #000000; width: 100px;">'.$boxlist_date.'</td>
+            <td style="border: 1px solid #000000; width: 95px;">'.$boxlist_date.'</td>
             <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_rs.'</td>
             <td style="border: 1px solid #000000; width: 120px;">'.$boxlist_contact.'</td>
-            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_po.'</td>
+            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_sf.'</td>
             </tr>';
     
 }

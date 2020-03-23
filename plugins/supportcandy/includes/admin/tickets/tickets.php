@@ -144,28 +144,21 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
    var FR = new FileReader();
    FR.onload = function(e) {
-      
-     
-      
-     var fileTo = event.target.result;
-     
-     var fileLines = fileTo.toString();
      
      var data = new Uint8Array(e.target.result);
      var workbook = XLSX.read(data, {type: 'array'});
      var firstSheet = workbook.Sheets[workbook.SheetNames[0]];
      
      var result = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
-     
-     var arrayOfData = JSON.stringify(result, null, 2);
-     
+     var arrayOfData = JSON.stringify(result);
      var parsedData = JSON.parse(arrayOfData);
+     var arrayLength = Object.keys(parsedData).length;
      
      if (parsedData[2] !== undefined)
      {
     if (parsedData[1][0] !== undefined && parsedData[1][15] !== undefined)
     {
-     for (var count = 1; count < fileLines.length; count++)
+     for (var count = 1; count < arrayLength; count++)
      {
          
      if (parsedData[count] !== undefined && parsedData[count][0].toString().trim() != "Box")

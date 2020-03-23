@@ -350,6 +350,41 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	    datatable.clear().draw();
 	}
 	
+	jQuery.fn.toJson = function(){
+  try
+  {
+  if(!this.is('table')){
+    return;
+    }
+  
+  var results = [],
+      headings = [];
+  
+  var table = jQuery('#boxinfodatatable').DataTable();
+  
+  this.find('thead tr th').each(function(index, value){
+    headings.push(jQuery(value).text());
+    });
+  
+
+  table.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+    var row = { };
+    var data = this.data();
+    headings.forEach(function(key, index){
+      var value = data[index];
+      row[key] = value;
+      });
+    results.push(row);
+    });
+  
+  return results;
+  }
+  catch (ex)
+  {
+      alert(ex);
+  }
+  }
+	
 	function wpsc_submit_ticket(){
 		
 		var validation = true;
@@ -512,15 +547,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		if (validation) {
 		    
 		    //New get DataTable data in the form of an
-		    var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
-
+		    //var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
+    
+           var data = JSON.stringify(jQuery('#boxinfodatatable').toJson());
+            
             //alert( 'The table contents are ' + data );
 		    
 			var dataform = new FormData(jQuery('#wpsc_frm_create_ticket')[0]);
 			
-			dataform.append('boxinfo', JSON.stringify(data));
-			
-			//alert( 'The table contents are ' + JSON.stringify(data) );
+			dataform.append('boxinfo', data);
 			
 			var is_tinymce = true;
 			<?php
@@ -575,6 +610,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 		}
 		
 	}
+	
 	<?php do_action('wpsc_print_ext_js_create_ticket');	?>
 	
 </script>

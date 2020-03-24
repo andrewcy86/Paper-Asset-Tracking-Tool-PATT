@@ -28,7 +28,7 @@ ob_start();
 
 <h3>Step 2</h3>
 <p>Print Box list and place it into the first box of earch record schedule series.</p>
-<strong><a href="">Box List Printout</a></strong>
+<strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/box_list.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box List Printout</a></strong>
 
 <h3>Step 3</h3>
 <p>Print folder/file labels. Folder seperate sheets must be placed as the first document in the folder. File labels must be placed on the top right of each document within the box.</p>

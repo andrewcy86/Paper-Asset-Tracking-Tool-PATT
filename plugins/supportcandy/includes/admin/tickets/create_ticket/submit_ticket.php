@@ -145,7 +145,20 @@ $thankyou_html = apply_filters('wpsc_after_thankyou_page_button',$thankyou_html,
 ob_start();
 ?>
 <div class="col-sm-12" style="margin-top:20px;">
-	<?php echo html_entity_decode(stripslashes($thankyou_html))?>
+    
+	<?php
+	
+    //$json_boxinfo_array = json_decode($_POST["boxinfo"]);
+	//$jsondata = $_POST["boxinfo"];
+	
+	//$jsondata = str_replace('\\', '', $jsondata);
+	//echo "OBJECT IS: " . $jsondata;
+	//$json_array = json_decode($jsondata, true);
+	//echo "Number of rows in json array is: " . count($json_array);
+	//echo "OBJECT AT 22 INDEX IS: " . $json_array[23]["Title"];
+	
+	
+	echo html_entity_decode(stripslashes($thankyou_html))?>
 </div>
 <?php
 $thankyou_html = ob_get_clean();

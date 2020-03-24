@@ -465,7 +465,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 			$ticket_widget_name = $wpsc_custom_widget_localize['custom_widget_'.$ticket_widget->term_id];
 			
 			$flag = false;
-			if ( $wpsc_ticket_widget_type && (in_array($role_id,$wpsc_ticket_widget_role) || (!$current_user->has_cap('wpsc_agent') && in_array('customer',$wpsc_ticket_widget_role)) || (is_super_admin($current_user->ID) && is_multisite() ) ) ) {
+			if ( $wpsc_ticket_widget_type && (in_array($role_id,$wpsc_ticket_widget_role) || (in_array('customer',$wpsc_ticket_widget_role)) || (is_super_admin($current_user->ID) && is_multisite() ) ) ) {
 				$flag = true;
 			}
 			?>
@@ -476,7 +476,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 							?>
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
 					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> <?php echo $ticket_widget_name;?>
-									<?php if ($wpscfunction->has_permission('change_status',$ticket_id) && $ticket_status):?>
+									<?php if ($wpscfunction->has_permission('change_status',$ticket_id) && $wpscfunction->has_permission('change_agentonly_fields',$ticket_id) && $ticket_status):?>
 										<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_change_ticket_status(<?php echo $ticket_id?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
 									<?php endif;?>
 								</h4>

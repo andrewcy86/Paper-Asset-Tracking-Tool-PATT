@@ -415,7 +415,7 @@ if (isset($_GET['id']))
             $url_id = fetch_request_id();
             //$url_key = fetch_request_key();
             //QR Code of Request
-            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $url_id;
+            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $padded_request_id;
             //$obj_pdf->writeHTML($url);
             $obj_pdf->write2DBarcode($url, 'QRCODE,H', $x_loc_2d, $y_loc_2d, '', 50, $style_barcode, 'N');
             //$obj_pdf->Cell(150, 50, $url, 0, 1);

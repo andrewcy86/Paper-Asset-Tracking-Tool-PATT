@@ -95,7 +95,7 @@ $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WH
         
 //$key = $request_key->ticket_auth_code;
 
-$url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $GLOBALS['id'];
+$url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $request_id;
 
 $request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE,H', '', '', '', 30, $style_barcode, 'N'));
 

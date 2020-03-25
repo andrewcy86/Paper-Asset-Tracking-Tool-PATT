@@ -57,15 +57,15 @@ if (isset($_GET['id']))
     function fetch_program_office()
     {
         global $wpdb;
-        $array = array();
-        $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
+
+        $request_program_office = $wpdb->get_row("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_ticket
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_ticket.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_ticket.id = " . $GLOBALS['id']);
         
-        foreach($request_program_office as $program_office)
-        {
-            array_push($array, strtoupper($program_office->acronym));
-        }
-        
-        return $array;
+        $program_office = $request_program_office->program_office;
+
+        return $program_office;
     }
     
     //Function to obtain shelf from database
@@ -363,7 +363,7 @@ if (isset($_GET['id']))
             $obj_pdf->SetXY($x_loc_white_rectangle, $y_loc_white_rectangle);
             $obj_pdf->SetFillColor(255,255,255);
             $obj_pdf->SetFont('helvetica', 'B', 45);
-            $obj_pdf->Cell(55, 5, $box_program_office[$i], 1, 0, 'C', 1);
+            $obj_pdf->Cell(55, 5, $box_program_office, 1, 0, 'C', 1);
             //$obj_pdf->Cell(w, h = 0, txt = '', border = 0, ln = 0, align = '', fill = 0, link = nil, stretch = 0, ignore_min_height = false, calign = 'T', valign = 'M')
             
             //Cell containing bay
@@ -413,9 +413,9 @@ if (isset($_GET['id']))
             
             $obj_pdf->SetFont('helvetica', '', 11);
             $url_id = fetch_request_id();
-            $url_key = fetch_request_key();
+            //$url_key = fetch_request_key();
             //QR Code of Request
-            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/support-ticket/?support_page=open_ticket&ticket_id=' . $url_id . '&auth_code=' . $url_key;
+            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $padded_request_id;
             //$obj_pdf->writeHTML($url);
             $obj_pdf->write2DBarcode($url, 'QRCODE,H', $x_loc_2d, $y_loc_2d, '', 50, $style_barcode, 'N');
             //$obj_pdf->Cell(150, 50, $url, 0, 1);

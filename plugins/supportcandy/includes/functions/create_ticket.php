@@ -80,11 +80,13 @@ $values = array(
 	'user_type' => $user_type,
 	'ticket_category' => $ticket_category,
 	'ticket_priority' => $ticket_priority,
+	'program_office_id' => 20,
 	'date_created' => date("Y-m-d H:i:s"),
 	'date_updated' => date("Y-m-d H:i:s"),
 	'ip_address' => $ip_address,
 	'agent_created' => $agent_created,
 	'ticket_auth_code' => $this->getRandomString(10),
+	'historyId' => 502,
 	'active' => '1'
 );
 
@@ -110,6 +112,44 @@ $data_where = array('id' => $ticket_id);
 $wpdb->update($wpdb->prefix . 'wpsc_ticket', $data_update, $data_where);
 
 // END
+
+//New BoxInfo Code
+    
+    $boxinfodata = $args["box_info"];
+    $boxinfodata = str_replace('\\', '', $boxinfodata);
+    $boxinfo_array = json_decode($boxinfodata, true);
+    
+	$box = '';
+	
+	foreach($boxinfo_array as $boxinfo){ 
+	$box_id = $request_id . '-' . $boxinfo["Box"];    
+    if ($box !== $boxinfo["Box"])
+    {
+        $boxarray = array(
+	    'box_id' => $box_id,
+	    'ticket_id' => $ticket_id,
+	    'location' =>  'East',
+	    'bay' => '1',
+	    'shelf' => 'Top',
+	    'user_id' => 1,
+	    'index_level' => 1,
+	    'date_created' => date("Y-m-d H:i:s"),
+	    'date_updated' => date("Y-m-d H:i:s")
+	    
+        );
+        
+       $boxinfo_id = $wpscfunction->create_new_boxinfo($boxarray);
+       
+       $wpscfunction->add_boxinfo_meta($boxinfo_id,'assigned_agent','0');
+
+       $wpscfunction->add_boxinfo_meta($boxinfo_id,'prev_assigned_agent','0');
+       
+       $box = $boxinfo["Box"]; 
+    }
+    
+    }
+
+//End of New BoxInfo Code
 
 $wpscfunction->add_ticket_meta($ticket_id,'assigned_agent','0');
 

@@ -1263,6 +1263,20 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
     }
     
     /**
+     * Adds ticketmeta for BoxInfo
+     */
+    function add_boxinfo_meta($boxinfo_id ,$meta_key ,$meta_value){
+      global $wpdb;
+      $wpdb->insert( 
+        $wpdb->prefix . 'wpsc_epa_boxmeta', 
+        array(
+          'box_id' => $boxinfo_id,
+          'meta_key' => $meta_key,
+          'meta_value' => $meta_value
+      ));
+    }
+    
+    /**
      * Update ticket meta for ticket
      */
     function update_ticket_meta($ticket_id ,$meta_key ,$meta_value){
@@ -1334,6 +1348,16 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
       $wpdb->insert($wpdb->prefix . 'wpsc_ticket', $values);
       $ticket_id = $wpdb->insert_id;
       return $ticket_id;
+    }
+    
+    /**
+     * Create a boxinfo record
+     */
+    public function create_new_boxinfo($boxarray){
+      global $wpdb;
+      $wpdb->insert($wpdb->prefix . 'wpsc_epa_boxinfo', $boxarray);
+      $boxinfo_id = $wpdb->insert_id;
+      return $boxinfo_id;
     }
     
     /**

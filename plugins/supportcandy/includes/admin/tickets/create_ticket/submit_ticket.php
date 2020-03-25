@@ -54,6 +54,11 @@ if(is_user_logged_in() && !$current_user->has_cap('wpsc_agent') ){
 	$args['customer_email'] = $customer_email;
 }
 
+//BoxInfo
+$boxinfodata = $_POST["boxinfo"];
+$args['box_info'] = $boxinfodata;
+
+
 // Subject
 $ticket_subject = isset($_POST['ticket_subject']) ? sanitize_text_field($_POST['ticket_subject']) : '';
 if($ticket_subject) $args['ticket_subject'] = $ticket_subject;
@@ -147,16 +152,6 @@ ob_start();
 <div class="col-sm-12" style="margin-top:20px;">
     
 	<?php
-	
-    //$json_boxinfo_array = json_decode($_POST["boxinfo"]);
-	//$jsondata = $_POST["boxinfo"];
-	
-	//$jsondata = str_replace('\\', '', $jsondata);
-	//echo "OBJECT IS: " . $jsondata;
-	//$json_array = json_decode($jsondata, true);
-	//echo "Number of rows in json array is: " . count($json_array);
-	//echo "OBJECT AT 22 INDEX IS: " . $json_array[23]["Title"];
-	
 	
 	echo html_entity_decode(stripslashes($thankyou_html))?>
 </div>

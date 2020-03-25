@@ -30,27 +30,45 @@ if (isset($_GET['id']))
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
-$record_schedules = $wpdb->get_results("SELECT DISTINCT record_schedule_id FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id =" .$GLOBALS['id']);
+
+
+$ticket_array = array();
+        
+$tickets = $wpdb->get_results("SELECT DISTINCT id FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id =" .$GLOBALS['id']);
+
+        foreach ( $tickets as $item )
+            {
+                array_push($ticket_array, $item->id);
+            }
+
+$ids = join("','",$ticket_array);
+
+
+$record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_folderdocinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_folderdocinfo INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id WHERE wpqa_wpsc_epa_folderdocinfo.box_id IN ('".$ids."')");
+
+$rs_array = array();
 
 foreach($record_schedules as $rs_num)
     {
+        
+array_push($rs_array, $rs_num->record_schedule_id);
+$rs_ids = join("','",$rs_array);
 
-$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format, wpqa_wpsc_epa_program_office.acronym as program_office
+$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
 FROM wpqa_wpsc_epa_folderdocinfo
 INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_folderdocinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = ".$rs_num->record_schedule_id);
 
-$box_list_get_count = $wpdb->get_row("SELECT COUNT(folderdocinfo_id) as count
+$box_list_get_count = $wpdb->get_row("SELECT count(distinct box_id) as box_count
 FROM wpqa_wpsc_epa_folderdocinfo
 WHERE record_schedule_id = " .$rs_num->record_schedule_id);
-$box_list_count = $box_list_get_count->count;
+$box_list_count = $box_list_get_count->box_count;
 
 $box_list_get_po = $wpdb->get_row("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_epa_folderdocinfo
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_folderdocinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+FROM wpqa_wpsc_ticket
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_ticket.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_ticket.id = " .$GLOBALS['id']);
 $box_list_po = $box_list_get_po->program_office;
 
 $rs_get_rsnum = $wpdb->get_row("SELECT DISTINCT Record_Schedule_Number FROM wpqa_epa_record_schedule WHERE id =" .$rs_num->record_schedule_id);
@@ -86,7 +104,7 @@ $tbl = '
 <table style="width:745px">
   <tr>
     <td><h1 style="font-size: 40px">Box List</h1></td>
-    <td><strong>Record Schedule:</strong> '.$rs_rsnum.'<br /><br /><strong>Total Boxes in Accesson:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$box_list_po.'</td>
+    <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br /><strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$box_list_po.'</td>
     <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" /><strong>&nbsp; &nbsp; &nbsp; &nbsp; '.$request_id.'</strong><br /></td>
   </tr>
 </table>

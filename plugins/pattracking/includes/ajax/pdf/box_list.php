@@ -93,9 +93,9 @@ $request_id = substr("000000{$GLOBALS['id']}", -$str_length);
 
 $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
         
-$key = $request_key->ticket_auth_code;
+//$key = $request_key->ticket_auth_code;
 
-$url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/support-ticket/?support_page=open_ticket&ticket_id=' . $GLOBALS['id'] . '&auth_code=' . $key;
+$url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $GLOBALS['id'];
 
 $request_id_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($url, 'QRCODE,H', '', '', '', 30, $style_barcode, 'N'));
 

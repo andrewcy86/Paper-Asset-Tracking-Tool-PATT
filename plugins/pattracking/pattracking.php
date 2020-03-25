@@ -79,7 +79,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-functions.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-actions.php' );
         include_once( WPPATT_ABSPATH . 'includes/rest_api/class-rest-child.php' );
-
+        $frontend  = new wppatt_Functions();
+        // Add PATT Query Shortcode
+        add_shortcode('wppattquery', array($frontend, 'get_id_details'));
+        
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           
@@ -98,6 +101,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action( 'wppatt_shipping_cron', array($backend, 'wpatt_shipping_cron_schedule'));
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
+
         }
         if ($this->is_request('frontend')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-frontend.php' );

@@ -29,13 +29,20 @@ echo '<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/re
 
 $ticket_id_val = substr($id, 0, 7);
 
-$boxlist_get_po = $wpdb->get_row(
+$program_office_array_id = array();
+
+$boxlist_get_po = $wpdb->get_results(
 	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_ticket
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_ticket.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_ticket.request_id = " . $ticket_id_val
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
 );
-$boxlist_po = $boxlist_get_po->program_office;
+
+foreach ($boxlist_get_po as $item) {
+	array_push($program_office_array_id, $item->program_office);
+	}
+	
+$boxlist_po = join(", ", $program_office_array_id);
 
 if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $id)) {
 	switch ($dash_count) {
@@ -129,32 +136,18 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 
 		case 1:
 			$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf
+				"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
 FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
 			);
 
 			$box_details_id = $box_details->pk;
 
-			$rs_array_id = array();
-			$record_schedules_id = $wpdb->get_results(
-				"SELECT DISTINCT wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
-            FROM wpqa_wpsc_epa_folderdocinfo
-            INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id
-            WHERE box_id  = '" . $box_details_id . "'"
-			);
-
-			foreach ($record_schedules_id as $item) {
-				array_push($rs_array_id, $item->rsnum);
-			}
-
-			$rs = join(", ", $rs_array_id);
-
 			$box_content = $wpdb->get_results(
-				"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
+				"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
 FROM wpqa_wpsc_epa_folderdocinfo
 INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id
 WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			);
 
@@ -174,7 +167,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			echo "<strong>Digitization Center Location:</strong> " . $box_details->location . "</strong><br />";
 			echo "<strong>Bay:</strong> " . $box_details->bay . "<br />";
 			echo "<strong>Shelf:</strong> " . $box_details->shelf . "<br />";
-			echo "<strong>Record Schedule(s):</strong> " . $rs . "<br />";
+			echo "<strong>Record Schedule:</strong> " . $box_details->rsnum . "<br />";
 			echo "<strong>Index Level:</strong>  " . $boxlist_il_val;
 
 			$tbl = '<br /><br /><strong>Box Contents:</strong>
@@ -192,7 +185,6 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
     <th>Title</th>
     <th class="desktop">Date</th>
     <th class="desktop">Contact</th>
-    <th class="desktop">Record Schedule #</th>
   </tr>
  </thead><tbody>
 ';
@@ -205,7 +197,6 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 				$boxcontent_site = $info->site;
 				$boxcontent_contact = $info->contact;
 				$boxcontent_sf = $info->source_format;
-				$boxcontent_rsnum = $info->rsnum;
 				$tbl .= '
     <tr>
             <td></td>
@@ -213,7 +204,6 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>
-            <td>' . $boxcontent_rsnum . '</td>
             </tr>
             ';
 			}

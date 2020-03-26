@@ -15,12 +15,16 @@ $dash_count = substr_count($id, '-');
 wp_enqueue_script('jquery');
 
 wp_register_script('dataTables-js', 'https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', '', '', true);
+wp_register_script('dataTables-responsive-js', 'https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js', '', '', true);
 wp_register_script('customScriptDatatables', plugins_url('js/customScriptDatatables.js', __FILE__, '', true));
 
+
 wp_enqueue_script('dataTables-js');
+wp_enqueue_script('dataTables-responsive-js');
 wp_enqueue_script('customScriptDatatables');
 
 echo '<link rel="stylesheet" type="text/css" href="' . WPSC_PLUGIN_URL . 'asset/lib/DataTables/datatables.min.css"/>';
+echo '<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css"/>';
 
 $ticket_id_val = substr($id, 0, 7);
 
@@ -80,11 +84,12 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 <table id="dataTable">
 <thead>
   <tr>
+    <th></th>
     <th>ID</th>
     <th>Facility</th>
-    <th>Bay</th>
-    <th>Shelf</th>
-    <th>Index Level</th>    
+    <th class="desktop">Bay</th>
+    <th class="desktop">Shelf</th>
+    <th class="desktop">Index Level</th>
   </tr>
  </thead><tbody>
 ';
@@ -104,6 +109,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 
 				$tbl .= '
     <tr>
+            <td></td>
             <td><a href="/wordpress3/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
             <td>' . $boxlist_location . '</td>
             <td>' . $boxlist_bay . '</td>
@@ -177,11 +183,12 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 <table id="dataTable">
 <thead>
   <tr>
+    <th></th>
     <th>ID</th>
     <th>Title</th>
-    <th>Date</th>
-    <th>Contact</th>
-    <th>Record Schedule #</th>    
+    <th class="desktop">Date</th>
+    <th class="desktop">Contact</th>
+    <th class="desktop">Record Schedule #</th>
   </tr>
  </thead><tbody>
 ';
@@ -197,6 +204,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 				$boxcontent_rsnum = $info->rsnum;
 				$tbl .= '
     <tr>
+            <td></td>
             <td><a href="/wordpress3/data?id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>

@@ -22,6 +22,7 @@ wp_register_script('customScriptDatatables', plugins_url('js/customScriptDatatab
 wp_enqueue_script('dataTables-js');
 wp_enqueue_script('dataTables-responsive-js');
 wp_enqueue_script('customScriptDatatables');
+wp_enqueue_style('wpsc-fa-css', WPSC_PLUGIN_URL.'asset/lib/font-awesome/css/all.css?version='.WPSC_VERSION );
 
 echo '<link rel="stylesheet" type="text/css" href="' . WPSC_PLUGIN_URL . 'asset/lib/DataTables/datatables.min.css"/>';
 echo '<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css"/>';
@@ -40,7 +41,7 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 	switch ($dash_count) {
 		case 0:
 			$request_info = $wpdb->get_row(
-				"SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, location.name as ticket_location, priority.name as ticket_priority, wpqa_wpsc_ticket.date_created as date_created
+				"SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
 FROM wpqa_wpsc_ticket
 
     INNER JOIN wpqa_terms AS status ON (
@@ -57,15 +58,18 @@ FROM wpqa_wpsc_ticket
 
 WHERE wpqa_wpsc_ticket.request_id = " . $id
 			);
-
+			
+			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
+            $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
 			echo "<h3>Request</h3>";
 			echo "<strong>Request ID:</strong> " . $id . "<br />";
 			echo "<strong>Program Office: </strong> " . $boxlist_po . "<br />";
 			echo "<strong>Request Handled by Digitization Center " . $request_info->ticket_location . "</strong><br />";
 			echo "<strong>Requestor Name:</strong> " . $request_info->customer_name . "<br />";
 			echo "<strong>Requestor Email:</strong> " . $request_info->customer_email . "<br />";
-			echo "<strong>Status:</strong> " . $request_info->ticket_status . "<br />";
-			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "<br />";
+			echo "<strong>Status:</strong> " . $request_info->ticket_status . "  <span style='color: ".$status_color." ;margin: 0px;'><i class='fas fa-circle'></i></span>
+<br />";
+			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "  <span style='color: ".$priority_color." ;margin: 0px;'><i class='fas fa-asterisk'></i></span><br />";
 			echo "<strong>Date Created:</strong> " . date("m-d-Y", strtotime($request_info->date_created));
 
 			$box_details = $wpdb->get_results(

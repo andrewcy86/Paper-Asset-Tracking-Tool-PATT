@@ -30,49 +30,41 @@ if (isset($_GET['id']))
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
+$record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_boxinfo INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id WHERE wpqa_wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
 
-
-$ticket_array = array();
-        
-$tickets = $wpdb->get_results("SELECT DISTINCT id FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id =" .$GLOBALS['id']);
-
-        foreach ( $tickets as $item )
-            {
-                array_push($ticket_array, $item->id);
-            }
-
-$ids = join("','",$ticket_array);
-
-
-$record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_folderdocinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_folderdocinfo INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id WHERE wpqa_wpsc_epa_folderdocinfo.box_id IN ('".$ids."')");
-
-$rs_array = array();
+$box_id_array = array();
 
 foreach($record_schedules as $rs_num)
     {
-        
-array_push($rs_array, $rs_num->record_schedule_id);
-$rs_ids = join("','",$rs_array);
 
-$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
+$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
 FROM wpqa_wpsc_epa_folderdocinfo
 INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id
-WHERE wpqa_wpsc_epa_folderdocinfo.record_schedule_id = ".$rs_num->record_schedule_id);
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
 
-$box_list_get_count = $wpdb->get_row("SELECT count(distinct box_id) as box_count
+$box_list_get_count = $wpdb->get_row("SELECT count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count
 FROM wpqa_wpsc_epa_folderdocinfo
-WHERE record_schedule_id = " .$rs_num->record_schedule_id);
+INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
+WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+
 $box_list_count = $box_list_get_count->box_count;
 
-$box_list_get_po = $wpdb->get_row("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_ticket
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_ticket.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_ticket.id = " .$GLOBALS['id']);
-$box_list_po = $box_list_get_po->program_office;
+$program_office_array_id = array();
 
-$rs_get_rsnum = $wpdb->get_row("SELECT DISTINCT Record_Schedule_Number FROM wpqa_epa_record_schedule WHERE id =" .$rs_num->record_schedule_id);
-$rs_rsnum = $rs_get_rsnum->Record_Schedule_Number;
+$boxlist_get_po = $wpdb->get_results(
+	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']
+);
+
+foreach ($boxlist_get_po as $item) {
+	array_push($program_office_array_id, $item->program_office);
+	}
+	
+$boxlist_po = join(", ", $program_office_array_id);
+
 
        $style_barcode = array(
         'border' => 0,
@@ -104,7 +96,7 @@ $tbl = '
 <table style="width:745px">
   <tr>
     <td><h1 style="font-size: 40px">Box List</h1></td>
-    <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br /><strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$box_list_po.'</td>
+    <td><strong>Record Schedule:</strong> '.$rs_num->rsnum.'<br /><br /><strong>Total Boxes in Accession:</strong> '.$box_list_count.'<br /><br /><strong>Program Office:</strong> '.$boxlist_po.'</td>
     <td align="right"><tcpdf method="write2DBarcode" params="'.$request_id_barcode.'" /><strong>&nbsp; &nbsp; &nbsp; &nbsp; '.$request_id.'</strong><br /></td>
   </tr>
 </table>
@@ -115,9 +107,9 @@ $tbl = '
     <th style="border: 1px solid #000000; width: 45px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
     <th style="border: 1px solid #000000; width: 150px; background-color: #f5f5f5; font-weight: bold;">Title</th>
     <th style="border: 1px solid #000000; width: 95px; background-color: #f5f5f5; font-weight: bold;">Date</th>
-    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Record Schedule</th>
     <th style="border: 1px solid #000000; width: 120px; background-color: #f5f5f5; font-weight: bold;">Contact</th>
     <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Source Format</th>    
+    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>  
   </tr>
 ';
 
@@ -127,7 +119,6 @@ foreach($box_list as $info){
     $boxlist_box = $info->box;
     $boxlist_title = $info->title;
     $boxlist_date = $info->date;
-    $boxlist_rs = $info->record_schedule;
     $boxlist_site = $info->site;
     $boxlist_contact = $info->contact;
     $boxlist_sf = $info->source_format;
@@ -146,9 +137,9 @@ foreach($box_list as $info){
             <td style="border: 1px solid #000000; width: 45px;">'.$boxlist_box.'<br />'. $boxlist_il_val .'</td>
             <td style="border: 1px solid #000000; width: 150px;">'.$boxlist_title.'</td>
             <td style="border: 1px solid #000000; width: 95px;">'.$boxlist_date.'</td>
-            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_rs.'</td>
             <td style="border: 1px solid #000000; width: 120px;">'.$boxlist_contact.'</td>
             <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_sf.'</td>
+            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_po.'</td>
             </tr>';
     
 }

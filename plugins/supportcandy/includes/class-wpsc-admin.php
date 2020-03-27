@@ -133,8 +133,28 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-tickets',
         array($this,'tickets')
       );
+      
+      /*
+      //Start JM Developer - Add Scan menu item that will link
+      // to the Scanning page. Must create a Scanning page. This
+      // links to the wsc-boxes page in the interim.
+      // Must determine the purpose/location of wpsc-boxes, which 
+      // I changed to wpsc-scanning
+       add_submenu_page(
+        'wpsc-tickets',
+        __( 'Scanning', 'supportcandy' ),
+        __( 'Scanning', 'supportcandy' ),
+        'manage_options',
+        'wpsc-scanning',
+        array($this,'scanning')
+      );
+      //End JM Developer*/
+      
+      $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
-      //Start RM Developer
+      if (($agent_permissions[label] == 'Administrator') || ($agent_permissions[label] == 'Agent'))
+      {
+       //Start RM Developer
        add_submenu_page(
         'wpsc-tickets',
         __( 'Boxes', 'supportcandy' ),
@@ -143,8 +163,10 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-boxes',
         array($this,'boxes')
       );
-      //End RM Developer  
-
+      //End RM Developer
+      do_action('wpsc_add_submenu_page');
+      }
+      
       add_submenu_page(
         'wpsc-tickets',
         __( 'Support Agents', 'supportcandy' ),
@@ -185,8 +207,6 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-appearance',
         array($this,'appearance_settings')
       );
-      
-      do_action('wpsc_add_submenu_page');
       
       add_submenu_page(
         'wpsc-tickets',
@@ -256,6 +276,17 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       include WPSC_ABSPATH.'includes/admin/boxes/boxes.php';
 
     }
+    
+    // Start JM Developer - Create Scanning page settings
+    
+    public function scanning(){
+      global $wpscfunction;
+      $wpscfunction->display_ad_banner();
+      include WPSC_ABSPATH.'includes/admin/scanning/scanning.php';
+    }
+    
+    
+    // End JM Developer
     
     // Email Notification Settings
     public function email_notifications(){

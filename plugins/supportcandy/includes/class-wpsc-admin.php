@@ -152,7 +152,7 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       
       $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
-      if (($agent_permissions[label] == 'Administrator') || ($agent_permissions[label] == 'Agent'))
+      if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
       {
        //Start RM Developer
        add_submenu_page(

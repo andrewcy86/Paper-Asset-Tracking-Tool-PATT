@@ -1,14 +1,27 @@
 <?php
-// Code to inject label button
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-global $current_user, $wpscfunction;
+//$path = preg_replace('/wp-content.*$/','',__DIR__);
+//include($path.'wp-load.php');
 
-$trackingNumber = '420917619301920130200546438392';
+global $current_user, $wpscfunction, $wpdb;
 
+//$usps_shipping_info_array = array();
+
+$usps_shipping_info = $wpdb->get_results(
+"SELECT *
+FROM wpqa_wpsc_epa_shipping_tracking
+WHERE company_name = 'usps'"
+);
+
+foreach ($usps_shipping_info as $item) {
+
+$trackingNumber = $item->tracking_number;
+
+if($item->shipped == 0) {
 $url = "http://production.shippingapis.com/shippingAPI.dll";
 $service = "TrackV2";
 
@@ -33,12 +46,14 @@ curl_close($ch);
 $response = new SimpleXMLElement($result);
 
 $deliveryStatus = $response->TrackInfo->TrackSummary;
-echo '<strong>Summary</strong>: '.$deliveryStatus;
+$status_array = array('ACCEPTED', 'POSSESSION', 'DELIVERY', 'DELIVERED');
+$table_name = 'wpqa_wpsc_epa_shipping_tracking';
 
-echo '<ul>';
-foreach ($response->TrackInfo->TrackDetail as $detail) {
-    echo '<li>' . $detail . '</li>';
+if ( preg_match('('.implode('|',$status_array).')', strtoupper($deliveryStatus))){
+$wpdb->update( $table_name, array( 'shipped' => 1),array('ID'=>$item->id));
+$wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$item->id));
 }
-echo '</ul>';
+}
+}
 
 ?>

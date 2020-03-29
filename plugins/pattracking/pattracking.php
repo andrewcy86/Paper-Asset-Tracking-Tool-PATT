@@ -82,7 +82,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
         add_shortcode('wppattquery', array($frontend, 'get_id_details'));
-        
+        // Add Shipping CRON
+        add_action( 'wppatt_shipping_cron', array($frontend, 'wpatt_shipping_cron_schedule'));
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           
@@ -97,8 +98,6 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
-          // Add Shipping CRON
-          add_action( 'wppatt_shipping_cron', array($backend, 'wpatt_shipping_cron_schedule'));
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
           

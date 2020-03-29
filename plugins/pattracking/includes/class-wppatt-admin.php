@@ -36,22 +36,6 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 
 	//echo $status_id;
 if ($status_id != 3) {
-    
-$shipped_array = array();
-
-$get_shipped_status = $wpdb->get_results(
-	"SELECT shipped
-FROM wpqa_wpsc_epa_shipping_tracking
-WHERE ticket_id = " . $ticket_id
-);
-
-foreach ($get_shipped_status as $item) {
-	array_push($shipped_array, $item->shipped);
-	}
-	
-if (($status_id == 4) && (!in_array(0, $shipped_array))) {
-$wpscfunction->change_status($ticket_id, 5);   
-}
 
 	$ticket_widget_name = __( 'Shipping', 'supportcandy' );
 

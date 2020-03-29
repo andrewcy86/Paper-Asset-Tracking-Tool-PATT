@@ -11,6 +11,7 @@ global $current_user, $wpscfunction, $wpdb;
 
 $shippingArray = ["usps", "fedex", "ups", "dhl"];
 
+// Begin going through the different shipping carriers
 foreach ($shippingArray as $shippingCompany)  {
 
 switch ($shippingCompany) {
@@ -70,4 +71,33 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
 }
 
         }
+        
+// Change the status of request from Initial Review Complete to Shipped
+$shipped_array = array();
+
+$get_unique_tickets = $wpdb->get_results(
+	"SELECT DISTINCT ticket_id
+FROM wpqa_wpsc_epa_shipping_tracking"
+);
+
+foreach ($get_unique_tickets as $item) {
+
+$ticket_id = $item->ticket_id ;
+$ticket_data = $wpscfunction->get_ticket($ticket_id);
+$status_id   	= $ticket_data['ticket_status'];
+
+$get_shipped_status = $wpdb->get_results(
+	"SELECT shipped
+FROM wpqa_wpsc_epa_shipping_tracking
+WHERE ticket_id = " . $item->ticket_id
+);
+
+foreach ($get_shipped_status as $shipped) {
+	array_push($shipped_array, $shipped->shipped);
+	}
+	
+if (($status_id == 4) && (!in_array(0, $shipped_array))) {
+$wpscfunction->change_status($item->ticket_id, 5);   
+}
+	}
 ?>

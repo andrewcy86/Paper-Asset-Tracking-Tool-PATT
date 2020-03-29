@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'wppatt_Admin' ) ) :
   
   final class wppatt_Admin {
-    
+
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    
@@ -36,6 +36,23 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
 
 	//echo $status_id;
 if ($status_id != 3) {
+    
+$shipped_array = array();
+
+$get_shipped_status = $wpdb->get_results(
+	"SELECT shipped
+FROM wpqa_wpsc_epa_shipping_tracking
+WHERE ticket_id = " . $ticket_id
+);
+
+foreach ($get_shipped_status as $item) {
+	array_push($shipped_array, $item->shipped);
+	}
+	
+if (($status_id == 4) && (!in_array(0, $shipped_array))) {
+$wpscfunction->change_status($ticket_id, 5);   
+}
+
 	$ticket_widget_name = __( 'Shipping', 'supportcandy' );
 
 	$wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');

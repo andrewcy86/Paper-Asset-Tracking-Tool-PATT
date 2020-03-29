@@ -9,15 +9,20 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
-//$usps_shipping_info_array = array();
+$shippingArray = ["usps", "fedex", "ups", "dhl"];
 
-$usps_shipping_info = $wpdb->get_results(
+foreach ($shippingArray as $shippingCompany)  {
+
+switch ($shippingCompany) {
+    case "usps":
+
+$shipping_query = $wpdb->get_results(
 "SELECT *
 FROM wpqa_wpsc_epa_shipping_tracking
 WHERE company_name = 'usps'"
 );
 
-foreach ($usps_shipping_info as $item) {
+foreach ($shipping_query as $item) {
 
 $trackingNumber = $item->tracking_number;
 
@@ -55,5 +60,14 @@ $wpdb->update( $table_name, array( 'status' => $deliveryStatus),array('ID'=>$ite
 }
 }
 }
+        break;
+    case "fedex":
+        break;
+    case "ups":
+        break;
+    case "dhl":
+        break;
+}
 
+        }
 ?>

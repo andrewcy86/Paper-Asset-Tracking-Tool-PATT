@@ -48,7 +48,7 @@ if (isset($_GET['id']))
     //Set overall values for PDF
     $obj_pdf = new TCPDF('P', PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
     $obj_pdf->SetCreator(PDF_CREATOR);
-    $obj_pdf->SetTitle("Box Labels - Paper Asset Tracking Tool");
+    $obj_pdf->SetTitle("Folder Separator Sheets - Paper Asset Tracking Tool");
     $obj_pdf->SetHeaderData('', '', PDF_HEADER_TITLE, PDF_HEADER_STRING);
     $obj_pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN,'',PDF_FONT_SIZE_MAIN));
     $obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA,'',PDF_FONT_SIZE_DATA));
@@ -71,14 +71,14 @@ if (isset($_GET['id']))
     $x_loc_title = 30;
     $y_loc_title = 130;
     //Folderdocinfo title coordinates
-    $x_loc_folderdocinfo_title = 60;
+    $x_loc_folderdocinfo_title = 32;
     $y_loc_folderdocinfo_title = 130;
     
     //Obtain array of Box ID's
     $folderdocinfo_array = fetch_folderdocinfo();
     $title_array = fetch_title();
     
-    //Begin for loop to iterate through folderdocinfo's array
+    //Begin for loop to iterate through folderdocinfo's arrayb
     for ($i = 0;$i < count($folderdocinfo_array);$i++)
     {
         //Begin if statement to determine # of new pages based on length of array
@@ -100,17 +100,15 @@ if (isset($_GET['id']))
         $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(255, 255, 255)));
         $obj_pdf->Cell(100, 0, $folderdocinfo_array[$i], 1, 0, 'C', 1);
         
-        //Bold "Title" printout
-        $obj_pdf->SetFont('helvetica', 'B', 30);
-        $obj_pdf->Text($x_loc_title, $y_loc_title, 'Title:');
-            
+
         //Folderdocinfo title printout
         //$obj_pdf->SetXY($x_loc_folderdocinfo_title, $y_loc_folderdocinfo_title);
         $obj_pdf->SetFont('helvetica', '', 30);
         //$obj_pdf->SetFillColor(255,255,255);
         //$obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
         //#MultiCell(w, h, txt, border = 0, align = 'J', fill = 0, ln = 1, x = '', y = '', reseth = true, stretch = 0, ishtml = false, autopadding = true, maxh = 0) ⇒ Object
-        $obj_pdf->MultiCell(125, 0, $title_array[$i], 0, 'L', 0, 0, $x_loc_folderdocinfo_title, $y_loc_folderdocinfo_title, true);
+        $txt = '<strong>Title:</strong> ' . ((strlen($title_array[$i]) > 150) ? substr($title_array[$i], 0, 150) . "...": $title_array[$i]);
+        $obj_pdf->MultiCell(145, 0, $txt, 0, 'L', 0, 0, $x_loc_folderdocinfo_title, $y_loc_folderdocinfo_title, true, 0, true);
     }
     
     //Generate PDF

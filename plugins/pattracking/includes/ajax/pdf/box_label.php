@@ -3,6 +3,8 @@
 $path = preg_replace('/wp-content.*$/','',__DIR__);
 include($path.'wp-load.php');
 
+global $wpdb;
+
 //Check to see if URL has the correct Request ID
 if (isset($_GET['id']))
 {
@@ -16,7 +18,7 @@ if (isset($_GET['id']))
         global $wpdb;
         $request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
 
-        $asset_id = $request_id->id;
+        $asset_id = $request_id->request_id;
 
         return $asset_id;
     }
@@ -39,19 +41,13 @@ if (isset($_GET['id']))
     }
     
     //Function to obtain box details from box ID
-    function fetch_box_data()
+    function fetch_box_id_a()
     {
         global $wpdb;
-        $array = array();
-        
-        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE box_id = " . $GLOBALS['id']);
 
-        foreach ( $box_result as $box )
-            {
-                array_push($array, $box->box_id);
-            }
+        $boxidArray = explode(',', $GLOBALS['id']);
 
-        return $array;
+        return $boxidArray;
 
     }
     
@@ -69,6 +65,7 @@ if (isset($_GET['id']))
 
         return $array;
     }
+    
     
     //Function to obtain program office from database
     function fetch_program_office()
@@ -139,6 +136,17 @@ if (isset($_GET['id']))
         return $key;
     }
 
+    //Function to obtain request key
+    function fetch_box_count()
+    {
+        global $wpdb;
+        $box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
+        
+        $count_val = $box_count->count;
+        
+        return $count_val;
+    }
+    
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
 
@@ -203,23 +211,71 @@ if (isset($_GET['id']))
         $obj_pdf->SetAutoPageBreak(true, 10);
         $obj_pdf->SetFont('helvetica', '', 11);
 
-if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
     
         $obj_pdf->AddPage();
 
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         //Obtain array of Box ID's
         $box_array = fetch_box_id();
         $box_location = fetch_location();
         $box_program_office = fetch_program_office();
         $box_shelf = fetch_shelf();
         $box_bay = fetch_bay();
-        
+        $box_date = fetch_create_date();
+        $box_count = fetch_box_count();
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
+       $box_array = fetch_box_id_a();
+}
+
         //Set count to 0. This count determine odd or even components of the array
         $c = 0;
         
         //Begin for loop to iterate through Box ID's array
         for ($i = 0;$i < count($box_array);$i++)
         {
+            
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {           
+
+        $asset_ticket_id = $wpdb->get_row( "SELECT DISTINCT ticket_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
+                
+        $asset_request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
+
+        $asset_id = $asset_request_id->request_id;
+        
+        
+        $box_digitization_center = $wpdb->get_row( "SELECT location FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
+        
+        $box_location_a = $box_digitization_center->location;
+
+
+        $request_program_office = $wpdb->get_row("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
+        
+        $box_program_office_a = $request_program_office->acronym;
+
+        $request_shelf = $wpdb->get_row("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
+        
+        $box_shelf_a = $request_shelf->shelf;
+    
+        $request_bay = $wpdb->get_row("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
+        
+        $box_bay_a = $request_bay->bay;
+
+        $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
+        
+        $create_date = $request_create_date->date_created;
+        $date = strtotime($create_date);
+        
+        $box_date_a = strtoupper(date('M y', $date));
+        
+        $get_box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $asset_ticket_id->ticket_id);
+        
+        $box_count_a = $get_box_count->count;
+        
+}
+
             //Begin if statement to determine where to add new pages
             if ($c == 2)
 
@@ -357,8 +413,17 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
                 $y_loc_dashed_border = 253;
             }
             //Determine box count out of total
-            $initial_box = $i + 1;
-            $total_box = count($box_array);
+            
+            $initial_box = substr($box_array[$i], strpos($box_array[$i], "-") + 1);
+            
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+            //$total_box = $box_count;
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+           $total_box = $box_count_a;
+}
+
             $obj_pdf->SetFont('helvetica', 'B', 28);
             $obj_pdf->Text($x_loc_b, $y_loc_b, "Box " . $initial_box . " of " . $total_box);
             $obj_pdf->Line($x_loc_l1, $y_loc_l1, $x_loc_l2, $y_loc_l2, $style_line);
@@ -384,14 +449,29 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_white_rectangle, $y_loc_white_rectangle);
             $obj_pdf->SetFillColor(255,255,255);
             $obj_pdf->SetFont('helvetica', 'B', 45);
+
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Cell(55, 5, $box_program_office[$i], 1, 0, 'C', 1);
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+            $obj_pdf->Cell(55, 5, $box_program_office_a, 1, 0, 'C', 1);
+}
+
             //$obj_pdf->Cell(w, h = 0, txt = '', border = 0, ln = 0, align = '', fill = 0, link = nil, stretch = 0, ignore_min_height = false, calign = 'T', valign = 'M')
             
             //Cell containing bay
             $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetXY($x_loc_bay, $y_loc_bay);
             $obj_pdf->SetFont('helvetica', 'B', 30);
+            
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Cell(27, 0, $box_bay[$i], 1, 0, 'C', 1);
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+            $obj_pdf->Cell(27, 0, $box_bay_a, 1, 0, 'C', 1);
+}
             
             //Cell containing shelf
             $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
@@ -399,7 +479,15 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->SetFillColor(0,0,0);
             $obj_pdf->SetFont('helvetica', 'B', 30);
             $obj_pdf->SetTextColor(255,255,255);
+            
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Cell(27, 0, $box_shelf[$i], 1, 0, 'C', 1);
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+            $obj_pdf->Cell(27, 0, $box_shelf_a, 1, 0, 'C', 1);
+}
+            
             
             //set text color back to black
             $obj_pdf->SetTextColor(0,0,0);
@@ -426,39 +514,63 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->Text($x_loc_c, $y_loc_c, $box_array[$i]);
             $obj_pdf->SetFont('helvetica', '', 14);
             
-            $num = fetch_request_id();
-            $str_length = 7;
-            $padded_request_id = substr("000000{$num}", -$str_length);
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+$num = fetch_request_id();
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+$num = $asset_id;
+}
+
             
-            $obj_pdf->Text($x_loc_rid, $y_loc_rid, $padded_request_id);
+
+            $obj_pdf->Text($x_loc_rid, $y_loc_rid, $num);
             
             $obj_pdf->SetFont('helvetica', '', 11);
-            $url_id = fetch_request_id();
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+$url_id = fetch_request_id();
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+$url_id = $asset_id;
+}
             //$url_key = fetch_request_key();
             //QR Code of Request
-            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $padded_request_id;
+            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $num;
             //$obj_pdf->writeHTML($url);
             $obj_pdf->write2DBarcode($url, 'QRCODE,H', $x_loc_2d, $y_loc_2d, '', 50, $style_barcode, 'N');
             //$obj_pdf->Cell(150, 50, $url, 0, 1);
             $obj_pdf->SetFont('helvetica', 'B', 18);
+            
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             //Obtain array of box locations
             $obj_pdf->Text($x_loc_l, $y_loc_l, $box_location[$i]);
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+            //Obtain array of box locations
+            $obj_pdf->Text($x_loc_l, $y_loc_l, $box_location_a);
+}
+
             //set month/year text color = white
             $obj_pdf->SetTextColor(255,255,255);
             $obj_pdf->SetFont('helvetica', 'B', 47);
-            $obj_pdf->Text($x_loc_cd, $y_loc_cd, fetch_create_date()); 
+            
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+            $obj_pdf->Text($x_loc_cd, $y_loc_cd, $box_date); 
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+            $obj_pdf->Text($x_loc_cd, $y_loc_cd, $box_date_a);
+}
+
             $obj_pdf->SetFont('helvetica', '', 11);
             //set text color back to = black
             $obj_pdf->SetTextColor(0,0,0);
         }
+        
         //Generate PDF
         $obj_pdf->Output('file.pdf', 'I');     
-} elseif (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
-
-$boxidArray = explode(',', $GLOBALS['id']);
-
-print_r($boxidArray);
-    
 } else {
 echo "Pass a valid ID in URL";
 }

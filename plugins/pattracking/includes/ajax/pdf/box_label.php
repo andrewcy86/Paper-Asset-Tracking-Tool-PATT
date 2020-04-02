@@ -38,6 +38,23 @@ if (isset($_GET['id']))
 
     }
     
+    //Function to obtain box details from box ID
+    function fetch_box_data()
+    {
+        global $wpdb;
+        $array = array();
+        
+        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE box_id = " . $GLOBALS['id']);
+
+        foreach ( $box_result as $box )
+            {
+                array_push($array, $box->box_id);
+            }
+
+        return $array;
+
+    }
+    
     //Function to obtain location value from database
     function fetch_location()
     {
@@ -185,8 +202,11 @@ if (isset($_GET['id']))
         $obj_pdf->setPrintFooter(false);
         $obj_pdf->SetAutoPageBreak(true, 10);
         $obj_pdf->SetFont('helvetica', '', 11);
+
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {
+    
         $obj_pdf->AddPage();
-        
+
         //Obtain array of Box ID's
         $box_array = fetch_box_id();
         $box_location = fetch_location();
@@ -432,7 +452,17 @@ if (isset($_GET['id']))
             $obj_pdf->SetTextColor(0,0,0);
         }
         //Generate PDF
-        $obj_pdf->Output('file.pdf', 'I');
+        $obj_pdf->Output('file.pdf', 'I');     
+} elseif (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+
+$boxidArray = explode(',', $GLOBALS['id']);
+
+print_r($boxidArray);
+    
+} else {
+echo "Pass a valid ID in URL";
+}
+
     }
     else
     {

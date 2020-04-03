@@ -248,7 +248,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
         $box_digitization_center = $wpdb->get_row( "SELECT location FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
         
-        $box_location_a = $box_digitization_center->location;
+        $box_location_a = strtoupper($box_digitization_center->location);
 
 
         $request_program_office = $wpdb->get_row("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
@@ -257,7 +257,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 
         $request_shelf = $wpdb->get_row("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
         
-        $box_shelf_a = $request_shelf->shelf;
+        $box_shelf_a = strtoupper($request_shelf->shelf);
     
         $request_bay = $wpdb->get_row("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
         
@@ -417,7 +417,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $initial_box = substr($box_array[$i], strpos($box_array[$i], "-") + 1);
             
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-            //$total_box = $box_count;
+            $total_box = $box_count;
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {

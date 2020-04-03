@@ -44,7 +44,7 @@ foreach ($boxlist_get_po as $item) {
 	
 $boxlist_po = join(", ", $program_office_array_id);
 
-if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $id)) {
+if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,4}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,4}-[0-9]{2}-[0-9]{1,4}$/", $id)) {
 	switch ($dash_count) {
 		case 0:
 			$request_info = $wpdb->get_row(

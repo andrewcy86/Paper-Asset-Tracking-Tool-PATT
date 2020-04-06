@@ -27,7 +27,7 @@ if (isset($_GET['id']))
     $obj_pdf->SetAutoPageBreak(true, 10);
     $obj_pdf->SetFont('helvetica', '', 11);
 
-if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4}-[0-9]{2}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
 
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     $box_ids = $wpdb->get_results("SELECT id FROM wpqa_wpsc_epa_boxinfo WHERE index_level = 2 AND ticket_id =" .$GLOBALS['id']);
@@ -90,7 +90,7 @@ $obj_pdf->writeHTML($tbl, true, false, false, false, '');
 
 } //endforeach_regex ticket id
 
-if (preg_match("/^([0-9]{7}-[0-9]{1,4}-[0-9]{2}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+if (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 
 $final_array = array();
 

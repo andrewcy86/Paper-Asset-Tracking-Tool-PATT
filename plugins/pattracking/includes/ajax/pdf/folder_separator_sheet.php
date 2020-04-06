@@ -73,11 +73,21 @@ if (isset($_GET['id']))
     //Folderdocinfo title coordinates
     $x_loc_folderdocinfo_title = 32;
     $y_loc_folderdocinfo_title = 130;
-    
+
+if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4}-01-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
+ 
+if (preg_match('/^\d+$/', $GLOBALS['id'])) {   
     //Obtain array of Box ID's
     $folderdocinfo_array = fetch_folderdocinfo();
     $title_array = fetch_title();
-    
+}
+
+if (preg_match("/^([0-9]{7}-[0-9]{1,4}-01-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+
+$folderdocinfo_array = explode(',', $GLOBALS['id']);
+
+}
+
     //Begin for loop to iterate through folderdocinfo's arrayb
     for ($i = 0;$i < count($folderdocinfo_array);$i++)
     {
@@ -92,7 +102,6 @@ if (isset($_GET['id']))
         //1D Box ID Barcode
         $obj_pdf->SetFont('helvetica', '', 30);
         $obj_pdf->write1DBarcode($folderdocinfo_array[$i], 'C128', $x_loc_1d, $y_loc_1d, '', 30, 0.7, $style_barcode, 'N');
-        
         //Folderdocinfo_id
         $obj_pdf->SetXY($x_loc_folderdocinfo, $y_loc_folderdocinfo);
         $obj_pdf->SetFont('helvetica', '', 30);
@@ -107,16 +116,32 @@ if (isset($_GET['id']))
         //$obj_pdf->SetFillColor(255,255,255);
         //$obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
         //#MultiCell(w, h, txt, border = 0, align = 'J', fill = 0, ln = 1, x = '', y = '', reseth = true, stretch = 0, ishtml = false, autopadding = true, maxh = 0) ⇒ Object
+        
+    if (preg_match("/^([0-9]{7}-[0-9]{1,4}-01-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
+        
+        $folderfile_info = $wpdb->get_row("SELECT title
+FROM wpqa_wpsc_epa_folderdocinfo
+WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+
+        $txt = '<strong>Title:</strong> ' . ((strlen($folderfile_info->title) > 150) ? substr($folderfile_info->title, 0, 150) . "...": $folderfile_info->title);
+    }
+    
+    if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         $txt = '<strong>Title:</strong> ' . ((strlen($title_array[$i]) > 150) ? substr($title_array[$i], 0, 150) . "...": $title_array[$i]);
+    }
+    
         $obj_pdf->MultiCell(145, 0, $txt, 0, 'L', 0, 0, $x_loc_folderdocinfo_title, $y_loc_folderdocinfo_title, true, 0, true);
     }
     
     //Generate PDF
     $obj_pdf->Output('file.pdf', 'I');
+    
+    
+} else {
+echo "Pass a valid ID in URL";
 }
 
-else
-{
+} else {
     //Define message for when no ID exists in URL
     echo "Pass request ID in URL";
 }

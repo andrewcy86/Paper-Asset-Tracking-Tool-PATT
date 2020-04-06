@@ -155,14 +155,14 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
       {
        //Start RM Developer
-       add_submenu_page(
+       /*add_submenu_page(
         'wpsc-tickets',
         __( 'Boxes', 'supportcandy' ),
         __( 'Boxes', 'supportcandy' ),
         'manage_options',
         'wpsc-boxes',
         array($this,'boxes')
-      );
+      );*/
       //End RM Developer
       do_action('wpsc_add_submenu_page');
       }

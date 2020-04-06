@@ -252,14 +252,16 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
 			$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
+				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
 WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			);
 
 			$box_boxid = $box_details->box_id;
 			$box_rs = $box_details->rsnum;
+			$box_po = $box_details->program_office;
 			$request_id = substr($box_boxid, 0, 7);
 			$box_il = $box_details->index_level;
 			$box_location = $box_details->location;
@@ -275,7 +277,7 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 				echo "<strong>File ID:</strong> " . $id . "<br />";
 			}
 
-			echo "<strong>Program Office:</strong> " . $boxlist_po . "<br />";
+			echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			
 			echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
 			if (!empty($folderfile_title)) {

@@ -84,6 +84,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         add_shortcode('wppattquery', array($frontend, 'get_id_details'));
         // Add Shipping CRON
         add_action( 'wppatt_shipping_cron', array($frontend, 'wpatt_shipping_cron_schedule'));
+        // Add ECMS CRON
+        add_action( 'wppatt_ecms_cron', array($frontend, 'wpatt_ecms_cron_schedule')); 
+        
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
           
@@ -105,7 +108,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action( 'wpsc_add_submenu_page', 'my_admin_menu');
 
           function my_admin_menu() {
-            add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Boxes', 'wpsc_agent', 'boxes', 'boxes_page' );
+            add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
             }
 

@@ -44,7 +44,7 @@ foreach ($boxlist_get_po as $item) {
 	
 $boxlist_po = join(", ", $program_office_array_id);
 
-if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,4}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,4}-[0-9]{2}-[0-9]{1,4}$/", $id)) {
+if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $id)) {
 	switch ($dash_count) {
 		case 0:
 			$request_info = $wpdb->get_row(
@@ -220,8 +220,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
             wpqa_wpsc_epa_folderdocinfo.title, 
             wpqa_wpsc_epa_folderdocinfo.date, 
             wpqa_wpsc_epa_folderdocinfo.author, 
-            wpqa_wpsc_epa_folderdocinfo.record_type, 
-            wpqa_epa_record_schedule.Record_Schedule_Number,
+            wpqa_wpsc_epa_folderdocinfo.record_type,
             wpqa_wpsc_epa_folderdocinfo.site_name, 
             wpqa_wpsc_epa_folderdocinfo.site_id, 
             wpqa_wpsc_epa_folderdocinfo.close_date,
@@ -233,8 +232,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
             wpqa_wpsc_epa_folderdocinfo.grant_number,
             wpqa_wpsc_epa_folderdocinfo.file_location,
             wpqa_wpsc_epa_folderdocinfo.file_name
-            FROM wpqa_wpsc_epa_folderdocinfo
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedule_id = wpqa_epa_record_schedule.id WHERE folderdocinfo_id = '" . $id . "'"
+            FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
 			);
 
 			$folderfile_boxid = $folderfile_details->box_id;
@@ -242,7 +240,6 @@ INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedu
 			$folderfile_date = $folderfile_details->date;
 			$folderfile_author = $folderfile_details->author;
 			$folderfile_record_type = $folderfile_details->record_type;
-			$folderfile_rsnum = $folderfile_details->Record_Schedule_Number;
 			$folderfile_site_name = $folderfile_details->site_name;
 			$folderfile_site_id = $folderfile_details->site_id;
 			$folderfile_close_date = $folderfile_details->close_date;
@@ -255,12 +252,14 @@ INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_folderdocinfo.record_schedu
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
 			$box_details = $wpdb->get_row(
-				"SELECT id, box_id, index_level, location, bay, shelf
+				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
 FROM wpqa_wpsc_epa_boxinfo
-WHERE id = '" . $folderfile_boxid . "'"
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			);
 
 			$box_boxid = $box_details->box_id;
+			$box_rs = $box_details->rsnum;
 			$request_id = substr($box_boxid, 0, 7);
 			$box_il = $box_details->index_level;
 			$box_location = $box_details->location;
@@ -277,6 +276,8 @@ WHERE id = '" . $folderfile_boxid . "'"
 			}
 
 			echo "<strong>Program Office:</strong> " . $boxlist_po . "<br />";
+			
+			echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
 			if (!empty($folderfile_title)) {
 				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
 			}

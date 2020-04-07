@@ -20,11 +20,12 @@ WHERE wpqa_wpsc_epa_folderdocinfo.file_name IS NOT NULL AND wpqa_wpsc_epa_folder
 );
 
 foreach ($folderfile_query as $item) {
-echo $item->folderdocid . '<br />';
-echo $item->ticket_id . '<br />';
-echo $item->ticket_status . '<br />';
-echo $item->folderdocinfo_id;
-
+// Preliminary Test - to be commented out
+echo '<strong>Folder/Document DB ID:</strong> '. $item->folderdocid . '<br />';
+echo '<strong>Ticket DB ID:</strong> '. $item->ticket_id . '<br />';
+echo '<strong>Ticket Status (should always be 66 or completed):</strong> '. $item->ticket_status . '<br />';
+echo '<strong>PATT Folder/Document ID:</strong> '. $item->folderdocinfo_id;
+echo '<hr />';
 /*
 // POST to ECMS
 $curl = curl_init();

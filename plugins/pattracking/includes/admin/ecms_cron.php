@@ -24,6 +24,7 @@ foreach ($folderfile_query as $item) {
 echo '<strong>Folder/Document DB ID:</strong> '. $item->folderdocid . '<br />';
 echo '<strong>Ticket DB ID:</strong> '. $item->ticket_id . '<br />';
 echo '<strong>Ticket Status (should always be 66 or completed):</strong> '. $item->ticket_status . '<br />';
+echo '<strong>Temp Storage Location & Filename:</strong> http://086.info/wordpress3'. $item->file_location . $item->file_name  . '<br />';
 echo '<strong>PATT Folder/Document ID:</strong> '. $item->folderdocinfo_id;
 echo '<hr />';
 /*

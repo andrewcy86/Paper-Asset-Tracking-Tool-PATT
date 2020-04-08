@@ -80,7 +80,7 @@ $values = array(
 	'user_type' => $user_type,
 	'ticket_category' => $ticket_category,
 	'ticket_priority' => $ticket_priority,
-	'program_office_id' => 20,
+	// 'program_office_id' => 20, CAR - RETURN TO THIS ASAP
 	'date_created' => date("Y-m-d H:i:s"),
 	'date_updated' => date("Y-m-d H:i:s"),
 	'ip_address' => $ip_address,
@@ -104,52 +104,15 @@ if(!$wpsc_ticket_id_type){
 
 $ticket_id = $wpscfunction->create_new_ticket($values);
 
-$str_length = 7;
-$request_id = substr("000000{$ticket_id}", -$str_length);
-
-$data_update = array('request_id' => $request_id);
-$data_where = array('id' => $ticket_id);
-$wpdb->update($wpdb->prefix . 'wpsc_ticket', $data_update, $data_where);
-
-// END
-
-//New BoxInfo Code
-    
-    $boxinfodata = $args["box_info"];
-    $boxinfodata = str_replace('\\', '', $boxinfodata);
-    $boxinfo_array = json_decode($boxinfodata, true);
-    
-	$box = '';
-	
-	foreach($boxinfo_array as $boxinfo){ 
-	$box_id = $request_id . '-' . $boxinfo["Box"];    
-    if ($box !== $boxinfo["Box"])
-    {
-        $boxarray = array(
-	    'box_id' => $box_id,
-	    'ticket_id' => $ticket_id,
-	    'location' =>  'East',
-	    'bay' => '1',
-	    'shelf' => 'Top',
-	    'user_id' => 1,
-	    'index_level' => 1,
-	    'date_created' => date("Y-m-d H:i:s"),
-	    'date_updated' => date("Y-m-d H:i:s")
-	    
-        );
-        
-       $boxinfo_id = $wpscfunction->create_new_boxinfo($boxarray);
-       
-       $wpscfunction->add_boxinfo_meta($boxinfo_id,'assigned_agent','0');
-
-       $wpscfunction->add_boxinfo_meta($boxinfo_id,'prev_assigned_agent','0');
-       
-       $box = $boxinfo["Box"]; 
-    }
-    
-    }
-
-//End of New BoxInfo Code
+/*
+BEGIN CAR - Added Custom PATT Action
+*/
+$data['ticket_id'] = $ticket_id;
+$data['box_info']  = $args["box_info"];
+do_action('patt_process_boxinfo_records', $data);
+/*
+END CAR - Added Custom PATT Action
+*/
 
 $wpscfunction->add_ticket_meta($ticket_id,'assigned_agent','0');
 

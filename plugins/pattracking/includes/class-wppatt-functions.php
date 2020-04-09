@@ -17,6 +17,11 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/shipping_cron.php';
     }
     
+    // CRON for ecms
+    public function wpatt_ecms_cron_schedule(){    
+    include WPPATT_ABSPATH . 'includes/admin/ecms_cron.php';
+    }
+    
     
 }  
 endif;

@@ -27,44 +27,51 @@ echo '<strong>Ticket Status (should always be 66 or completed):</strong> '. $ite
 echo '<strong>Temp Storage Location & Filename:</strong> http://086.info/wordpress3'. $item->file_location . $item->file_name  . '<br />';
 echo '<strong>PATT Folder/Document ID:</strong> '. $item->folderdocinfo_id;
 echo '<hr />';
-/*
-// POST to ECMS
-$curl = curl_init();
 
-curl_setopt_array($curl, array(
-  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov:8080/apiman-gateway/ecms/save/1.2?apiKey=09c7c603-3153-42f1-9eac-6b4b971e16be",
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_ENCODING => "",
-  CURLOPT_MAXREDIRS => 10,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-  CURLOPT_CUSTOMREQUEST => "POST",
-  CURLOPT_POSTFIELDS => array('metadata' => '{ 
+$target_url = 'http://lippizzan3.rtpnc.epa.gov:8080/apiman-gateway/ecms/save/1.2?apiKey=[Insert Key]';
+$file_name_with_full_path ='test_pdf.pdf';
+
+//$cfile = new CURLFile($file_name_with_full_path,mime_content_type($file_name_with_full_path),'imported_pdf');    
+// Assign POST data
+
+// POST Request to Content Ingestion Endpoint
+$fileHandler = fopen($file_name_with_full_path, 'r');
+$fileData = fread($fileHandler, filesize($file_name_with_full_path));
+
+$post = array( 
+'metadata' => '{ 
 "properties":{ 
 "r_object_type":"erma_content",
-"object_name":"26553380_1_Inserted Digital Signature into a PDF Document Using PIV Card (2).pdf",
-"a_application_type":"BAP",
-"erma_content_title":"26553380_1_Inserted Digital Signature into a PDF Document Using PIV Card (2)",
-"erma_content_unid":"BAP_02312676",
+"object_name":"test_pdf.pdf",
+"a_application_type":"PATT",
+"erma_content_title":"Transit",
+"erma_content_unid":"0000001a",
 "erma_content_date":"2012-09-12T21:45:32",
 "erma_content_schedule":"000_000_a",
 "erma_content_eventdate":"2013-09-12T21:45:32",
 "erma_sensitivity_id":"3",
-"erma_custodian":"mnguyen",
-"erma_folder_path":"H:\\\\ECMS\\\\ECMS Share\\\\ Enhancements\\\\ECMS REST API\\\\VDD"
+"erma_custodian":"ayuen",
+"erma_folder_path":""
 }
 }
-','content'=> new CURLFILE('/C:/Users/mnguyen/Desktop/test pdf/26553380_1_Inserted  Digital Signature into a PDF Document Using PIV Card (2).pdf')),
-  CURLOPT_HTTPHEADER => array(
-    "Authorization: Basic YmFwX2FkbWluOnBhcmFmYWlsQDEyMw=="
-  ),
-));
-
-$response = curl_exec($curl);
-
+','content'=> $fileData);
+$curl = curl_init();
+curl_setopt($curl, CURLOPT_URL,$target_url);
+curl_setopt($curl, CURLOPT_INFILE, $fileHandler);
+curl_setopt($curl, CURLOPT_INFILESIZE, filesize($file_name_with_full_path));
+curl_setopt($curl, CURLOPT_SSL_VERIFYPEER,false);
+curl_setopt($curl, CURLOPT_POST,1);
+curl_setopt($curl, CURLOPT_POST, count($post));
+curl_setopt($curl, CURLOPT_POSTFIELDS, $post);
+curl_setopt($curl, CURLOPT_RETURNTRANSFER,true);
+curl_setopt($curl, CURLOPT_VERBOSE,true);
+curl_setopt($curl, CURLOPT_HTTPHEADER, array('[Insert Authroization]'));
+$result = curl_exec($curl);
+if(!$result){
+    die('Error: "' . curl_error($curl) . '" - Code: ' . curl_errno($curl));
+}
 curl_close($curl);
-echo $response;
+var_dump($result);
 
 // Check Response success 
 if ($response = '') {
@@ -77,7 +84,6 @@ $ecms_location = 'link to document in ecms';
 $wpdb->update( $table_name, array( 'file_location' => $ecms_location),array('ID'=>$item->folderdocid));
 }
 
-*/
 }
 
 ?>

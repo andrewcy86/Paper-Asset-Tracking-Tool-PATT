@@ -346,7 +346,7 @@ if (!class_exists('Patt_HooksFilters')) {
 
             <!-- End of new datatable -->
 
-				?>
+				<?php
             }
         }
     }

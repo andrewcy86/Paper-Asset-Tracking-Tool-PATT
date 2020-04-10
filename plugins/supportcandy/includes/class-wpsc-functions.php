@@ -1090,6 +1090,7 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
         case 'reply_ticket':
           $response = $customer_email == $current_user->user_email || $this->agent_has_permission( 'reply_unassigned', $ticket_id ) || $this->agent_has_permission( 'reply_assigned_me', $ticket_id ) || $this->agent_has_permission( 'reply_assigned_others', $ticket_id ) || (!$current_user->has_cap('wpsc_agent') && $wpsc_ticket_public_mode) ? true : false;
           break;
+          
           $term = wp_insert_term( __('Status','supportcandy'), 'wpsc_ticket_widget' );
 					if ($term && isset($term['term_id'])) {
 						add_term_meta ($term['term_id'], 'wpsc_ticket_widget_load_order', '1');
@@ -1263,20 +1264,6 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
     }
     
     /**
-     * Adds ticketmeta for BoxInfo
-     */
-    function add_boxinfo_meta($boxinfo_id ,$meta_key ,$meta_value){
-      global $wpdb;
-      $wpdb->insert( 
-        $wpdb->prefix . 'wpsc_epa_boxmeta', 
-        array(
-          'box_id' => $boxinfo_id,
-          'meta_key' => $meta_key,
-          'meta_value' => $meta_value
-      ));
-    }
-    
-    /**
      * Update ticket meta for ticket
      */
     function update_ticket_meta($ticket_id ,$meta_key ,$meta_value){
@@ -1348,16 +1335,6 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
       $wpdb->insert($wpdb->prefix . 'wpsc_ticket', $values);
       $ticket_id = $wpdb->insert_id;
       return $ticket_id;
-    }
-    
-    /**
-     * Create a boxinfo record
-     */
-    public function create_new_boxinfo($boxarray){
-      global $wpdb;
-      $wpdb->insert($wpdb->prefix . 'wpsc_epa_boxinfo', $boxarray);
-      $boxinfo_id = $wpdb->insert_id;
-      return $boxinfo_id;
     }
     
     /**

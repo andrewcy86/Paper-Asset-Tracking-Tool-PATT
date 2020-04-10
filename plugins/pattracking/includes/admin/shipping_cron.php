@@ -86,11 +86,20 @@ $ticket_id = $item->ticket_id ;
 $ticket_data = $wpscfunction->get_ticket($ticket_id);
 $status_id   	= $ticket_data['ticket_status'];
 
-$get_shipped_status = $wpdb->get_results(
-	"SELECT shipped
-FROM wpqa_wpsc_epa_shipping_tracking
-WHERE ticket_id = " . $item->ticket_id
-);
+// $get_shipped_status = $wpdb->get_results(
+// 	"SELECT shipped
+// FROM wpqa_wpsc_epa_shipping_tracking
+// WHERE ticket_id = " . $item->ticket_id
+// );
+
+
+$args = [
+    'select' => 'shipped',
+    'where' => ['ticket_id', $item->ticket_id]
+];
+$wpqa_wpsc_epa_shipping_tracking = new WP_CUST_QUERY('wpqa_wpsc_epa_shipping_tracking');
+$get_shipped_status = $wpqa_wpsc_epa_shipping_tracking->get_results($args, false);
+
 
 foreach ($get_shipped_status as $shipped) {
 	array_push($shipped_array, $shipped->shipped);

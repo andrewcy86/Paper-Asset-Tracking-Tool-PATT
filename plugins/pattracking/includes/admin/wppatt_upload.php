@@ -4,10 +4,10 @@ class WPPATT_UPLOAD extends WP_Widget {
 // constructor
  public function __construct() {
 // Give widget name here
-parent::WP_Widget(false, $name = __(‘My Widget’, ‘wp_widget_plugin’) );
+parent::WP_Widget(false, $name = __('My Widget', 'wp_widget_plugin') );
 
 }
-
+}
 // Register and load the widget
 function wpb_load_widget() {
     register_widget( 'wpb_widget' );

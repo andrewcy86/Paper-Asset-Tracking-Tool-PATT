@@ -137,19 +137,29 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 		case 1:
 			$box_details = $wpdb->get_row(
 				"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
+				FROM wpqa_wpsc_epa_boxinfo
+				INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+				WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
 			);
 
 			$box_details_id = $box_details->pk;
 
-			$box_content = $wpdb->get_results(
-				"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
-FROM wpqa_wpsc_epa_folderdocinfo
-INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
-WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
-			);
+			// $box_content = $wpdb->get_results(
+			// 	"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
+			// 	FROM wpqa_wpsc_epa_folderdocinfo
+			// 	INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
+			// 	WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
+			// );
+
+			$args = [
+				'select' => 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format',
+				'join' => [
+					['type'=> 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_boxinfo', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'box_id'],
+				],
+				'where' => ['wpqa_wpsc_epa_folderdocinfo.box_id', $box_details_id],
+			];
+			$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+			$box_content = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
 
 			$str_length = 7;
 			$request_id = substr("000000{$box_details->ticket}", -$str_length);
@@ -214,26 +224,36 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			break;
 
 		case 3:
-			$folderfile_details = $wpdb->get_row(
-				"SELECT 
-            wpqa_wpsc_epa_folderdocinfo.box_id,
-            wpqa_wpsc_epa_folderdocinfo.title, 
-            wpqa_wpsc_epa_folderdocinfo.date, 
-            wpqa_wpsc_epa_folderdocinfo.author, 
-            wpqa_wpsc_epa_folderdocinfo.record_type,
-            wpqa_wpsc_epa_folderdocinfo.site_name, 
-            wpqa_wpsc_epa_folderdocinfo.site_id, 
-            wpqa_wpsc_epa_folderdocinfo.close_date,
-            wpqa_wpsc_epa_folderdocinfo.epa_contact_email,
-            wpqa_wpsc_epa_folderdocinfo.access_type,
-            wpqa_wpsc_epa_folderdocinfo.source_format,
-            wpqa_wpsc_epa_folderdocinfo.rights, 
-            wpqa_wpsc_epa_folderdocinfo.contract_number,  
-            wpqa_wpsc_epa_folderdocinfo.grant_number,
-            wpqa_wpsc_epa_folderdocinfo.file_location,
-            wpqa_wpsc_epa_folderdocinfo.file_name
-            FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
-			);
+			// $folderfile_details = $wpdb->get_row(
+			// 	"SELECT 
+            // wpqa_wpsc_epa_folderdocinfo.box_id,
+            // wpqa_wpsc_epa_folderdocinfo.title, 
+            // wpqa_wpsc_epa_folderdocinfo.date, 
+            // wpqa_wpsc_epa_folderdocinfo.author, 
+            // wpqa_wpsc_epa_folderdocinfo.record_type,
+            // wpqa_wpsc_epa_folderdocinfo.site_name, 
+            // wpqa_wpsc_epa_folderdocinfo.site_id, 
+            // wpqa_wpsc_epa_folderdocinfo.close_date,
+            // wpqa_wpsc_epa_folderdocinfo.epa_contact_email,
+            // wpqa_wpsc_epa_folderdocinfo.access_type,
+            // wpqa_wpsc_epa_folderdocinfo.source_format,
+            // wpqa_wpsc_epa_folderdocinfo.rights, 
+            // wpqa_wpsc_epa_folderdocinfo.contract_number,  
+            // wpqa_wpsc_epa_folderdocinfo.grant_number,
+            // wpqa_wpsc_epa_folderdocinfo.file_location,
+            // wpqa_wpsc_epa_folderdocinfo.file_name
+            // FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
+			// );
+
+			$args = [
+				'select' => 'box_id, title,  date,  author,  record_type, site_name,  site_id,  close_date, epa_contact_email, access_type, source_format, rights,  contract_number,   grant_number, file_location, file_name',
+				'where' => ['folderdocinfo_id', $id],
+			];
+			$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+			$folderfile_details = $wpqa_wpsc_epa_folderdocinfo->get_row($args, false);
+
+
+
 
 			$folderfile_boxid = $folderfile_details->box_id;
 			$folderfile_title = $folderfile_details->title;
@@ -251,13 +271,27 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			$folderfile_grant_number = $folderfile_details->grant_number;
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
-			$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
-			);
+
+
+// 			$box_details = $wpdb->get_row(
+// 				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
+// FROM wpqa_wpsc_epa_boxinfo
+// INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+// INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+// WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
+// 			);
+
+			$args = [
+				'select' => 'wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office',
+				'join' => [
+					['type'=> 'INNER JOIN', 'table' => 'wpqa_epa_record_schedule', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'record_schedule_id'],
+					['type'=> 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id']
+				],
+				'where' => ['wpqa_wpsc_epa_boxinfo.id', $folderfile_boxid],
+			];
+			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+			$box_details = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
+
 
 			$box_boxid = $box_details->box_id;
 			$box_rs = $box_details->rsnum;

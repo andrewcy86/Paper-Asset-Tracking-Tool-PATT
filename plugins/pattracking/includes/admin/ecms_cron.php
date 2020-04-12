@@ -12,16 +12,50 @@ global $current_user, $wpscfunction, $wpdb;
 // Obtain files to be transferred
 
 $folderfile_query = $wpdb->get_results(
-"SELECT wpqa_wpsc_ticket.id as ticket_id, wpqa_wpsc_epa_folderdocinfo.id as folderdocid, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id, wpqa_wpsc_ticket.ticket_status, wpqa_wpsc_epa_folderdocinfo.file_name, wpqa_wpsc_epa_folderdocinfo.file_location
+"SELECT 
+wpqa_wpsc_ticket.id as ticket_id, 
+wpqa_wpsc_epa_folderdocinfo.id as folderdocid, 
+wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id, 
+wpqa_wpsc_epa_folderdocinfo.title, 
+wpqa_wpsc_epa_folderdocinfo.date,
+wpqa_wpsc_epa_folderdocinfo.close_date,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_wpsc_ticket.ticket_status,
+wpqa_users.user_login,
+wpqa_wpsc_epa_folderdocinfo.file_name, 
+wpqa_wpsc_epa_folderdocinfo.file_location
 FROM wpqa_wpsc_epa_folderdocinfo
 INNER JOIN wpqa_wpsc_epa_boxinfo ON  wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 INNER JOIN wpqa_wpsc_ticket ON  wpqa_wpsc_epa_boxinfo.box_id = wpqa_wpsc_ticket.id
+INNER JOIN wpqa_users ON wpqa_wpsc_epa_boxinfo.user_id = wpqa_users.ID
 WHERE wpqa_wpsc_epa_folderdocinfo.file_name IS NOT NULL AND wpqa_wpsc_epa_folderdocinfo.file_location LIKE '%temp_location%' AND wpqa_wpsc_ticket.ticket_status = 66"
 );
 
 foreach ($folderfile_query as $item) {
 // Preliminary Test - to be commented out
+echo '<strong>Filename:</strong> '. $item->file_name . '<br />';
+echo '<strong>Title:</strong> '. $item->title . '<br />';
 echo '<strong>Folder/Document DB ID:</strong> '. $item->folderdocid . '<br />';
+$date = strtotime( $item->date );
+$date_formated = date( 'Y-m-d\\TH:i:s', $date );
+echo '<strong>Date:</strong> '. $date_formated . '<br />';
+echo '<strong>Record Schedule:</strong> '. $item->rsnum . '<br />';
+$event_date = strtotime( $item->close_date );
+$event_date_formated = date( 'Y-m-d\\TH:i:s', $event_date );
+
+if ($event_date_formated == '-0001-11-30T00:00:00') {
+$event_date_formated = '';
+} else {
+$event_date_formated = date( 'Y-m-d\\TH:i:s', $event_date );
+}
+
+echo '<strong>Event Date:</strong> '. $event_date_formated . '<br />';
+echo '<strong>Sensativity:</strong> 0<br />';
+echo '<strong>Custodian:</strong> '. $item->user_login . '<br />';
+echo '<strong>Folder:</strong> '. $item->file_location . '<br />';
+
+echo '------------------------------------------------------------<br />';
 echo '<strong>Ticket DB ID:</strong> '. $item->ticket_id . '<br />';
 echo '<strong>Ticket Status (should always be 66 or completed):</strong> '. $item->ticket_status . '<br />';
 echo '<strong>Temp Storage Location & Filename:</strong> http://086.info/wordpress3'. $item->file_location . $item->file_name  . '<br />';

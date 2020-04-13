@@ -11,7 +11,16 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
 $list_array = array();
         
-$box_index_result = $wpdb->get_results( "SELECT DISTINCT index_level FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
+// $box_index_result = $wpdb->get_results( "SELECT DISTINCT index_level FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
+
+$args = [
+    'select' => 'SELECT DISTINCT index_level',
+    'where' => ['ticket_id', $ticket_id],
+];
+$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+$box_index_result = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+
+
 
 foreach ( $box_index_result as $box_index )
     {

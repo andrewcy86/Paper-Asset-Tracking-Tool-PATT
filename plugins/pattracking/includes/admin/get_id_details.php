@@ -31,12 +31,23 @@ $ticket_id_val = substr($id, 0, 7);
 
 $program_office_array_id = array();
 
-$boxlist_get_po = $wpdb->get_results(
-	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
-);
+// $boxlist_get_po = $wpdb->get_results(
+// 	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+// FROM wpqa_wpsc_epa_boxinfo
+// INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+// WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
+// );
+
+
+$args = [
+    'select' => 'DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office',
+    'join' => [
+        ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id'],
+    ],
+    'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $ticket_id_val],
+];
+$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+$boxlist_get_po = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
 
 foreach ($boxlist_get_po as $item) {
 	array_push($program_office_array_id, $item->program_office);
@@ -47,24 +58,26 @@ $boxlist_po = join(", ", $program_office_array_id);
 if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $id)) {
 	switch ($dash_count) {
 		case 0:
-			$request_info = $wpdb->get_row(
-				"SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
-FROM wpqa_wpsc_ticket
+			// $request_info = $wpdb->get_row(
+			// "SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
+			// FROM wpqa_wpsc_ticket
+			// INNER JOIN wpqa_terms AS status ON ( wpqa_wpsc_ticket.ticket_status = status.term_id )
+			// INNER JOIN wpqa_terms AS location ON ( wpqa_wpsc_ticket.ticket_category = location.term_id )
+			// INNER JOIN wpqa_terms AS priority ON ( wpqa_wpsc_ticket.ticket_priority = priority.term_id )    
+			// WHERE wpqa_wpsc_ticket.request_id = " . $id );
 
-    INNER JOIN wpqa_terms AS status ON (
-        wpqa_wpsc_ticket.ticket_status = status.term_id
-    )
+			$args = [
+				'select' => 'wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created',
+				'join' => [
+					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS status', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_status'],
+					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS location', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_category'],
+					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS priority', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_priority'],
+				],
+				'where' => ['wpqa_wpsc_ticket.request_id', $id],
+			];
+			$wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
+			$request_info = $wpqa_wpsc_ticket->get_row($args, false);
 
-    INNER JOIN wpqa_terms AS location ON (
-        wpqa_wpsc_ticket.ticket_category = location.term_id
-    )
-    
-    INNER JOIN wpqa_terms AS priority ON (
-        wpqa_wpsc_ticket.ticket_priority = priority.term_id
-    )    
-
-WHERE wpqa_wpsc_ticket.request_id = " . $id
-			);
 			
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
@@ -79,11 +92,19 @@ WHERE wpqa_wpsc_ticket.request_id = " . $id
 			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "  <span style='color: ".$priority_color." ;margin: 0px;'><i class='fas fa-asterisk'></i></span><br />";
 			echo "<strong>Date Created:</strong> " . date("m-d-Y", strtotime($request_info->date_created));
 
-			$box_details = $wpdb->get_results(
-				"SELECT wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf
-FROM wpqa_wpsc_epa_boxinfo
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
-			);
+			// $box_details = $wpdb->get_results(
+			// "SELECT wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf
+			// FROM wpqa_wpsc_epa_boxinfo
+			// WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
+			// );
+
+			$args = [
+				'select' => 'wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf',
+				'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $request_info->id],
+			];
+			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+			$request_info = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+
 
 			$tbl = '<br /><br /><strong>Boxes associated with this request:</strong>
 <style>
@@ -135,12 +156,22 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 			break;
 
 		case 1:
-			$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
-				FROM wpqa_wpsc_epa_boxinfo
-				INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-				WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
-			);
+			// $box_details = $wpdb->get_row(
+			// 	"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
+			// 	FROM wpqa_wpsc_epa_boxinfo
+			// 	INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+			// 	WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
+			// );
+
+			$args = [
+				'select' => 'wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created',
+				'join' => [
+					['type' => 'INNER JOIN', 'table' => 'wpqa_epa_record_schedule', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'record_schedule_id']
+				],
+				'where' => ['wpqa_wpsc_epa_boxinfo.box_id', "$id"],
+			];
+			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+			$box_details = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
 
 			$box_details_id = $box_details->pk;
 

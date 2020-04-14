@@ -74,13 +74,14 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
     }
     
     public function includes() {
+        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-abstraction.php' );
+        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
+        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-hooks-filters.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-install.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-ajax.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-functions.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-actions.php' );
         include_once( WPPATT_ABSPATH . 'includes/rest_api/class-rest-child.php' );
-        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-abstraction.php' );
-        include_once( WPPATT_ABSPATH . 'includes/class-wppatt-hooks-filters.php' );
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
         add_shortcode('wppattquery', array($frontend, 'get_id_details'));

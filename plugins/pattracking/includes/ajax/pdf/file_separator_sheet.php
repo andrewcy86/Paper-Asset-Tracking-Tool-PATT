@@ -30,14 +30,34 @@ if (isset($_GET['id']))
 if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
 
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-    $box_ids = $wpdb->get_results("SELECT id FROM wpqa_wpsc_epa_boxinfo WHERE index_level = 2 AND ticket_id =" .$GLOBALS['id']);
+
+    // $box_ids = $wpdb->get_results("SELECT id FROM wpqa_wpsc_epa_boxinfo WHERE index_level = 2 AND ticket_id =" .$GLOBALS['id']);
+
+    $args = [
+        'select' => 'id',
+        'where' => [
+                    ['index_level', 2],
+                    ['ticket_id', $GLOBALS['id'], 'AND']
+                ],
+    ];
+    $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
+    $box_ids = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+
 
     foreach($box_ids as $item)
     {
 
-$folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE box_id = " .$item->id);
+// $folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
+// FROM wpqa_wpsc_epa_folderdocinfo
+// WHERE box_id = " .$item->id);
+
+    $args = [
+        'select' => 'folderdocinfo_id, title',
+        'where' => ['box_id', $item->id]
+    ];
+    $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+    $folderfile_info = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
+
 
 $maxcols = 3;
 $i = 0;
@@ -98,9 +118,17 @@ $folderfile_array= explode(',', $GLOBALS['id']);
 
 foreach($folderfile_array as $item) {
 
-$folderfile_info = $wpdb->get_row("SELECT folderdocinfo_id, title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE folderdocinfo_id = '" .$item."'");
+// $folderfile_info = $wpdb->get_row("SELECT folderdocinfo_id, title
+// FROM wpqa_wpsc_epa_folderdocinfo
+// WHERE folderdocinfo_id = '" .$item."'");
+
+    $args = [
+        'select' => 'folderdocinfo_id, title',
+        'where' => ['folderdocinfo_id', "$item"]
+    ];
+    $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+    $folderfile_info = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
+
 
 $parent = new stdClass;
 $parent->folderdocinfo_id = $folderfile_info->folderdocinfo_id;

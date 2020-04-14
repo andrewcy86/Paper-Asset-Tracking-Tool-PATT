@@ -20,7 +20,17 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        $request_folderdocinfo = $wpdb->get_results("SELECT folderdocinfo_id FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " . $GLOBALS['id']);
+        // $request_folderdocinfo = $wpdb->get_results("SELECT folderdocinfo_id FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " . $GLOBALS['id']);
+
+        $args = [
+            'select' => 'folderdocinfo_id',
+            'where' => [
+                        ['ticket_id', $GLOBALS['id']],
+                        ['index_level', 1, 'AND']
+                    ]
+        ];
+        $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo');
+        $request_folderdocinfo = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);
         
         foreach($request_folderdocinfo as $folderdocinfo)
         {
@@ -35,7 +45,19 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        $request_title = $wpdb->get_results("SELECT title FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " .$GLOBALS['id']);
+        // $request_title = $wpdb->get_results("SELECT title FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " .$GLOBALS['id']);
+
+        $args = [
+            'select' => 'title',
+            'where' => [
+                        ['wpqa_wpsc_epa_folderdocinfo.box_id', 'wpqa_wpsc_epa_boxinfo.id'],
+                        ['ticket_id', $GLOBALS['id'], 'AND'],
+                        ['index_level', 1, 'AND']
+                    ]
+        ];
+        $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo');
+        $request_title = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);
+        
         
         foreach($request_title as $folder_title)
         {
@@ -119,9 +141,17 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
         
     if (preg_match("/^([0-9]{7}-[0-9]{1,4}-01-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
-        $folderfile_info = $wpdb->get_row("SELECT title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+//         $folderfile_info = $wpdb->get_row("SELECT title
+// FROM wpqa_wpsc_epa_folderdocinfo
+// WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+
+        $args = [
+            'select' => 'title',
+            'where' => ['folderdocinfo_id', "$folderdocinfo_array[$i]"]
+        ];
+        $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+        $folderfile_info = $wpqa_wpsc_epa_folderdocinfo->get_row($args, false);
+        
 
         $txt = '<strong>Title:</strong> ' . ((strlen($folderfile_info->title) > 150) ? substr($folderfile_info->title, 0, 150) . "...": $folderfile_info->title);
     }

@@ -73,6 +73,7 @@ if (isset($_GET['id']))
         $args = [
             'where' => ['ticket_id', $GLOBALS['id']],
         ];
+
         $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
         $box_digitization_center = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
 
@@ -80,10 +81,8 @@ if (isset($_GET['id']))
             {
                 array_push($array, strtoupper($location->location));
             }
-
         return $array;
-    }
-    
+    }    
     
     //Function to obtain program office from database
     function fetch_program_office()
@@ -93,7 +92,6 @@ if (isset($_GET['id']))
 
         // $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
         
-
         $args = [
             'select' => 'acronym',
             'where' => [
@@ -108,7 +106,7 @@ if (isset($_GET['id']))
         {
             array_push($array, strtoupper($program_office->acronym));
         }
-        
+                
         return $array;
     }
     
@@ -291,17 +289,24 @@ if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,
 
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         //Obtain array of Box ID's
-        $box_array = fetch_box_id();
-        $box_location = fetch_location();
-        $box_program_office = fetch_program_office();
-        $box_shelf = fetch_shelf();
-        $box_bay = fetch_bay();
-        $box_date = fetch_create_date();
-        $box_count = fetch_box_count();
+        // $box_array = fetch_box_id();
+        $box_array = Patt_Custom_Func::fetch_box_id($GLOBALS['id']);
+        // $box_location = fetch_location();
+        $box_location = Patt_Custom_Func::fetch_location($GLOBALS['id']);
+        $box_program_office = Patt_Custom_Func::fetch_program_office($GLOBALS['id']);
+        // $box_shelf = fetch_shelf();
+        $box_shelf = Patt_Custom_Func::fetch_shelf($GLOBALS['id']);
+        // $box_bay = fetch_bay();
+        $box_bay = Patt_Custom_Func::fetch_bay($GLOBALS['id']);
+        // $box_date = fetch_create_date();
+        $box_date = Patt_Custom_Func::fetch_create_date($GLOBALS['id']);
+        // $box_count = fetch_box_count();
+        $box_count = Patt_Custom_Func::fetch_box_count($GLOBALS['id']);
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
-       $box_array = fetch_box_id_a();
+    //    $box_array = fetch_box_id_a();
+       $box_array = Patt_Custom_Func::fetch_box_id_a($GLOBALS['id']);
 }
 
         //Set count to 0. This count determine odd or even components of the array
@@ -660,7 +665,8 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetFont('helvetica', '', 14);
             
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-$num = fetch_request_id();
+// $num = fetch_request_id();
+$num = Patt_Custom_Func::fetch_request_id($GLOBALS['id']);
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
@@ -673,7 +679,9 @@ $num = $asset_id;
             
             $obj_pdf->SetFont('helvetica', '', 11);
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-$url_id = fetch_request_id();
+// $url_id = fetch_request_id();
+$url_id = Patt_Custom_Func::fetch_request_id($GLOBALS['id']);
+
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {

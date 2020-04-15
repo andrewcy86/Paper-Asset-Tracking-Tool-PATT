@@ -63,9 +63,95 @@ abstract class PATT_DB {
 	 * @since   1.0
 	 * @return  object
 	 */
-	public function get( $row_id ) {
+	public function get_row( $args, $count =  false) {
 		global $wpdb;
-		return $wpdb->get_row( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $this->primary_key = %s LIMIT 1;", $row_id ) );
+
+		$order = '';
+		if(issset($args['order'])){
+			$order = "ORDER BY {$args['order'][0]} {$args['order'][1]}";
+		}
+
+		$where = '';
+		if(issset($args['where'])){
+			$where = "WHERE {$args['where'][0]} {$args['where'][1]}";
+		}
+
+		$join = '';
+		if(issset($args['join'])){
+			foreach($args['join'] as $join){
+				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
+			}
+		}
+
+		$select = issset($args['select']) ? $args['select'] : '*';
+
+		return $wpdb->get_row( $wpdb->prepare( "SELECT {$select} FROM $this->table_name {$join} {$where} LIMIT 1;" ) );
+	}
+
+	/**
+	 * Retrieve a var by the primary key
+	 *
+	 * @access  public
+	 * @since   1.0
+	 * @return  object
+	 */
+	public function get_value( $key, $value, $count =  false) {
+		global $wpdb;
+		if($count) {
+			$result = $wpdb->get_var($wpdb->prepare("SELECT COUNT(*) FROM $this->table_name WHERE $key = $value LIMIT 1"));
+		} else {
+			$result = $wpdb->get_var( $wpdb->prepare( "SELECT * FROM $this->table_name WHERE $key = $value LIMIT 1;" ) );
+		}
+		return $result;
+	}
+
+	/**
+	 * Retrieve a var by the primary key
+	 *
+	 * @access  public
+	 * @since   1.0
+	 * @return  object
+	 */
+	public function get_results( $args, $count =  false) {
+		global $wpdb;
+
+		$order = '';
+		if(issset($args['order'])){
+			$order = "ORDER BY {$args['order'][0]} {$args['order'][1]}";
+		}
+
+		$select = issset($args['select']) ? $args['select'] : '*';
+
+		$where = '';
+		if(issset($args['where'])){
+			if(is_array($args['where'][0])){
+				$i = 1;
+				foreach($args['where'][0] as $where) {
+					if($i == 1){
+						$where = " WHERE {$args['where'][0]} {$args['where'][1]}";
+					} else {
+						$where = " {$args['where'][2]} {$args['where'][0]} {$args['where'][1]}";
+					}
+					$i++;
+				}
+			} else {
+				$where = " WHERE {$args['where'][0]} {$args['where'][1]}";
+			}
+		}
+
+		$join = '';
+		if(issset($args['join'])){
+			foreach($args['join'] as $join){
+				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
+			}
+		}
+
+		if($count) {
+			$result = $wpdb->get_results($wpdb->prepare("SELECT COUNT(*) FROM $this->table_name {$join} {$where}}"));
+		} else {
+			$result = $wpdb->get_results( $wpdb->prepare( "SELECT {$select} FROM $this->table_name {$join} {$where}} {$order}"));
+		}
+		return $result;
 	}
 
 	/**
@@ -224,4 +310,17 @@ abstract class PATT_DB {
 		return $wpdb->get_var( $wpdb->prepare( "SHOW TABLES LIKE '%s'", $table ) ) === $table;
 	}
 
+}
+
+class WP_CUST_QUERY Extends PATT_DB {
+	
+	/**
+	 * Get things started
+	 *
+	 * @access  public
+	 * @since   1.0
+	 */
+	public function __construct($table_name) {
+		$this->table_name = $table_name;
+	}
 }

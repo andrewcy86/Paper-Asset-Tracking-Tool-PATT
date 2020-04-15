@@ -117,6 +117,10 @@ $json = json_decode($result, true);
 date_default_timezone_set("America/New_York");
 $date = date('m/d/Y h:i:s a', time());
 
+$information = curl_getinfo($curl);
+print_r( $information);
+
+
 // Error Handling
 if (array_key_exists("status",$json) || array_key_exists("code",$json))
   {
@@ -126,7 +130,7 @@ while($json['status'] == 401 && $json['code'] == 'E_BAD_CREDENTIALS_ERROR' && $r
 	
 	$wpdb->insert('wpqa_epa_error_log', array(
     'Status_Code' => $json['status'],
-    'Error_Message' => $json['code'] .' | '. var_dump($result),
+    'Error_Message' => $json['code'],
     'Service_Type' => 'PATT_ECMS_API',
 	'Timestamp' => $date,
 ));
@@ -139,14 +143,11 @@ if(!$result){
 	
 	$wpdb->insert('wpqa_epa_error_log', array(
     'Status_Code' => curl_errno($curl),
-    'Error_Message' => curl_error($curl) .' | '. var_dump($result),
+    'Error_Message' => curl_error($curl),
     'Service_Type' => 'PATT_ECMS_CURL',
 	'Timestamp' => $date,
 ));
 }
-
-$information = curl_getinfo($curl);
-print_r( $information);
 
 curl_close($curl);
 var_dump($result);

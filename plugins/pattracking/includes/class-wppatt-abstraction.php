@@ -67,23 +67,23 @@ abstract class PATT_DB {
 		global $wpdb;
 
 		$order = '';
-		if(issset($args['order'])){
+		if(isset($args['order'])){
 			$order = "ORDER BY {$args['order'][0]} {$args['order'][1]}";
 		}
 
 		$where = '';
-		if(issset($args['where'])){
+		if(isset($args['where'])){
 			$where = "WHERE {$args['where'][0]} {$args['where'][1]}";
 		}
 
 		$join = '';
-		if(issset($args['join'])){
+		if(isset($args['join'])){
 			foreach($args['join'] as $join){
 				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
 			}
 		}
 
-		$select = issset($args['select']) ? $args['select'] : '*';
+		$select = isset($args['select']) ? $args['select'] : '*';
 
 		return $wpdb->get_row( $wpdb->prepare( "SELECT {$select} FROM $this->table_name {$join} {$where} LIMIT 1;" ) );
 	}
@@ -116,14 +116,14 @@ abstract class PATT_DB {
 		global $wpdb;
 
 		$order = '';
-		if(issset($args['order'])){
+		if(isset($args['order'])){
 			$order = "ORDER BY {$args['order'][0]} {$args['order'][1]}";
 		}
 
-		$select = issset($args['select']) ? $args['select'] : '*';
+		$select = isset($args['select']) ? $args['select'] : '*';
 
 		$where = '';
-		if(issset($args['where'])){
+		if(isset($args['where'])){
 			if(is_array($args['where'][0])){
 				$i = 1;
 				foreach($args['where'][0] as $where) {
@@ -140,7 +140,7 @@ abstract class PATT_DB {
 		}
 
 		$join = '';
-		if(issset($args['join'])){
+		if(isset($args['join'])){
 			foreach($args['join'] as $join){
 				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
 			}

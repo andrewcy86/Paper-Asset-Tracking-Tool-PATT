@@ -19,7 +19,9 @@ wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id,
 wpqa_wpsc_epa_folderdocinfo.title, 
 wpqa_wpsc_epa_folderdocinfo.date,
 wpqa_wpsc_epa_folderdocinfo.close_date,
-wpqa_epa_record_schedule.Record_Schedule_Number as rsnum,
+wpqa_epa_record_schedule.Function_Number as fnum,
+wpqa_epa_record_schedule.Schedule_Number as snum,
+wpqa_epa_record_schedule.Disposition_Number as dnum,
 wpqa_wpsc_ticket.ticket_status,
 wpqa_users.user_login,
 wpqa_wpsc_epa_folderdocinfo.file_name, 
@@ -71,6 +73,22 @@ $file_name_with_full_path = $_SERVER['DOCUMENT_ROOT'] . '/wordpress3/wp-content/
 $fileHandler = fopen($file_name_with_full_path, 'r');
 $fileData = fread($fileHandler, filesize($file_name_with_full_path));
 
+$date = strtotime( $item->date );
+$date_formated = date( 'Y-m-d\\TH:i:s', $date );
+
+$event_date = strtotime( $item->close_date );
+$event_date_formated = date( 'Y-m-d\\TH:i:s', $event_date );
+
+if ($event_date_formated == '-0001-11-30T00:00:00') {
+$event_date_formated = '';
+} else {
+$event_date_formated = date( 'Y-m-d\\TH:i:s', $event_date );
+}
+
+$rs_num = $item->fnum . '_' .$item->snum . '_' . $item->dnum;
+
+$folderdocid = 'PATT_' . $item->folderdocid;
+
 $metadata = '
 { 
 "properties":{ 
@@ -78,11 +96,11 @@ $metadata = '
 "object_name":"' .$item->file_name.'",
 "a_application_type":"PATT",
 "erma_content_title":"'.$item->title.'",
-"erma_content_unid":"'.$item->folderdocid.'",
+"erma_content_unid":"' . $folderdocid.'",
 "erma_content_date":"'.$date_formated.'",
-"erma_content_schedule":"'.$item->rsnum.'",
+"erma_content_schedule":"'.$rs_num.'",
 "erma_content_eventdate":"'.$event_date_formated.'",
-"erma_sensitivity_id":"0",
+"erma_sensitivity_id":"",
 "erma_custodian":"'.$item->user_login.'",
 "erma_folder_path":"'.$item->file_location.'"
 }
@@ -113,21 +131,24 @@ curl_setopt_array($curl, array(
 $result = curl_exec($curl);
 $retry = 0;
 $json = json_decode($result, true);
-//print_r($json);
+
 date_default_timezone_set("America/New_York");
 $date = date('m/d/Y h:i:s a', time());
 
 $information = curl_getinfo($curl);
 print_r( $information);
 
+//print_r($json);
 
 // Error Handling
 if (array_key_exists("status",$json) || array_key_exists("code",$json))
   {
-while($json['status'] == 401 && $json['code'] == 'E_BAD_CREDENTIALS_ERROR' && $retry < 3){
+while($json['status'] == 401 && $json['code'] == 'E_BAD_CREDENTIALS_ERROR' && $retry < 2){
     $result = curl_exec($curl);
     $retry++;
-	
+}
+
+while($json['status'] == 401 || $json['status'] == 500){
 	$wpdb->insert('wpqa_epa_error_log', array(
     'Status_Code' => $json['status'],
     'Error_Message' => $json['code'],
@@ -153,7 +174,7 @@ curl_close($curl);
 var_dump($result);
 
 // Check Response success 
-if ($response = '') {
+if ($response = '123') {
 // Update Ticket Status
 $wpscfunction->change_status($item->ticket_id, 67);
 
@@ -161,8 +182,14 @@ $wpscfunction->change_status($item->ticket_id, 67);
 $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 $ecms_location = '/ecms/...';
 $wpdb->update( $table_name, array( 'file_location' => $ecms_location),array('ID'=>$item->folderdocid));
-}
 
+// Delete record from temp storage
+    if (file_exists($file_name_with_full_path)) {
+        unlink($file_name_with_full_path);
+    } else {
+        // File not found.
+    }
+}
 }
 
 ?>

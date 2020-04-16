@@ -356,3 +356,8 @@ function jsgrid_load_scripts() {
 	wp_enqueue_script('admin-jsgrid', get_template_directory_uri().'/jsgrid/js/jsgrid.min.js');
 }
 add_action('admin_enqueue_scripts', 'jsgrid_load_scripts');
+
+if(function_exists('add_db_table_editor')){
+add_db_table_editor('title=Record Schedule Editor&table=wpqa_epa_record_schedule');
+add_db_table_editor('title=File Folder Details&table=wpqa_wpsc_epa_folderdocinfo');
+}

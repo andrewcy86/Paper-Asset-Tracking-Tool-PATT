@@ -113,7 +113,7 @@ echo $metadata;
 
 $curl = curl_init();
 curl_setopt_array($curl, array(
-  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov:8080/apiman-gateway/ecms/save/1.2?apiKey=031a8c90-f025-4e80-ab47-e2bd577410d7",
+  CURLOPT_URL => "http://lippizzan3.rtpnc.epa.gov:8080/apiman-gateway/ecms/save/1.2?apiKey=xxxx",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => "",
   CURLOPT_MAXREDIRS => 10,
@@ -124,7 +124,7 @@ curl_setopt_array($curl, array(
   CURLOPT_CUSTOMREQUEST => "POST",
   CURLOPT_POSTFIELDS => array('metadata' => $metadata,'contents'=> $fileData),
   CURLOPT_HTTPHEADER => array(
-    "Authorization: Basic cGF0dF9hZG1pbjplY21zUGF0dDEyMw=="
+    "Authorization: Basic xxxx"
   ),
 ));
 

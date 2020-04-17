@@ -73,7 +73,19 @@ abstract class PATT_DB {
 
 		$where = '';
 		if(isset($args['where'])){
-			$where = "WHERE {$args['where'][0]} {$args['where'][1]}";
+			if(is_array($args['where'][0])){
+				$i = 1;
+				foreach($args['where'] as $cond) {
+					if($i == 1){
+						$where = " WHERE {$cond[0]} = {$cond[1]}";
+					} else {
+						$where .= " {$cond[2]} {$cond[0]} = {$cond[1]}";
+					}
+					$i++;
+				}
+			} else {
+				$where = " WHERE {$args['where'][0]} = {$args['where'][1]}";
+			}
 		}
 
 		$join = '';
@@ -85,7 +97,7 @@ abstract class PATT_DB {
 
 		$select = isset($args['select']) ? $args['select'] : '*';
 
-		return $wpdb->get_row( $wpdb->prepare( "SELECT {$select} FROM $this->table_name {$join} {$where} LIMIT 1;" ) );
+		return $wpdb->get_row("SELECT {$select} FROM $this->table_name {$join} {$where} LIMIT 1;" );
 	}
 
 	/**
@@ -126,16 +138,16 @@ abstract class PATT_DB {
 		if(isset($args['where'])){
 			if(is_array($args['where'][0])){
 				$i = 1;
-				foreach($args['where'][0] as $where) {
+				foreach($args['where'] as $cond) {
 					if($i == 1){
-						$where = " WHERE {$args['where'][0]} {$args['where'][1]}";
+						$where = " WHERE {$cond[0]} = {$cond[1]}";
 					} else {
-						$where = " {$args['where'][2]} {$args['where'][0]} {$args['where'][1]}";
+						$where .= " {$cond[2]} {$cond[0]} = {$cond[1]}";
 					}
 					$i++;
 				}
 			} else {
-				$where = " WHERE {$args['where'][0]} {$args['where'][1]}";
+				$where = " WHERE {$args['where'][0]} = {$args['where'][1]}";
 			}
 		}
 
@@ -147,9 +159,11 @@ abstract class PATT_DB {
 		}
 
 		if($count) {
-			$result = $wpdb->get_results($wpdb->prepare("SELECT COUNT(*) FROM $this->table_name {$join} {$where}}"));
+			$result = $wpdb->get_results("SELECT COUNT(*) FROM $this->table_name {$join} {$where}");
 		} else {
-			$result = $wpdb->get_results( $wpdb->prepare( "SELECT {$select} FROM $this->table_name {$join} {$where}} {$order}"));
+			$query = "SELECT {$select} FROM $this->table_name {$join} {$where} {$order}";
+			// die($query);
+			$result = $wpdb->get_results($query);
 		}
 		return $result;
 	}
@@ -323,4 +337,10 @@ class WP_CUST_QUERY Extends PATT_DB {
 	public function __construct($table_name) {
 		$this->table_name = $table_name;
 	}
+}
+function dd($arg) {
+	echo '<pre>';
+	print_r($arg); 
+	echo '</pre>'; 
+	die();
 }

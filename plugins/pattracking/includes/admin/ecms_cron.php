@@ -31,7 +31,7 @@ INNER JOIN wpqa_wpsc_epa_boxinfo ON  wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_w
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 INNER JOIN wpqa_wpsc_ticket ON  wpqa_wpsc_epa_boxinfo.box_id = wpqa_wpsc_ticket.id
 INNER JOIN wpqa_users ON wpqa_wpsc_epa_boxinfo.user_id = wpqa_users.ID
-WHERE wpqa_wpsc_epa_folderdocinfo.file_name IS NOT NULL AND wpqa_wpsc_epa_folderdocinfo.file_location LIKE '%temp_location%' AND wpqa_wpsc_ticket.ticket_status = 66"
+WHERE wpqa_wpsc_epa_folderdocinfo.file_name IS NOT NULL AND wpqa_wpsc_epa_folderdocinfo.file_location LIKE '%uploads%' AND wpqa_wpsc_ticket.ticket_status = 66"
 );
 
 foreach ($folderfile_query as $item) {
@@ -68,7 +68,7 @@ echo '<hr />';
 */
 
 //POST Request to Content Ingestion Endpoint
-$file_name_with_full_path = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/uploads/' . $item->file_location . $item->file_name;
+$file_name_with_full_path = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/' . $item->file_location . $item->file_name;
 
 $fileHandler = fopen($file_name_with_full_path, 'r');
 $fileData = fread($fileHandler, filesize($file_name_with_full_path));
@@ -173,6 +173,7 @@ if(!$result){
 curl_close($curl);
 var_dump($result);
 
+/*
 // Check Response success 
 if ($response = '123') {
 // Update Ticket Status
@@ -183,13 +184,16 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 $ecms_location = '/ecms/...';
 $wpdb->update( $table_name, array( 'file_location' => $ecms_location),array('ID'=>$item->folderdocid));
 
+
 // Delete record from temp storage
     if (file_exists($file_name_with_full_path)) {
         unlink($file_name_with_full_path);
     } else {
         // File not found.
     }
+
 }
+*/
 }
 
 ?>

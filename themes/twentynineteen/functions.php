@@ -360,4 +360,5 @@ add_action('admin_enqueue_scripts', 'jsgrid_load_scripts');
 if(function_exists('add_db_table_editor')){
 add_db_table_editor('title=Record Schedule Editor&table=wpqa_epa_record_schedule');
 add_db_table_editor('title=File Folder Details&table=wpqa_wpsc_epa_folderdocinfo');
+add_db_table_editor('title=Error Log&table=wpqa_epa_error_log');
 }

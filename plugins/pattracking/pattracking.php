@@ -85,6 +85,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
         add_shortcode('wppattquery', array($frontend, 'get_id_details'));
+        // Add Shipping CRON
+        add_action( 'wppatt_shipping_cron', array($frontend, 'wpatt_shipping_cron_schedule'));
+        // Add ECMS CRON
+        add_action( 'wppatt_ecms_cron', array($frontend, 'wpatt_ecms_cron_schedule')); 
         
         if ($this->is_request('admin')) {
           include_once( WPPATT_ABSPATH . 'includes/class-wppatt-admin.php' );
@@ -100,26 +104,26 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
-          // Add Shipping CRON
-          add_action( 'wppatt_shipping_cron', array($backend, 'wpatt_shipping_cron_schedule'));
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
-          
+
           // Set Barcode Scanning Page
           add_action( 'wpsc_add_submenu_page', 'my_admin_menu');
 
           function my_admin_menu() {
+            add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
-            add_submenu_page( 'wpsc-tickets', 'Dashboard Boxes', 'Boxes', 'wpsc_agent', 'wpsc-boxes', 'boxes_page' );
             }
 
           function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
             }
-
-          function boxes_page(){
-            include_once( WPPATT_ABSPATH . 'includes/admin/pages/boxes.php' );
-            }  
+            
+            function boxes_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/boxes.php'
+            );
+            }
+            
     
         }
         if ($this->is_request('frontend')) {

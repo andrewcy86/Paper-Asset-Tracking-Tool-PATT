@@ -15,14 +15,8 @@ if (isset($_GET['id']))
     //Function to obtain asset_tag value from database
     function fetch_request_id()
     {
-        // global $wpdb;
-        // $request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
-
-        $args = [
-            'where' => ['id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $box_details = $wpqa_wpsc_ticket->get_row($args, false);
+        global $wpdb;
+        $request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
 
         $asset_id = $request_id->request_id;
 
@@ -35,13 +29,7 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
         
-        // $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
-
-        $args = [
-            'where' => ['ticket_id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $box_result = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
 
         foreach ( $box_result as $box )
             {
@@ -68,21 +56,16 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        // $box_digitization_center = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
+        $box_digitization_center = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
         
-        $args = [
-            'where' => ['ticket_id', $GLOBALS['id']],
-        ];
-
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $box_digitization_center = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
-
                 foreach ( $box_digitization_center as $location )
             {
                 array_push($array, strtoupper($location->location));
             }
+
         return $array;
-    }    
+    }
+    
     
     //Function to obtain program office from database
     function fetch_program_office()
@@ -90,23 +73,13 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
 
-        // $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
+        $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
         
-        $args = [
-            'select' => 'acronym',
-            'where' => [
-                    ['ticket_id', $GLOBALS['id']],
-                    ['wpqa_wpsc_epa_boxinfo.program_office_id', 'wpqa_wpsc_epa_program_office.id', 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_epa_program_office = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office');
-        $request_program_office = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_epa_program_office->get_results($args, false);
-
         foreach($request_program_office as $program_office)
         {
             array_push($array, strtoupper($program_office->acronym));
         }
-                
+        
         return $array;
     }
     
@@ -115,18 +88,8 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        // $request_shelf = $wpdb->get_results("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
+        $request_shelf = $wpdb->get_results("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
         
-        $args = [
-            'select' => 'shelf',
-            'where' => [
-                    ['ticket_id', $GLOBALS['id']],
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket');
-        $request_shelf = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket->get_results($args, false);
-
         foreach($request_shelf as $shelf)
         {
             array_push($array, strtoupper($shelf->shelf));
@@ -140,19 +103,8 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        // $request_bay = $wpdb->get_results("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
+        $request_bay = $wpdb->get_results("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND ticket_id = " . $GLOBALS['id']);
         
-
-        $args = [
-            'select' => 'bay',
-            'where' => [
-                    ['ticket_id', $GLOBALS['id']],
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket');
-        $request_bay = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket->get_results($args, false);
-
         foreach($request_bay as $bay)
         {
             array_push($array, strtoupper($bay->bay));
@@ -165,16 +117,8 @@ if (isset($_GET['id']))
     function fetch_create_date()
     {
         global $wpdb;
-        // $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
+        $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
         
-        $args = [
-            'select' => 'date_created',
-            'where' => ['id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $request_create_date = $wpqa_wpsc_ticket->get_row($args, false);
-
-
         $create_date = $request_create_date->date_created;
         $date = strtotime($create_date);
         
@@ -185,16 +129,8 @@ if (isset($_GET['id']))
     function fetch_request_key()
     {
         global $wpdb;
-        // $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
+        $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
         
-
-        $args = [
-            'select' => 'ticket_auth_code',
-            'where' => ['id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $request_key = $wpqa_wpsc_ticket->get_row($args, false);
-
         $key = $request_key->ticket_auth_code;
         
         return $key;
@@ -204,16 +140,8 @@ if (isset($_GET['id']))
     function fetch_box_count()
     {
         global $wpdb;
-        // $box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
+        $box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
         
-        $args = [
-            'select' => 'COUNT(ticket_id) as count',
-            'where' => ['ticket_id', $GLOBALS['id']],
-        ];
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $box_count = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
-
-
         $count_val = $box_count->count;
         
         return $count_val;
@@ -289,24 +217,17 @@ if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,
 
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
         //Obtain array of Box ID's
-        // $box_array = fetch_box_id();
-        $box_array = Patt_Custom_Func::fetch_box_id($GLOBALS['id']);
-        // $box_location = fetch_location();
-        $box_location = Patt_Custom_Func::fetch_location($GLOBALS['id']);
-        $box_program_office = Patt_Custom_Func::fetch_program_office($GLOBALS['id']);
-        // $box_shelf = fetch_shelf();
-        $box_shelf = Patt_Custom_Func::fetch_shelf($GLOBALS['id']);
-        // $box_bay = fetch_bay();
-        $box_bay = Patt_Custom_Func::fetch_bay($GLOBALS['id']);
-        // $box_date = fetch_create_date();
-        $box_date = Patt_Custom_Func::fetch_create_date($GLOBALS['id']);
-        // $box_count = fetch_box_count();
-        $box_count = Patt_Custom_Func::fetch_box_count($GLOBALS['id']);
+        $box_array = fetch_box_id();
+        $box_location = fetch_location();
+        $box_program_office = fetch_program_office();
+        $box_shelf = fetch_shelf();
+        $box_bay = fetch_bay();
+        $box_date = fetch_create_date();
+        $box_count = fetch_box_count();
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {  
-    //    $box_array = fetch_box_id_a();
-       $box_array = Patt_Custom_Func::fetch_box_id_a($GLOBALS['id']);
+       $box_array = fetch_box_id_a();
 }
 
         //Set count to 0. This count determine odd or even components of the array
@@ -318,109 +239,38 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {           
 
-        // $asset_ticket_id = $wpdb->get_row( "SELECT DISTINCT ticket_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
-       
-        $args = [
-            'select' => 'DISTINCT ticket_id',
-            'where' => ['box_id', $box_array[$i]],
-        ];
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $asset_ticket_id = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
-
-
-        // $asset_request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
-        $args = [
-            'where' => ['id', $asset_ticket_id->ticket_id],
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $asset_request_id = $wpqa_wpsc_ticket->get_row($args, false);
+        $asset_ticket_id = $wpdb->get_row( "SELECT DISTINCT ticket_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
+                
+        $asset_request_id = $wpdb->get_row( "SELECT * FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
 
         $asset_id = $asset_request_id->request_id;
         
         
-        // $box_digitization_center = $wpdb->get_row( "SELECT location FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
-        $args = [
-            'select' => 'location',
-            'where' => ['box_id', $box_array[$i]],
-        ];
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $asset_request_id = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
-
-
+        $box_digitization_center = $wpdb->get_row( "SELECT location FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $box_array[$i] ."'");
+        
         $box_location_a = strtoupper($box_digitization_center->location);
 
 
-        // $request_program_office = $wpdb->get_row("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
+        $request_program_office = $wpdb->get_row("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
         
-        $args = [
-            'select' => 'acronym',
-            'where' => [
-                    ['wpqa_wpsc_epa_boxinfo.program_office_id ', 'wpqa_wpsc_epa_program_office.id'],
-                    ['box_id', $box_array[$i], 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_epa_program_office = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office');
-        $request_program_office = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_epa_program_office->get_row($args, false);
-
-
         $box_program_office_a = $request_program_office->acronym;
 
-        // $request_shelf = $wpdb->get_row("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
-             
-        $args = [
-            'select' => 'shelf',
-            'where' => [
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id'],
-                    ['box_id', $box_array[$i], 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket');
-        $request_shelf = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket->get_row($args, false);
-
-
-
+        $request_shelf = $wpdb->get_row("SELECT shelf FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
+        
         $box_shelf_a = strtoupper($request_shelf->shelf);
     
-        // $request_bay = $wpdb->get_row("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
+        $request_bay = $wpdb->get_row("SELECT bay FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id AND box_id = '" . $box_array[$i] ."'");
         
-        $args = [
-            'select' => 'bay',
-            'where' => [
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id'],
-                    ['box_id', $box_array[$i], 'AND']
-                ],
-        ];
-        $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket');
-        $request_shelf = $wpqa_wpsc_epa_boxinfo_wpqa_wpsc_ticket->get_row($args, false);
-
-
         $box_bay_a = $request_bay->bay;
 
-        // $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
+        $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
         
-        $args = [
-            'select' => 'date_created',
-            'where' => ['id', $asset_ticket_id->ticket_id]
-        ];
-        $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-        $request_create_date = $wpqa_wpsc_ticket->get_row($args, false);
-
-
         $create_date = $request_create_date->date_created;
         $date = strtotime($create_date);
         
         $box_date_a = strtoupper(date('M y', $date));
         
-        // $get_box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $asset_ticket_id->ticket_id);
-
-
-        $args = [
-            'select' => 'COUNT(ticket_id) as count',
-            'where' => ['ticket_id', $asset_ticket_id->ticket_id]
-        ];
-        $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $get_box_count = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
-
+        $get_box_count = $wpdb->get_row( "SELECT COUNT(ticket_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $asset_ticket_id->ticket_id);
         
         $box_count_a = $get_box_count->count;
         
@@ -443,124 +293,124 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 // Even
                 //1D barcode coordinates
                 $x_loc_1d = 65;
-                $y_loc_1d = 60;
+                $y_loc_1d = 70;
                 //QR barcode coordinates
-                $x_loc_2d = 150;
-                $y_loc_2d = 2;
+                $x_loc_2d = 155;
+                $y_loc_2d = 12;
                 //Box x of y text coordinates
                 $x_loc_b = 70;
-                $y_loc_b = 105;
+                $y_loc_b = 115;
                 //Box ID Printout coordinates
                 $x_loc_c = 90;
-                $y_loc_c = 87;
+                $y_loc_c = 97;
                 //Line seperator coordinates
                 $x_loc_l1 = 70;
-                $y_loc_l1 = 100;
+                $y_loc_l1 = 110;
                 $x_loc_l2 = 190;
-                $y_loc_l2 = 100;
+                $y_loc_l2 = 110;
                 //Box_a RFID coordinates
-                $x_loc_ba1 = 10;
-                $y_loc_ba1 = 45;
+                $x_loc_ba1 = 13;
+                $y_loc_ba1 = 55;
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
                 $x_loc_l = 169;
-                $y_loc_l = 80;
+                $y_loc_l = 90;
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
-                $y_loc_cd = 11;
+                $y_loc_cd = 21;
                 //Request ID Coordinates
-                $x_loc_rid = 163;
-                $y_loc_rid = 47;
+                $x_loc_rid = 165;
+                $y_loc_rid = 50;
                 //RFID Vertical Text Coordinates
-                $x_loc_rfid = 19;
-                $y_loc_rfid = 110;
+                $x_loc_rfid = 22;
+                $y_loc_rfid = 120;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
-                $y_loc_digi_box_regular = 79;
+                $y_loc_digi_box_regular = 89;
                 //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 160.5;
-                $y_loc_digi_box_dashed = 76;
+                $y_loc_digi_box_dashed = 86;
                 //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 5;
-                $y_loc_black_rectangle = 5;
+                $x_loc_black_rectangle = 10;
+                $y_loc_black_rectangle = 15;
                 //White rectangle containing program office
-                $x_loc_white_rectangle = 14;
-                $y_loc_white_rectangle = 10;
+                $x_loc_white_rectangle = 19;
+                $y_loc_white_rectangle = 20;
                 //Program office
-                $x_loc_program_office = 35;
-                $y_loc_program_office = 13;
+                $x_loc_program_office = 38;
+                $y_loc_program_office = 23;
                 //Bay
                 $x_loc_bay = 134;
-                $y_loc_bay = 105;
+                $y_loc_bay = 115;
                 //Shelf
                 $x_loc_shelf = 161;
-                $y_loc_shelf = 105;
+                $y_loc_shelf = 115;
                 //Dashed border around shelf/bay
                 $x_loc_dashed_border = 130;
-                $y_loc_dashed_border = 103;
+                $y_loc_dashed_border = 113;
             }
             else
             {
                 // Odd
                 //1D barcode coordinates
                 $x_loc_1d = 65;
-                $y_loc_1d = 210;
+                $y_loc_1d = 200;
                 //QR barcode coordinates
-                $x_loc_2d = 150;
-                $y_loc_2d = 152;
+                $x_loc_2d = 155;
+                $y_loc_2d = 142;
                 //Box x of y text coordinates
                 $x_loc_b = 70;
-                $y_loc_b = 255;
+                $y_loc_b = 245;
                 //Box ID Printout coordinates
                 $x_loc_c = 90;
-                $y_loc_c = 237;
+                $y_loc_c = 227;
                 //Line seperator coordinates
                 $x_loc_l1 = 70;
-                $y_loc_l1 = 250;
+                $y_loc_l1 = 240;
                 $x_loc_l2 = 190;
-                $y_loc_l2 = 250;
+                $y_loc_l2 = 240;
                 //Box_a RFID coordinates
-                $x_loc_ba1 = 10;
-                $y_loc_ba1 = 195;
+                $x_loc_ba1 = 13;
+                $y_loc_ba1 = 185;
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
                 $x_loc_l = 169;
-                $y_loc_l = 230;                
+                $y_loc_l = 220;                
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
-                $y_loc_cd = 162;
+                $y_loc_cd = 152;
                 //Request ID Coordinates
-                $x_loc_rid = 163;
-                $y_loc_rid = 197;
+                $x_loc_rid = 165;
+                $y_loc_rid = 180;
                 //RFID Vertical Text Coordinates
-                $x_loc_rfid = 19;
-                $y_loc_rfid = 260;
+                $x_loc_rfid = 22;
+                $y_loc_rfid = 250;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
-                $y_loc_digi_box_regular = 229;
+                $y_loc_digi_box_regular = 219;
                 //Digitization center box dashed border
                 $x_loc_digi_box_dashed = 160.5;
-                $y_loc_digi_box_dashed = 226;
+                $y_loc_digi_box_dashed = 216;
                 //Black rectangle containing program office and month/year of request
-                $x_loc_black_rectangle = 5;
-                $y_loc_black_rectangle = 155;
+                $x_loc_black_rectangle = 10;
+                $y_loc_black_rectangle = 145;
                 //White rectangle containing program office
-                $x_loc_white_rectangle = 14;
-                $y_loc_white_rectangle = 160;
+                $x_loc_white_rectangle = 19;
+                $y_loc_white_rectangle = 150;
                 //Program office
-                $x_loc_program_office = 33;
-                $y_loc_program_office = 163;
+                $x_loc_program_office = 38;
+                $y_loc_program_office = 153;
                 //Bay
                 $x_loc_bay = 134;
-                $y_loc_bay = 255;
+                $y_loc_bay = 245;
                 //Shelf
                 $x_loc_shelf = 161;
-                $y_loc_shelf = 255;
+                $y_loc_shelf = 245;
                 //Dashed border around shelf/bay
                 $x_loc_dashed_border = 130;
-                $y_loc_dashed_border = 253;
+                $y_loc_dashed_border = 243;
             }
             //Determine box count out of total
             
@@ -665,8 +515,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetFont('helvetica', '', 14);
             
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-// $num = fetch_request_id();
-$num = Patt_Custom_Func::fetch_request_id($GLOBALS['id']);
+$num = fetch_request_id();
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
@@ -679,9 +528,7 @@ $num = $asset_id;
             
             $obj_pdf->SetFont('helvetica', '', 11);
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-// $url_id = fetch_request_id();
-$url_id = Patt_Custom_Func::fetch_request_id($GLOBALS['id']);
-
+$url_id = fetch_request_id();
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {

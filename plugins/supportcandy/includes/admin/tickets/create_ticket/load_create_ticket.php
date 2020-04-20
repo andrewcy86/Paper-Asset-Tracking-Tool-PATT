@@ -317,7 +317,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 	/*
 	 BEGIN CAR - Added Custom PATT Action
 	 */
-	do_action('patt_print_js_functions_create');
+	<?php do_action('patt_print_js_functions_create'); ?>
 	/*
 	 END CAR - Added Custom PATT Action
 	 */
@@ -361,18 +361,17 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					break;
 
 				case 'tinymce':
-					<
-					? php
+					<?php
 
-					$rich_editing = $wpscfunction - > rich_editing_status($current_user);
+					$rich_editing = $wpscfunction->rich_editing_status($current_user);
 
 					$flag = false;
 					if ($wpsc_desc_status && is_user_logged_in() && (in_array('register_user',
-							$wpsc_allow_rich_text_editor) && !$current_user - > has_cap('wpsc_agent')) &&
+							$wpsc_allow_rich_text_editor) && !$current_user->has_cap('wpsc_agent')) &&
 						$rich_editing) {
 						$flag = true;
 					}
-					elseif($wpsc_desc_status && $current_user - > has_cap('wpsc_agent') && is_user_logged_in() &&
+					elseif($wpsc_desc_status && $current_user->has_cap('wpsc_agent') && is_user_logged_in() &&
 						$rich_editing) {
 						$flag = true;
 					}
@@ -382,18 +381,15 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					}
 
 					if ($flag) {
-						?
-						>
+						?>
 						var description = tinyMCE.activeEditor.getContent();
 						if (description.trim().length == 0) validation = false;
-						break; <
-						? php
+						break; <?php
 					} else {
-						? >
+						?>
 						if (jQuery('#ticket_description').val() == '') validation = false;
-						break; <
-						? php
-					} ? >
+						break; <?php
+					} ?>
 			}
 
 			if (!validation) return;
@@ -401,9 +397,7 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 
 		//New DataTable validation check
 		if (!jQuery('#boxinfodatatable').DataTable().data().any()) {
-
 			validation = false;
-
 		}
 
 		if (!validation) {
@@ -443,110 +437,95 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 			return false;
 		}
 
-		<
-		? php do_action('wpsc_create_ticket_validation'); ? >
+		<?php do_action('wpsc_create_ticket_validation'); ?>
 
 		/*
 			Captcha
 		*/
-		<
-		? php
+		<?php
 		if ($wpsc_captcha) {
 			if ($wpsc_recaptcha_type) {
-				? >
+				?>
 				if (jQuery('#captcha_code').val().trim().length == 0) {
 					alert("<?php _e('Please confirm you are not a robot!','supportcandy')?>");
 					validation = false;
 					return false;
-				} <
-				? php
+				} <?php
 			} else {
-				? >
+				?>
 				var recaptcha = jQuery("#g-recaptcha-response").val();
 				if (recaptcha === "") {
 					alert("<?php _e('Please confirm you are not a robot!','supportcandy')?>");
 					validation = false;
 					return false;
-				} < ? php
+				} <?php
 			}
-		} ?
-		>
+		} ?>
 
-		<
-		? php
+		<?php
 		if ($wpsc_set_in_gdpr) {
-			? >
+			?>
 			if (!jQuery('#wpsc_gdpr').is(':checked')) {
 				alert("<?php _e('Ticket can not be created unless you agree to privacy policy.','supportcandy')?>");
 				return false;
-			} <
-			? php
-		} ?
-		>
+			} <?php
+		} ?>
 
-		<
-		? php
+		<?php
 		if ($wpsc_terms_and_conditions) {
-			? >
+			?>
 			if (!jQuery('#terms').is(':checked')) {
 				alert("<?php _e('Ticket can not be created unless you agree to terms & coditions.', 'supportcandy')?>");
 				return false;
-			} <
-			? php
-		} ?
-		>
+			} <?php
+		} ?>
 
 		if (validation) {
 
 			//New get DataTable data in the form of an
-			//var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
+			var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
 
 			var data = JSON.stringify(jQuery('#boxinfodatatable').toJson());
-
-			//alert( 'The table contents are ' + data );
 
 			var dataform = new FormData(jQuery('#wpsc_frm_create_ticket')[0]);
 
 			console.log(dataform);
 
-			// dataform.append('boxinfo', data);
+			dataform.append('boxinfo', data);
 
-			var is_tinymce = true; <
-			? php
+			// alert('The table contents are '+data);
+			console.log(dataform);
+			// return false;
 
-			$rich_editing = $wpscfunction - > rich_editing_status($current_user);
+			var is_tinymce = true; 
+			<?php
+
+			$rich_editing = $wpscfunction->rich_editing_status($current_user);
 			$flag = false;
 
-			if (is_user_logged_in() && (in_array('register_user', $wpsc_allow_rich_text_editor) && !$current_user - >
-					has_cap('wpsc_agent')) && $rich_editing) {
+			if (is_user_logged_in() && (in_array('register_user', $wpsc_allow_rich_text_editor) && !$current_user->has_cap('wpsc_agent')) && $rich_editing) {
 				$flag = true;
 			}
-			elseif($current_user - > has_cap('wpsc_agent') && is_user_logged_in() && $rich_editing) {
+			elseif($current_user->has_cap('wpsc_agent') && is_user_logged_in() && $rich_editing) {
 				$flag = true;
 			}
 			elseif(!is_user_logged_in() && in_array('guest_user', $wpsc_allow_rich_text_editor)) {
 				$flag = true;
 			}
 			if ($wpsc_desc_status) {
-				if ($flag) {
-					?
-					>
+				if ($flag) { ?>
 					//var description = tinyMCE.get('ticket_description').getContent().trim();
 					//dataform.append('ticket_description', description);
 					//is_tinymce = true;
-					<
-					? php
+					<?php
 				} else {
-					?
-					>
+					?>
 					//var description = jQuery('#ticket_description').val();
 					//dataform.append('ticket_description',description);
 					//is_tinymce = false;
-					<
-					? php
+					<?php
 				}
-			} ?
-			>
+			} ?>
 			jQuery('#create_ticket_body').html(wpsc_admin.loading_html);
 			//wpsc_doScrolling('.wpsc_tl_action_bar',1000);
 			jQuery.ajax({
@@ -563,21 +542,18 @@ if(apply_filters('wpsc_print_create_ticket_html',true)):
 					} else {
 						window.location.href = response.redirct_url;
 					}
-				}); <
-			? php
+				}); <?php
 			if ($wpsc_desc_status) {
-				? >
+				?>
 				// if(is_tinymce) tinyMCE.activeEditor.setContent('');
-				<
-				? php
-			} ? >
+				<?php
+			} ?>
 			return false;
 		}
 
 	}
 
-	<
-	? php do_action('wpsc_print_ext_js_create_ticket'); ? >
+	<?php do_action('wpsc_print_ext_js_create_ticket'); ?>
 </script>
 <?php if (!$wpsc_recaptcha_type && $wpsc_captcha): ?>
 <script src='https://www.google.com/recaptcha/api.js'></script>

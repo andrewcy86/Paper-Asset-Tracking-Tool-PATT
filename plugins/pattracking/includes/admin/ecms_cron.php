@@ -1,15 +1,17 @@
 <?php
 
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
+//if ( ! defined( 'ABSPATH' ) ) {
+	//exit; // Exit if accessed directly
+//}
 
-//$path = preg_replace('/wp-content.*$/','',__DIR__);
-//include($path.'wp-load.php');
+$path = preg_replace('/wp-content.*$/','',__DIR__);
+include($path.'wp-load.php');
 
 global $current_user, $wpscfunction, $wpdb;
 
 // Obtain files to be transferred
+//ini_set('memory_limit','512M');
+
 
 $folderfile_query = $wpdb->get_results(
 "SELECT 
@@ -68,10 +70,23 @@ echo '<hr />';
 */
 
 //POST Request to Content Ingestion Endpoint
-$file_name_with_full_path = $_SERVER['DOCUMENT_ROOT'] . '/wp-content/' . $item->file_location . $item->file_name;
+$file_name_with_full_path = $_SERVER['DOCUMENT_ROOT'] . '/wordpress3/wp-content/' . $item->file_location . $item->file_name;
 
-$fileHandler = fopen($file_name_with_full_path, 'r');
-$fileData = fread($fileHandler, filesize($file_name_with_full_path));
+$curlFile = curl_file_create($file_name_with_full_path );
+
+//$fileHandler = fopen($file_name_with_full_path, 'r');
+//$fileData = fread($fileHandler, filesize($file_name_with_full_path));
+
+
+//$file = fopen($file_name_with_full_path, 'r');
+//$len = 1024;
+//$fileData = fread( $file, $len );
+
+//while (!feof($file)) {
+//   $fileData .= fread( $file, $len );
+//}
+
+//fclose($file);
 
 $date = strtotime( $item->date );
 $date_formated = date( 'Y-m-d\\TH:i:s', $date );
@@ -122,7 +137,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLINFO_HEADER_OUT => true,
   CURLOPT_CUSTOMREQUEST => "POST",
-  CURLOPT_POSTFIELDS => array('metadata' => $metadata,'contents'=> $fileData),
+  CURLOPT_POSTFIELDS => array('metadata' => $metadata,'contents'=> $curlFile),
   CURLOPT_HTTPHEADER => array(
     "Authorization: Basic cGF0dF9hZG1pbjplY21zUGF0dDEyMw=="
   ),

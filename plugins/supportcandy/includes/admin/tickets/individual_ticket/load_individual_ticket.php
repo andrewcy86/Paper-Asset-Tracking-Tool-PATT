@@ -118,7 +118,9 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 		  <?php } ?>		
       </h4>
     </div>
-
+<?php do_action('wpsc_before_request_id',$ticket_id);?>
+<br />
+<br />
 		<?php
 		if($reply_form_position && $ticket_status){
 			include WPSC_ABSPATH . 'includes/admin/tickets/individual_ticket/reply_form.php';

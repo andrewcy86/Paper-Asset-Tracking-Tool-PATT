@@ -13,6 +13,11 @@ if (!class_exists('wppatt_Admin')):
     {
             include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';
         }
+        
+        public function request_boxes_BeforeRequestID()
+    {
+            include WPPATT_ABSPATH . 'includes/admin/wppatt_request_boxes.php';    
+        }
 
         public function get_pdf_label_field()
     {

@@ -101,6 +101,10 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           $backend  = new wppatt_Admin();
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
+          
+          // Add Box Details to Request page
+          add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));
+          
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));

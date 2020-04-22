@@ -50,6 +50,40 @@ if (!class_exists('Patt_Custom_Func')) {
             }
             return $array;
         }
+        
+        //Function to obtain box ID, location, shelf, bay and index from ticket 
+        
+        public static function fetch_box_details($id)
+        {
+            global $wpdb; 
+            // die(print_r($wpdb->prefix));
+            $array = array();
+            $args = [
+                'where' => ['ticket_id', $id],
+            ];
+            $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+            $box_result = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+
+            foreach ($box_result as $box) {
+                $boxlist_il = $box->index_level;
+				$boxlist_il_val = '';
+				if ($boxlist_il == 1) {
+					$boxlist_il_val = "Folder";
+				} else {
+					$boxlist_il_val = "File";
+				}
+				
+                $parent = new stdClass;
+                $parent->id = $box->box_id;
+                $parent->index_level = $boxlist_il_val;
+                $parent->location = $box->location;
+                $parent->bay = strtoupper($box->bay);
+                $parent->shelf = strtoupper($box->shelf);
+                $array[] = $parent;
+
+            }
+            return $array;
+        }
 
         //Function to obtain box details from box ID
         public static function fetch_box_id_a( $id )

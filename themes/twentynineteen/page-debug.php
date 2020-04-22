@@ -23,6 +23,11 @@ get_header();
 		$box_array = Patt_Custom_Func::fetch_box_id(1);
 		print_r($box_array);
 		echo '<hr/>';
+			
+		echo "Obtain array of Box Information for frontend/backend Request Details page <br/>";
+		$box_details_array = Patt_Custom_Func::fetch_box_details(1);
+		print_r($box_details_array);
+		echo '<hr/>';
 
 		echo "Function to obtain location value from database <br/>";
         $box_location = Patt_Custom_Func::fetch_location(1);

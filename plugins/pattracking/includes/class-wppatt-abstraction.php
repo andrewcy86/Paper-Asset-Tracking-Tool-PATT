@@ -42,7 +42,13 @@ abstract class PATT_DB {
 	 * @return  array
 	 */
 	public function get_columns() {
-		return array();
+		global $wpdb;
+		$result = array();
+		$columns = $wpdb->get_results("SHOW COLUMNS FROM $this->table_name");
+		foreach ($columns as $key => $value) {
+			$result[$value->Field] = '%s';
+		}
+		return $result;
 	}
 
 	/**
@@ -53,7 +59,15 @@ abstract class PATT_DB {
 	 * @return  array
 	 */
 	public function get_column_defaults() {
-		return array();
+		global $wpdb;
+		$result = array();
+		$columns = $wpdb->get_results("SHOW COLUMNS FROM $this->table_name");
+		foreach ($columns as $key => $value) {
+			if($value->Default) {
+				$result[$value->Field] = $value->Default;
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -250,18 +264,20 @@ abstract class PATT_DB {
 	 * @since   1.0
 	 * @return  bool
 	 */
-	public function update( $row_id, $data = array(), $where = '' ) {
+	public function update( $data = array(), $where = [] ) {
 
 		global $wpdb;
 
-		// Row ID must be positive integer
+	/* Cort to Review 
+		// Row ID must be positive integer 
 		$row_id = absint( $row_id );
 
 		if( empty( $row_id ) ) {
 			return false;
 		}
+	*/
 
-		if( empty( $where ) ) {
+		if( count( $where ) < 1) {
 			$where = $this->primary_key;
 		}
 
@@ -278,7 +294,7 @@ abstract class PATT_DB {
 		$data_keys = array_keys( $data );
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
 
-		if ( false === $wpdb->update( $this->table_name, $data, array( $where => $row_id ), $column_formats ) ) {
+		if ( false === $wpdb->update( $this->table_name, $data, $where, $column_formats ) ) {
 			return false;
 		}
 

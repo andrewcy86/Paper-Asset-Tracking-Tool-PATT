@@ -74,8 +74,46 @@ get_header();
 		print_r($box_array);
 		echo '<hr/>';
 
+		echo 'Function to insert a new row<br/>';
+		global $wpdb;
+		$data = [
+			box_id  => 'VHG8987YU',
+			ticket_id   => '87',
+			location    => 'EAST',
+			bay => 'Top',
+			shelf   => 'Shock',
+			user_id => '1',
+			index_level => '2',
+			program_office_id   => 1,
+			record_schedule_id  => '879797978',
+			date_created    => date('Y-m-d'),
+			date_updated   => date('Y-m-d')
+		];
+		// $cq_init = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+		// $result = $cq_init->insert($data);
+		// print_r($result);
+		// echo '<hr/>';
 
-
+		echo 'Function to update a table<br/>';
+		global $wpdb;
+		$data = [
+			location    => 'UIOOO',
+			bay => 'Top',
+			shelf   => 'Shock',
+			user_id => '1',
+			index_level => '20',
+			program_office_id   => 1,
+			record_schedule_id  => '6876868',
+			date_updated   => date('Y-m-d')
+		];
+		$where = [
+			box_id  => 'VHG87YU',	
+			ticket_id   => '878'		
+		];
+		// $cq_init = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+		// $result = $cq_init->update($data, $where);
+		// print_r($result);
+		// echo '<hr/>';
 ?>
 
 			<?php

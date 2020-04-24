@@ -117,9 +117,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           function my_admin_menu() {
             add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails', 'box_details' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             }
 
-          function scanning_page(){
+            function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
             }
             
@@ -128,6 +130,15 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             );
             }
             
+            function box_details(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/box-details.php'
+            );
+            }
+            
+            function file_details(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/folder-file-details.php'
+            );
+            }
     
         }
         if ($this->is_request('frontend')) {

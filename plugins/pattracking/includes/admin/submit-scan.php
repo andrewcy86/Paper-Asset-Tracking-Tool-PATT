@@ -1,29 +1,8 @@
 <?php
 
-wp_enqueue_script('jquery');
-
-wp_register_script('dataTables-js', 'https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js', '', '', true);
-wp_register_script('dataTables-responsive-js', 'https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js', '', '', true);
-wp_register_script('customScriptDatatables', WPPATT_PLUGIN_URL . 'includes/admin/js/customScriptDatatables.js', '', '', true);
-
-
-// JM Developer - register scanning page js
-wp_register_script('customScanning-js', WPPATT_PLUGIN_URL . 'includes/admin/js/scanning.js', '', '', true);
-
-wp_enqueue_script('dataTables-js');
-wp_enqueue_script('dataTables-responsive-js');
-wp_enqueue_script('customScriptDatatables');
-
-// JM Developer - enqueue js
-wp_enqueue_script('customScanning-js');
-
-
-
 // TODO:  Create the following supporting MYSQL functions:
 //          mysql_query(<STATEMENT>)
 //          mysql_num_rows(<QUERY>)
-//          Regex's for SWITCH/CASE
-
 
 if(isset($_POST['submit-scan'])) {
     
@@ -59,26 +38,65 @@ if(isset($_POST['submit-scan'])) {
             // Use regex for each case
             
             // Cart Barcode
-              $cartid = "";  
+              $reg_cartid = "/\b(CID-\d\d-e|CID-\d\d-w)\b/";   
 
             // Staging barcode
-              $reg_stagingarea = "";  
+              $reg_stagingarea = "/\b(sa-e|sa-w)\b/";  
 
             // Scanning barcode
-              $reg_scanning = '/\b(sa-e|sa-w)\b/';
+              $reg_scanning = "/\b(SCN-\d\d-e|SCN-\d\d-w)\b/";
+              
+            // Combined bay and shelf barcode
+            $reg_bay_and_shelf = "/\b(\d\d\d-[a-zA-Z]{3})\b/";  
 
+            // Bay barcode
+            $reg_bay = "/\b(\d\d\d)\b/";  
+
+            // Shelf barcode
+            $reg_shelf = "/(\A[a-zA-Z]{3}\z)/iA";
+      
             switch($scan)
             {
+                case (preg_match($reg_bay_and_shelf, $scan)? true : false):
+                    // Case a bay and shelf barcode
+                    // Determine if an update or insert will be performed
+                    
+                    // Seperate the bay and shelf into thier own variable
+                    $shelfid = preg_match($reg_shelf, $input_line, $output_array);
+                    $bayid = preg_match($reg_bay, $input_line, $output_array);
+                    
+
+                        if ($count > 0){
+                            
+                            $statement = "UPDATE wpqa_wpsc_scan_list SET (shelfid) VALUES ($shelfid) WHERE boxid = $boxid_value";
+                        }
+                        else{
+                            
+                            $statement = "INSERT INTO wpqa_wpsc_scan_list (shelfid) VALUES ($shelfid) WHERE boxid = $boxid_value";
+                                 
+                        }
+
+                        if ($count > 0){
+                            
+                            $statement = "UPDATE wpqa_wpsc_scan_list SET (bayid) VALUES ($bayid) WHERE boxid = $boxid_value";
+                        }
+                        else{
+                            
+                            $statement = "INSERT INTO wpqa_wpsc_scan_list (bayid) VALUES ($bayid) WHERE boxid = $boxid_value";
+                                 
+                        }
+
+                    break;
                 case (preg_match($reg_cart, $scan)? true : false):
                     // Case a cart barcode
                     // Determine if an update or insert will be performed
                     if ($count > 0){
                         
-                        $statement = "UPDATE wpqa_wpsc_scan_list SET (cartid) VALUES ($cartid) WHERE boxid = $boxid_value";
+                        $statement = "UPDATE wpqa_wpsc_scan_list SET (cartid) VALUES ($scan) WHERE boxid = $boxid_value";
                     }
                     else{
                         
-                        $statement = "INSERT INTO wpqa_wpsc_scan_list (cartid) VALUES ($cartid) WHERE boxid = $boxid_value";
+                        $statement = "INSERT INTO wpqa_wpsc_scan_list (cartid) VALUES ($scan) WHERE boxid = $boxid_value";
                              
                     }
                     
@@ -90,11 +108,11 @@ if(isset($_POST['submit-scan'])) {
                     // Determine if an update or insert will be performed
                     if ($count > 0){
                         
-                         $statement = "UPDATE wpqa_wpsc_scan_list SET (stagingareaid) VALUES ($stagingareaid) WHERE boxid = $boxid_value"; 
+                         $statement = "UPDATE wpqa_wpsc_scan_list SET (stagingareaid) VALUES ($scan) WHERE boxid = $boxid_value"; 
                     }
                     else{
                         
-                         $statement = "INSERT INTO wpqa_wpsc_scan_list (staginareaid) VALUES ($stagingareaid) WHERE boxid = $boxid_value";
+                         $statement = "INSERT INTO wpqa_wpsc_scan_list (staginareaid) VALUES ($scan) WHERE boxid = $boxid_value";
                          
                     }
                     break;
@@ -105,23 +123,26 @@ if(isset($_POST['submit-scan'])) {
                     // Determine if an update or insert will be performed
                     if ($count > 0){
                         
-                        $statement = "UPDATE wpqa_wpsc_scan_list SET (scanningid) VALUES ($scanningid) WHERE boxid = $boxid_value";
+                        $statement = "UPDATE wpqa_wpsc_scan_list SET (scanningid) VALUES ($scan) WHERE boxid = $boxid_value";
                     }
                     else{
                            
-                        $statement = "INSERT INTO wpqa_wpsc_scan_list (scanningid) VALUES ($scanningid) WHERE boxid = $boxid_value";
+                        $statement = "INSERT INTO wpqa_wpsc_scan_list (scanningid) VALUES ($scan) WHERE boxid = $boxid_value";
                     }
                     break;
             }
        }       
        
-       $res=mysqli_query($statement);
+       $res = mysqli_query($statement);
        
         if(!$res) {
-            die('could not connect'.mysql_error());
+            die('could not connect: '.mysql_error());
+        }else{
+            
+            echo '<script language="javascript">';
+            echo 'alert("Location scans for the box(es) were successfully updated."';
+            echo '</script>';
         }
-        
-    echo "Submission Test";
     }
 }
 

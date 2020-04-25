@@ -74,12 +74,20 @@ Enter one or more Box IDs:<br />
 background-color: rgb(66, 73, 73) !important; 
 color: rgb(255, 255, 255) !important; 
 }
- .bootstrap-tagsinput {
+
+.bootstrap-tagsinput {
    width: 100%;
   }
+
+#searchGeneric {
+    padding: 0 30px !important;
+}
 </style>
 
 <div class="table-responsive" style="overflow-x:auto;">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<br /><br />
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
         <thead>
             <tr>
@@ -111,10 +119,12 @@ jQuery(document).ready(function(){
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_processing.php',
        'data': function(data){
           // Read values
+          var sg = jQuery('#searchGeneric').val();
           var boxid = jQuery('#searchByBoxID').val();
           var po = jQuery('#searchByProgramOffice').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
           // Append to data
+          data.searchGeneric = sg;
           data.searchByBoxID = boxid;
           data.searchByProgramOffice = po;
           data.searchByDigitizationCenter = dc;

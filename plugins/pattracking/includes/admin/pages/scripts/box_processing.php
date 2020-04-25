@@ -26,6 +26,7 @@ $searchValue = $_POST['search']['value']; // Search value
 $searchByBoxID = str_replace(",", "|", $_POST['searchByBoxID']);
 $searchByProgramOffice = $_POST['searchByProgramOffice'];
 $searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
+$searchGeneric = $_POST['searchGeneric'];
 
 ## Search 
 $searchQuery = " ";
@@ -39,6 +40,13 @@ if($searchByProgramOffice != ''){
 
 if($searchByDigitizationCenter != ''){
    $searchQuery .= " and (a.location='".$searchByDigitizationCenter."') ";
+}
+
+if($searchGeneric != ''){
+   $searchQuery .= " and (a.box_id like '%".$searchGeneric."%' or 
+      b.request_id like '%".$searchGeneric."%' or 
+      a.location like '%".$searchGeneric."%' or
+      c.acronym like '%".$searchGeneric."%') ";
 }
 
 if($searchValue != ''){

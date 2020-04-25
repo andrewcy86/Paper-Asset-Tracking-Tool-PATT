@@ -138,6 +138,11 @@ jQuery(document).ready(function(){
     ]
   });
 
+  jQuery(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        dataTable.draw();
+    }
+});
 
   jQuery("#searchByProgramOffice").change(function(){
     dataTable.draw();

@@ -24,7 +24,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 <div class="bootstrap-iso">
   
-  <h3>Box Details</h3>
+  <h3>Box Search</h3>
   
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
@@ -32,7 +32,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-sync-alt"></i> <?php _e('Refresh','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-sync-alt"></i> Clear Filters</button>
   </div>
 	
 </div>
@@ -49,7 +49,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 	                            <div class="wpsp_sidebar_labels">
 Enter one or more Box IDs:<br />
          <input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
-<br /><br />
+<br />
          <select id='searchByProgramOffice'>
            <option value=''>-- Select Program Office --</option>
            <option value='OMS'>OMS</option>
@@ -102,14 +102,14 @@ color: rgb(255, 255, 255) !important;
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.css" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput-typeahead.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tagsinput/0.8.0/bootstrap-tagsinput.min.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
   
   
 <script>
 
 jQuery(document).ready(function(){
+
   var dataTable = jQuery('#tbl_templates_boxes').DataTable({
     'processing': true,
     'serverSide': true,
@@ -139,16 +139,6 @@ jQuery(document).ready(function(){
   });
 
 
-  jQuery(document).on('keypress',function(e) {
-    if(e.which == 13) {
-        dataTable.draw();
-    }
-});
-
-  jQuery("input").on('itemRemoved', function(event) {
-    dataTable.draw();
-});
-
   jQuery("#searchByProgramOffice").change(function(){
     dataTable.draw();
 });
@@ -156,7 +146,43 @@ jQuery(document).ready(function(){
   jQuery("#searchByDigitizationCenter").change(function(){
     dataTable.draw();
 });
-  
+
+		function onAddTag(tag) {
+			dataTable.draw();
+		}
+		function onRemoveTag(tag) {
+			dataTable.draw();
+		}
+
+
+jQuery("#searchByBoxID").tagsInput({
+   'defaultText':'',
+   'onAddTag': onAddTag,
+   'onRemoveTag': onRemoveTag,
+   'width':'100%'
+});
+
+jQuery("#searchByBoxID_tag").on('paste',function(e){
+    var element=this;
+    setTimeout(function () {
+        var text = jQuery(element).val();
+        var target=jQuery("#searchByBoxID");
+        var tags = (text).split(/[ ,]+/);
+        for (var i = 0, z = tags.length; i<z; i++) {
+              var tag = jQuery.trim(tags[i]);
+              if (!target.tagExist(tag)) {
+                    target.addTag(tag);
+              }
+              else
+              {
+                  jQuery("#searchByBoxID_tag").val('');
+              }
+                
+         }
+    }, 0);
+});
+
+
 });
 
 </script>

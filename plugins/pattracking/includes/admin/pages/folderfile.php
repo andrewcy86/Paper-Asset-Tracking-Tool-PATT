@@ -47,7 +47,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 								<hr class="widget_divider">
 
 	                            <div class="wpsp_sidebar_labels">
-Enter one or more Box IDs:<br />
+Enter one or more Document IDs:<br />
          <input type='text' id='searchByDocID' class="form-control" data-role="tagsinput">
 <br />
          <select id='searchByProgramOffice'>

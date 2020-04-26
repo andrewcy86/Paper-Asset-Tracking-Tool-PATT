@@ -132,7 +132,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             );
             }
             
-            function boxes_page(){
+            function folderfile_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/folderfile.php'
             );
             }

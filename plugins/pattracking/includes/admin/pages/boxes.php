@@ -152,6 +152,14 @@ jQuery(document).ready(function(){
     dataTable.draw();
 });
 
+  jQuery('#searchGeneric').on('input keyup paste', function () {
+    var hasValue = jQuery.trim(this.value).length;
+    if(hasValue == 0) {
+            dataTable.draw();
+        }
+});
+
+
 		function onAddTag(tag) {
 			dataTable.draw();
 		}

@@ -134,38 +134,14 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         array($this,'tickets')
       );
       
-      /*
-      //Start JM Developer - Add Scan menu item that will link
-      // to the Scanning page. Must create a Scanning page. This
-      // links to the wsc-boxes page in the interim.
-      // Must determine the purpose/location of wpsc-boxes, which 
-      // I changed to wpsc-scanning
-       add_submenu_page(
-        'wpsc-tickets',
-        __( 'Scanning', 'supportcandy' ),
-        __( 'Scanning', 'supportcandy' ),
-        'manage_options',
-        'wpsc-scanning',
-        array($this,'scanning')
-      );
-      //End JM Developer*/
-      
+      // PATT Menu Items
+      do_action('wpsc_add_submenu_page');
       $agent_permissions = $wpscfunction->get_current_agent_permissions();
-
       if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
       {
-       //Start RM Developer
-       /*add_submenu_page(
-        'wpsc-tickets',
-        __( 'Boxes', 'supportcandy' ),
-        __( 'Boxes', 'supportcandy' ),
-        'manage_options',
-        'wpsc-boxes',
-        array($this,'boxes')
-      );*/
-      //End RM Developer
-      do_action('wpsc_add_submenu_page');
+      do_action('wpsc_add_admin_page');
       }
+      // END PATT Menu Items
       
       add_submenu_page(
         'wpsc-tickets',

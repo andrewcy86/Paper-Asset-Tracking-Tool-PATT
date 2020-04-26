@@ -179,7 +179,7 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
     var element=this;
     setTimeout(function () {
         var text = jQuery(element).val();
-        var target=jQuery("#searchByBoxID");
+        var target=jQuery("#searchByDocID");
         var tags = (text).split(/[ ,]+/);
         for (var i = 0, z = tags.length; i<z; i++) {
               var tag = jQuery.trim(tags[i]);

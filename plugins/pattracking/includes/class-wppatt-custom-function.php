@@ -50,7 +50,24 @@ if (!class_exists('Patt_Custom_Func')) {
             }
             return $array;
         }
-        
+       
+	//Function to obtain full list of Program Offices
+        public static function fetch_program_office_array()
+        {
+            global $wpdb;
+            $array = array();
+            $args = [
+                'select' => 'acronym',
+            ];
+            $wpqa_wpsc_epa_program_office = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_program_office");
+            $po_result = $wpqa_wpsc_epa_program_office->get_results($args, false);
+
+            foreach ($po_result as $po) {
+                array_push($array, $po->acronym);
+            }
+            return $array;
+        }
+
         //Convert box patt id to id
         public static function convert_box_id( $id )
         {

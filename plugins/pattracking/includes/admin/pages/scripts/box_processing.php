@@ -69,7 +69,7 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$boxQuery = "SELECT CONCAT('<a href=admin.php?page=boxdetails&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, a.location as location, c.acronym as acronym FROM wpqa_wpsc_epa_boxinfo as a
+$boxQuery = "SELECT CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, a.location as location, c.acronym as acronym FROM wpqa_wpsc_epa_boxinfo as a
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_program_office as c ON a.program_office_id = c.id
 WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;

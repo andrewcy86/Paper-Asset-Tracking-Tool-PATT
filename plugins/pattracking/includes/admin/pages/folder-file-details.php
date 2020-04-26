@@ -24,33 +24,6 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 
 <div class="bootstrap-iso">
-  
-  <h3>Folder/File Details</h3>
-  
- <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
-
-<div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
-  
-	<div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-sync-alt"></i> <?php _e('Refresh','supportcandy')?></button>
-  </div>
-	
-</div>
-
-<div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
-
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
-?>
-  <div class="col-sm-8 col-md-9 wpsc_it_body">
-    <div class="row wpsc_it_subject_widget">
-      <h3>
-	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[Folder/File ID # <?php
-            echo $GLOBALS['id']; ?>]
-		  <?php } ?>		
-      </h3>
 <?php
 			$folderfile_details = $wpdb->get_row(
 				"SELECT 
@@ -111,6 +84,62 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 ?>
 
 <?php
+			$box_il_val = '';
+			if ($box_il == 1) {
+?>
+  <h3>Folder Details</h3>
+<?php
+			} else {
+?>
+  <h3>File Details</h3>
+<?php
+			}
+?>
+
+ <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
+
+<div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
+  
+	<div class="col-sm-12">
+    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-sync-alt"></i> <?php _e('Refresh','supportcandy')?></button>
+  </div>
+	
+</div>
+
+<div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
+
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
+?>
+  <div class="col-sm-8 col-md-9 wpsc_it_body">
+    <div class="row wpsc_it_subject_widget">
+
+
+<?php
+			$box_il_val = '';
+			if ($box_il == 1) {
+?>
+      <h3>
+	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
+        	[Folder ID # <?php
+            echo $GLOBALS['id']; ?>]
+		  <?php } ?>		
+      </h3>
+<?php
+			} else {
+?>
+      <h3>
+	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
+        	[File ID # <?php
+            echo $GLOBALS['id']; ?>]
+		  <?php } ?>		
+      </h3>
+<?php
+			}
+?>
+			
+<?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
 ?>
 <a href="admin.php?page=wpsc-tickets&id=<?php echo $box_requestid ?>">< Back to Request</a>
@@ -134,13 +163,6 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
     </div>
 
 <?php
-
-			$box_il_val = '';
-			if ($box_il == 1) {
-				echo "<h3>Folder Information</h3>";
-			} else {
-				echo "<h3>File Information</h3>";
-			}
 
 			echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			

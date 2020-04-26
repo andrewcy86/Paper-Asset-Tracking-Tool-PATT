@@ -74,6 +74,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
     }
     
     public function includes() {
+        
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-abstraction.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-custom-function.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-hooks-filters.php' );
@@ -110,23 +111,29 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
-
+            
           // Set Barcode Scanning Page
           add_action( 'wpsc_add_submenu_page', 'my_admin_menu');
 
           function my_admin_menu() {
             add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
+            add_submenu_page( 'wpsc-tickets', 'Folder/File Dashboard', 'Folder/File Dashboard', 'wpsc_agent', 'folderfile', 'folderfile_page' );
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails', 'box_details' );
             add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             }
 
-            function scanning_page(){
+          function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
             }
             
             function boxes_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/boxes.php'
+            );
+            }
+            
+            function boxes_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/folderfile.php'
             );
             }
             

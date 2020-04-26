@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb, $current_user, $wpscfunction;
 
 $GLOBALS['id'] = $_GET['id'];
+$GLOBALS['pid'] = $_GET['pid'];
 
 include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 $load_styles = new wppatt_Functions();
@@ -89,15 +90,17 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
 			$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
+				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id
 WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			);
 
 			$box_boxid = $box_details->box_id;
 			$box_ticketid = $box_details->ticket_id;
+			$box_requestid = $box_details->request_id;
 			$box_rs = $box_details->rsnum;
 			$box_po = $box_details->program_office;
 			$request_id = substr($box_boxid, 0, 7);
@@ -107,7 +110,21 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			$box_shelf = $box_details->shelf;
 ?>
 
-            <a href="admin.php?page=wpsc-tickets&id=<?php echo $box_ticketid ?>">< Back to Request</a>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
+?>
+<a href="admin.php?page=wpsc-tickets&id=<?php echo $box_requestid ?>">< Back to Request</a>
+<?php
+}
+?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
+?>
+<a href="admin.php?page=boxes">< Back to Box Dashboard</a>
+<?php
+}
+?>
+
     </div>
 
 <?php
@@ -179,9 +196,23 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 	 jQuery('#toplevel_page_wpsc-tickets a:first').removeClass('wp-not-current-submenu');
 	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
-	 jQuery('.wp-first-item').addClass('current'); 
 	 jQuery('#menu-dashboard').removeClass('current');
 	 jQuery('#menu-dashboard a:first').removeClass('current');
+
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
+?>
+	 jQuery('.wp-first-item').addClass('current'); 
+<?php
+}
+?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
+?>
+	 jQuery('.wp-submenu li:nth-child(3)').addClass('current');
+<?php
+}
+?>
 } );
 
 </script>
@@ -192,15 +223,23 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location
-										<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_change_ticket_status(<?php echo $ticket_id?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
-								</h4>
+					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location</h4>
 								<hr class="widget_divider">
 	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong> 
 	                            <?php 
 	                            if (!empty($box_boxid)) {
-	                                echo "<a href='admin.php?page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                if ($GLOBALS['pid'] == 'requestdetails') {
+	                                echo "<a href='admin.php?pid=requestdetails&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                }
+	                                if ($GLOBALS['pid'] == 'boxsearch') {
+	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                }
 	                                } ?>
+	                            </div>
+	                           <div class="wpsp_sidebar_labels"><strong>Request ID:</strong> 
+	                            <?php 
+	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
+	                            ?>
 	                            </div>
 	                            <div class="wpsp_sidebar_labels"><strong>Digitization Center:</strong> 
 	                            <?php

@@ -73,13 +73,16 @@ if (!class_exists('Patt_Custom_Func')) {
             global $wpdb;
             $id = '"'.$id.'"';
             $args = [
-                'select' => 'ticket_id',
-                'where' => ['box_id',  $id],
+                'select' => 'request_id',
+                'where' => [
+                    ['box_id',  $id],
+                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND'],
+                ]
             ];
-            $wpqa_wpsc_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+            $wpqa_wpsc_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo, {$wpdb->prefix}wpsc_ticket");
             $request_key = $wpqa_wpsc_box->get_row($args, false);
 
-            $key = $request_key->ticket_id;
+            $key = $request_key->request_id;
             return $key;
         }
         

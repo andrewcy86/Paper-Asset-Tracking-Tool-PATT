@@ -101,9 +101,23 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 				$boxcontent_site = $info->site;
 				$boxcontent_contact = $info->contact;
 				$boxcontent_sf = $info->source_format;
+				
+
+if ($GLOBALS['pid'] == 'requestdetails') {
 				$tbl .= '
-    <tr>
-            <td><a href="admin.php?page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
+            <tr>
+            <td><a href="admin.php?pid=requestdetails&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
+            ';
+}
+
+if ($GLOBALS['pid'] == 'boxsearch') {
+				$tbl .= '
+            <tr>
+            <td><a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
+            ';
+}
+            
+                $tbl .='
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>

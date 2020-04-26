@@ -50,11 +50,15 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 Enter one or more Box IDs:<br />
          <input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
 <br />
-         <select id='searchByProgramOffice'>
-           <option value=''>-- Select Program Office --</option>
-           <option value='OMS'>OMS</option>
-           <option value='R1'>R1</option>
-         </select>
+
+         <?php
+  $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+<select id='searchByProgramOffice'>
+     <option value=''>-- Select Program Office --</option>
+     <?php foreach($po_array as $key => $value) { ?>
+      <option value='<?php echo $value; ?>'><?php echo $value; ?></option>
+     <?php } ?></select>
+     
 <br /><br />
         <select id='searchByDigitizationCenter'>
            <option value=''>-- Select Digitization Center --</option>
@@ -152,7 +156,7 @@ jQuery(document).ready(function(){
     dataTable.draw();
 });
 
-  jQuery('#searchGeneric').on('input keyup paste', function () {
+jQuery('#searchGeneric').on('input keyup paste', function () {
     var hasValue = jQuery.trim(this.value).length;
     if(hasValue == 0) {
             dataTable.draw();

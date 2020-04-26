@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb, $current_user, $wpscfunction;
 
 $GLOBALS['id'] = $_GET['id'];
+$GLOBALS['pid'] = $_GET['pid'];
 
 include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 $load_styles = new wppatt_Functions();
@@ -51,7 +52,21 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id'])) {
             echo $GLOBALS['id']; ?>]
 		  <?php } ?>		
       </h3>
-            <a href="admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>">< Back to Request</a><br /><br />
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
+?>
+<a href="admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_box_request_id($GLOBALS['id']); ?>">< Back to Request</a><br /><br />
+<?php
+}
+?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
+?>
+<a href="admin.php?page=boxes">< Back to Box Dashboard</a><br /><br />
+<?php
+}
+?>
+
     </div>
 <style>
 .datatable_header {
@@ -107,15 +122,31 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 	 jQuery('#tbl_templates_boxes').DataTable({
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
 		});
+
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 
 	 jQuery('#toplevel_page_wpsc-tickets a:first').removeClass('wp-not-current-submenu');
 	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
-	 jQuery('.wp-first-item').addClass('current'); 
 	 jQuery('#menu-dashboard').removeClass('current');
 	 jQuery('#menu-dashboard a:first').removeClass('current');
+	 
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
+?>
+	 jQuery('.wp-first-item').addClass('current'); 
+<?php
+}
+?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
+?>
+	 jQuery('.wp-submenu li:nth-child(3)').addClass('current');
+<?php
+}
+?>
+
 } );
 
 </script>

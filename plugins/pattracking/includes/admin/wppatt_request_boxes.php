@@ -119,7 +119,7 @@ width: 204px;
 
 				$tbl .= '
     <tr class="wpsc_tl_row_item">
-            <td><a href="/wordpress3/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
+            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
             <td>' . $boxlist_location . '</td>
             <td>' . $boxlist_bay . '</td>
             <td>' . $boxlist_shelf . '</td>

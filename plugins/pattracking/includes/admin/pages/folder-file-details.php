@@ -124,7 +124,13 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 <?php
 }
 ?>
-
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
+?>
+<a href="admin.php?page=folderfile">< Back to Folder/File Dashboard</a>
+<?php
+}
+?>
     </div>
 
 <?php
@@ -213,6 +219,13 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 <?php
 }
 ?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
+?>
+	 jQuery('.wp-submenu li:nth-child(4)').addClass('current');
+<?php
+}
+?>
 } );
 
 </script>
@@ -238,6 +251,9 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                                }
 	                                if ($GLOBALS['pid'] == 'boxsearch') {
 	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
+	                                }
+	                                if ($GLOBALS['pid'] == 'docsearch') {
+	                                echo "<a href='admin.php?pid=docsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
 	                                }
 	                                } ?>
 	                            </div>

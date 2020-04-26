@@ -24,12 +24,18 @@ get_header();
 		print_r($box_array);
 		echo '<hr/>';
 		
+		echo "Obtain array of Program Offices<br/>";
+		$po_array = Patt_Custom_Func::fetch_program_office_array();
+		print_r($po_array);
+		echo '<hr/>';
+		
+		
 		echo "Convert PATT Request ID to DB ID<br/>";
 		$GLOBALS['id'] = $_GET['id'];
 		echo $request_id;
 		echo Patt_Custom_Func::convert_request_id($GLOBALS['id']);
 		echo '<hr/>';
-			
+		
 		echo "Obtain array of Box Information for frontend/backend Request Details page <br/>";
 		$box_details_array = Patt_Custom_Func::fetch_box_details(1);
 		print_r($box_details_array);
@@ -80,46 +86,8 @@ get_header();
 		print_r($box_array);
 		echo '<hr/>';
 
-		echo 'Function to insert a new row<br/>';
-		global $wpdb;
-		$data = [
-			box_id  => 'VHG8987YU',
-			ticket_id   => '87',
-			location    => 'EAST',
-			bay => 'Top',
-			shelf   => 'Shock',
-			user_id => '1',
-			index_level => '2',
-			program_office_id   => 1,
-			record_schedule_id  => '879797978',
-			date_created    => date('Y-m-d'),
-			date_updated   => date('Y-m-d')
-		];
-		// $cq_init = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
-		// $result = $cq_init->insert($data);
-		// print_r($result);
-		// echo '<hr/>';
 
-		echo 'Function to update a table<br/>';
-		global $wpdb;
-		$data = [
-			location    => 'UIOOO',
-			bay => 'Top',
-			shelf   => 'Shock',
-			user_id => '1',
-			index_level => '20',
-			program_office_id   => 1,
-			record_schedule_id  => '6876868',
-			date_updated   => date('Y-m-d')
-		];
-		$where = [
-			box_id  => 'VHG87YU',	
-			ticket_id   => '878'		
-		];
-		// $cq_init = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
-		// $result = $cq_init->update($data, $where);
-		// print_r($result);
-		// echo '<hr/>';
+
 ?>
 
 			<?php

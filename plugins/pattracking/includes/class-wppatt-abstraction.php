@@ -102,16 +102,16 @@ abstract class PATT_DB {
 			}
 		}
 
-		$join = '';
+		$join_query = '';
 		if(isset($args['join'])){
 			foreach($args['join'] as $join){
-				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
+				$join_query .= " {$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
 			}
 		}
 
 		$select = isset($args['select']) ? $args['select'] : '*';
-
-		return $wpdb->get_row("SELECT {$select} FROM $this->table_name {$join} {$where} LIMIT 1;" );
+		$query = "SELECT {$select} FROM $this->table_name {$join_query} {$where} LIMIT 1;";
+		return $wpdb->get_row($query);
 	}
 
 	/**
@@ -165,18 +165,17 @@ abstract class PATT_DB {
 			}
 		}
 
-		$join = '';
+		$join_query = '';
 		if(isset($args['join'])){
 			foreach($args['join'] as $join){
-				$join .= "{$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
+				$join_query .= " {$join['type']} {$join['table']} ON {$join['table']}.{$join['key']} {$join['compare']} {$this->table_name}.{$join['foreign_key']}";
 			}
 		}
 
 		if($count) {
-			$result = $wpdb->get_results("SELECT COUNT(*) FROM $this->table_name {$join} {$where}");
+			$result = $wpdb->get_results("SELECT COUNT(*) FROM $this->table_name {$join_query} {$where}");
 		} else {
-			$query = "SELECT {$select} FROM $this->table_name {$join} {$where} {$order}";
-			// die($query);
+			$query = "SELECT {$select} FROM $this->table_name {$join_query} {$where} {$order}";
 			$result = $wpdb->get_results($query);
 		}
 		return $result;
@@ -248,8 +247,9 @@ abstract class PATT_DB {
 
 		// Reorder $column_formats to match the order of columns given in $data
 		$data_keys = array_keys( $data );
+		
 		$column_formats = array_merge( array_flip( $data_keys ), $column_formats );
-
+		
 		$wpdb->insert( $this->table_name, $data, $column_formats );
 
 		do_action( 'edd_post_insert_' . $type, $wpdb->insert_id, $data );
@@ -267,15 +267,6 @@ abstract class PATT_DB {
 	public function update( $data = array(), $where = [] ) {
 
 		global $wpdb;
-
-	/* Cort to Review 
-		// Row ID must be positive integer 
-		$row_id = absint( $row_id );
-
-		if( empty( $row_id ) ) {
-			return false;
-		}
-	*/
 
 		if( count( $where ) < 1) {
 			$where = $this->primary_key;

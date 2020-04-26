@@ -113,18 +113,24 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wpsc_show_agent_setting_button',false);
             
           // Set Barcode Scanning Page
-          add_action( 'wpsc_add_submenu_page', 'my_admin_menu');
-
-          function my_admin_menu() {
-            add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
-            add_submenu_page( 'wpsc-tickets', 'Folder/File Dashboard', 'Folder/File Dashboard', 'wpsc_agent', 'folderfile', 'folderfile_page' );
+          add_action( 'wpsc_add_admin_page', 'admin_menu_items');
+          
+          function admin_menu_items() {
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
-            add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails', 'box_details' );
-            add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             }
-
+            
           function scanning_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/scanning.php' );
+            }
+            
+          // Set Box and File Dashboard and Details Pages
+          add_action( 'wpsc_add_submenu_page', 'main_menu_items');
+
+          function main_menu_items() {
+            add_submenu_page( 'wpsc-tickets', 'Box Dashboard', 'Box Dashboard', 'wpsc_agent', 'boxes', 'boxes_page' );
+            add_submenu_page( 'wpsc-tickets', 'Folder/File Dashboard', 'Folder/File Dashboard', 'wpsc_agent', 'folderfile', 'folderfile_page' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'boxdetails', 'box_details' );
+            add_submenu_page( '', '', '', 'wpsc_agent', 'filedetails', 'file_details' );
             }
             
             function boxes_page(){

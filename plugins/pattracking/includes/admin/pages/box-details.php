@@ -123,6 +123,12 @@ if ($GLOBALS['pid'] == 'boxsearch') {
             <td><a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
             ';
 }
+if ($GLOBALS['pid'] == 'docsearch') {
+				$tbl .= '
+            <tr>
+            <td><a href="admin.php?pid=docsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
+            ';
+}
             
                 $tbl .='
             <td>' . $boxcontent_title_truncated . '</td>

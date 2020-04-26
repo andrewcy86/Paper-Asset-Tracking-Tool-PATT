@@ -51,6 +51,80 @@ if (!class_exists('Patt_Custom_Func')) {
             return $array;
         }
         
+        //Convert box patt id to id
+        public static function convert_box_id( $id )
+        {
+            global $wpdb;
+            $id = '"'.$id.'"';
+            $args = [
+                'select' => 'id',
+                'where' => ['box_id',  $id],
+            ];
+            $wpqa_wpsc_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+            $request_key = $wpqa_wpsc_box->get_row($args, false);
+
+            $key = $request_key->id;
+            return $key;
+        }
+        
+        //Convert box patt id to patt request id
+        public static function convert_box_request_id( $id )
+        {
+            global $wpdb;
+            $id = '"'.$id.'"';
+            $args = [
+                'select' => 'ticket_id',
+                'where' => ['box_id',  $id],
+            ];
+            $wpqa_wpsc_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+            $request_key = $wpqa_wpsc_box->get_row($args, false);
+
+            $key = $request_key->ticket_id;
+            return $key;
+        }
+        
+        //Convert patt request id to id
+        public static function convert_request_id( $id )
+        {
+            global $wpdb;
+            $id = '"'.$id.'"';
+            $args = [
+                'select' => 'id',
+                'where' => ['request_id',  $id],
+            ];
+            $wpqa_wpsc_request = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_ticket");
+            $id_key = $wpqa_wpsc_request->get_row($args, false);
+
+            $key = $id_key->id;
+            return $key;
+        }
+        
+        //Function to obtain box ID, title, date and contact 
+        
+        public static function fetch_box_content($id)
+        {
+            global $wpdb; 
+            // die(print_r($wpdb->prefix));
+            $array = array();
+            $args = [
+                'where' => ['box_id', $id],
+            ];
+            $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_folderdocinfo");
+            $box_content = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
+
+            foreach ($box_content as $box) {
+                $parent = new stdClass;
+                $parent->id = $box->folderdocinfo_id;
+                $parent->title = $box->title;
+                $parent->date = $box->date;
+                $parent->contact = $box->epa_contact_email;
+                $parent->source_format = $box->source_format;
+                $array[] = $parent;
+
+            }
+            return $array;
+        }
+        
         //Function to obtain box ID, location, shelf, bay and index from ticket 
         
         public static function fetch_box_details($id)

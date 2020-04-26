@@ -66,6 +66,13 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <?php
 }
 ?>
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
+?>
+<a href="admin.php?page=folderfile">< Back to Folder/File Dashboard</a><br /><br />
+<?php
+}
+?>
 
     </div>
 <style>
@@ -160,7 +167,13 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <?php
 }
 ?>
-
+<?php
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docearch') {
+?>
+	 jQuery('.wp-submenu li:nth-child(4)').addClass('current');
+<?php
+}
+?>
 } );
 
 </script>

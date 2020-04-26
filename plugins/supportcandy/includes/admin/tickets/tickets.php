@@ -248,8 +248,8 @@ function wpsc_page_inline_script(){
        var attrs = <?php echo $url_attrs?>;
        jQuery(document).ready(function(){
          
-         <?php if (!empty($_GET['id'])) { ?>
-         wpsc_open_ticket(<?php echo $_GET['id']; ?>);
+         <?php $GLOBALS['id'] = $_GET['id']; if (!empty($GLOBALS['id']) && preg_match("/^[0-9]{7}$/", $GLOBALS['id'])) { ?>
+         wpsc_open_ticket(<?php echo Patt_Custom_Func::convert_request_id($GLOBALS['id']); ?>);
          <?php } else { ?>
          wpsc_init(wpsc_setting_action,attrs);
          <?php } ?>

@@ -225,6 +225,11 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
 					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location</h4>
 								<hr class="widget_divider">
+								<div class="wpsp_sidebar_labels"><strong>Request ID:</strong> 
+	                            <?php 
+	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
+	                            ?>
+	                            </div>
 	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong> 
 	                            <?php 
 	                            if (!empty($box_boxid)) {
@@ -235,11 +240,6 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
 	                                }
 	                                } ?>
-	                            </div>
-	                           <div class="wpsp_sidebar_labels"><strong>Request ID:</strong> 
-	                            <?php 
-	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
-	                            ?>
 	                            </div>
 	                            <div class="wpsp_sidebar_labels"><strong>Digitization Center:</strong> 
 	                            <?php

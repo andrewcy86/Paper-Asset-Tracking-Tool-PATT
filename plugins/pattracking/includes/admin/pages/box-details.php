@@ -189,19 +189,32 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 
   </div>
  
+ <?php
+    $location_details = $wpdb->get_row("SELECT acronym, location, shelf, bay, record_schedule_number
+FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule
+WHERE wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id
+AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+
+    $location_program_office = $location_details->acronym;
+    $location_digitization_center = $location_details->location;
+    $location_shelf = $location_details->shelf;
+    $location_bay = $location_details->bay;
+    $location_record_schedule = $location_details->record_schedule_number;
+ ?>
+ 
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
 							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
 					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location
-										<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_change_ticket_status(<?php echo $ticket_id?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
-								</h4>
+										<!--<button id="wpsc_individual_change_ticket_status" onclick="wpsc_get_change_ticket_status(<?php echo $ticket_id?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $edit_btn_css ?>"><i class="fas fa-edit"></i></button>
+								--></h4>
 								<hr class="widget_divider">
 
-	                            <div class="wpsp_sidebar_labels"><strong>Program Office:</strong> [Insert Program Office Here]</div>
-	                            <div class="wpsp_sidebar_labels"><strong>Digitization Center:</strong> [Insert Digitization Center Here]</div>
-								<div class="wpsp_sidebar_labels"><strong>Bay:</strong> [Insert Bay Here]</div>
-								<div class="wpsp_sidebar_labels"><strong>Shelf:</strong> [Insert Shelf Here] </div>
-								<div class="wpsp_sidebar_labels"><strong>Record Schedule :</strong> [Insert Record Schedule]</div>
+	                            <div class="wpsp_sidebar_labels"><strong>Program Office: </strong> <?php echo $location_program_office ?></div>
+	                            <div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong> <?php echo $location_digitization_center ?></div>
+								<div class="wpsp_sidebar_labels"><strong>Bay: </strong> <?php echo $location_bay ?></div>
+								<div class="wpsp_sidebar_labels"><strong>Shelf: </strong> <?php echo $location_shelf ?> </div>
+								<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong> <?php echo $location_record_schedule ?></div>
 			    		</div>
 	
 	</div>

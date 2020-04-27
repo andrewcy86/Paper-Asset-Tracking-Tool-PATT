@@ -31,7 +31,7 @@ $searchGeneric = $_POST['searchGeneric'];
 ## Search 
 $searchQuery = " ";
 if($searchByDocID != ''){
-   $searchQuery .= " and (a.folderdocinfo_id REGEXP '".$searchByDocID."' ) ";
+   $searchQuery .= " and (a.folderdocinfo_id REGEXP '^(".$searchByDocID.")$' ) ";
 }
 
 if($searchByProgramOffice != ''){

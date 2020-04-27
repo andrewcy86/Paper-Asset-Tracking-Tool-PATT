@@ -31,7 +31,7 @@ $searchGeneric = $_POST['searchGeneric'];
 ## Search 
 $searchQuery = " ";
 if($searchByBoxID != ''){
-   $searchQuery .= " and (a.box_id REGEXP '".$searchByBoxID."' ) ";
+   $searchQuery .= " and (a.box_id REGEXP '^(".$searchByBoxID.")$' ) ";
 }
 
 if($searchByProgramOffice != ''){

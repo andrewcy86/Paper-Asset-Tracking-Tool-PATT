@@ -231,7 +231,7 @@ echo '<option value="'.$value.'">Aisle #' . $value . ' [' . (100 - $get_availabl
             
             jQuery.ajax({
                 // make the ajax call to server and pass the aisle ID as a GET variable
-                url: "<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/bay_query.php?aisle_id=" + aisleId,
+                url: "<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/bay_query.php?aisle_id=" + aisleId,
             }).done(function(data) {
                 // our ajax call is finished, we have the data returned from the server in a var called data
                 data = JSON.parse(data);

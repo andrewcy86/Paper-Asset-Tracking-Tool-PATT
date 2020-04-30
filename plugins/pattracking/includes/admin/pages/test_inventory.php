@@ -16,6 +16,14 @@ WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $box_id . "'"
 
 $digitization_center = $box_details->digitization_center;
 ?>
+<style>
+#dropdown_container {
+    left: 50% !important;
+    right: auto !important;
+    text-align: center !important;
+}
+</style>
+<div id="dropdown_container">
 <br /><br />
 <strong>Aisle</strong>
 <select id="aisle_selector" name="aisle_selector" class="form-control">    
@@ -47,8 +55,9 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
 <select name="bay_selector" class="form-control" id="bay_selector">
 </select>
 <br /><br />
+</div>
 
-<div id="box">
+<div id="shelf_position">
     </div>
 		
 		<script>
@@ -57,7 +66,7 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
 			jQuery("#bay_div").hide();
 		  // event called when the aisle select is changed
         jQuery("#aisle_selector").change(function(){
-            jQuery("#box").hide();
+            jQuery("#shelf_position").hide();
             // get the currently selected aisle selector ID
             var aisleId = jQuery(this).val();
             
@@ -91,8 +100,8 @@ var matches = /\[.*?(\d+).*?\]/g.exec(item);
         });
         
          jQuery("#bay_selector").change(function(){ 
-            jQuery("#box").show();
-            jQuery("#box").load("<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/shelf_position.php?aisle="+jQuery('#aisle_selector').val()+"&bay="+jQuery('#bay_selector').val()+"&center=<?php echo $digitization_center ?>&box_id=<?php echo $_GET['box_id'] ?>"); 
+            jQuery("#shelf_position").show();
+            jQuery("#shelf_position").load("<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/shelf_position.php?aisle="+jQuery('#aisle_selector').val()+"&bay="+jQuery('#bay_selector').val()+"&center=<?php echo $digitization_center ?>&box_id=<?php echo $_GET['box_id'] ?>"); 
          });
 	
 });		

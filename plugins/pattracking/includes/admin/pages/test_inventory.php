@@ -15,6 +15,8 @@ WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $box_id . "'"
 			);
 
 $digitization_center = $box_details->digitization_center;
+
+if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $box_id)) {
 ?>
 <style>
 #dropdown_container {
@@ -100,9 +102,23 @@ var matches = /\[.*?(\d+).*?\]/g.exec(item);
         });
         
          jQuery("#bay_selector").change(function(){ 
+            var bayId = jQuery(this).val();
+            if (bayId == '0') {
+            jQuery("#shelf_position").hide();
+            } else {
             jQuery("#shelf_position").show();
+            }
             jQuery("#shelf_position").load("<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/shelf_position.php?aisle="+jQuery('#aisle_selector').val()+"&bay="+jQuery('#bay_selector').val()+"&center=<?php echo $digitization_center ?>&box_id=<?php echo $_GET['box_id'] ?>"); 
          });
 	
 });		
 		</script>
+<?php 
+    
+} else {
+    
+echo 'Please pass a valid Box ID.';
+
+}
+
+?>

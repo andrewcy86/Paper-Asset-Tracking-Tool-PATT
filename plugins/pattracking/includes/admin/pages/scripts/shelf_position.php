@@ -122,11 +122,14 @@ span.seatCharts-legendDescription {
 					
 				</div>
 				<div class="booking-details">
-					<h2>Details</h2>
-					<strong>Box # <?php echo $_GET['box_id']; ?> Assignment</strong>
+					<h2>Box # <?php echo $_GET['box_id']; ?></h2>
 					<h3> Selected Box Position:</h3>
 					<ul id="selected-seats"></ul>
-					
+					 <input type="hidden" id="selection" name="selection" value="">
+					 <input type="hidden" id="aisle" name="aisle" value="<?php echo $_GET['aisle']; ?>">
+					 <input type="hidden" id="bay" name="bay" value="<?php echo $_GET['bay']; ?>">
+					 <input type="hidden" id="boxid" name="boxid" value="<?php echo $_GET['box_id']; ?>">
+					 <input type="hidden" id="dc" name="dc" value="<?php echo $_GET['center']; ?>">
 					<button class="checkout-button">Submit &raquo;</button>
 					
 					<div id="legend"></div>
@@ -137,6 +140,7 @@ span.seatCharts-legendDescription {
 		
 		<script>
 			var firstSeatLabel = 1;
+			
 	jQuery(document).ready(function() {
 				var $cart = jQuery('#selected-seats'),
 					$counter = jQuery('#counter'),
@@ -182,7 +186,7 @@ span.seatCharts-legendDescription {
 								.attr('id', 'cart-item-'+this.settings.id)
 								.data('seatId', this.settings.id)
 								.appendTo($cart);
-							
+							jQuery('#selection').val(this.settings.id);
 							/*
 							 * Lets update the counter and total
 							 *
@@ -216,6 +220,22 @@ span.seatCharts-legendDescription {
 					//let's just trigger Click event on the appropriate position, so we don't have to repeat the logic here
 					sc.get(jQuery(this).parents('li:first').data('seatId')).click();
 				});
+				
+                
+jQuery(".checkout-button").click(function () {
+   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/location_update.php',{
+    postvarspname: jQuery("#selection").val(),
+    postvaraname: jQuery("#aisle").val(),
+    postvarbname: jQuery("#bay").val(),
+    postvarboxname: jQuery("#boxid").val(),
+    postvarcentername: jQuery("#dc").val()
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+   });
+});
+
 <?php
 //$digitization_center = 'East';
 
@@ -245,4 +265,3 @@ echo 'sc.get([' . $string . ']).status("unavailable")';
 		});	
 		
 		</script>
-				

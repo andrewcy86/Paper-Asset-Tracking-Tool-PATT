@@ -470,34 +470,12 @@ TODO:  Add input mask for validating if the miltiline textarea
                               echo '</div>'; 
                               /*echo '<div id="dvconfirmation" class="confirmation">';*/
                               echo '<div id="dvconfirmation" class="" >';
+                                  echo '<hr/>';
                                   echo '<p>The box(es) location information has been received.  Thanks.';
                                   echo '<hr/>';
-                                  echo '<br>';
                                   /* JM - 5/1/2020 - Create a loop that displays the result for each updated box id location */
                                   echo "Box ID #: " . $boxid . " has been updated. New Location: " .$aisle. "A_" .$bay . "B_" . $shelf ."S_".$position."P_".$center_value;
-                                  echo '<br>';
                                   echo '<hr/>';
-                                  echo 'Debug: Location';
-                                        
-                                      echo 'print_r($box_location);';
-                                        
-                                  echo '<br>';
-                                  echo 'Debug: Bay';
-                                        
-                                      echo 'print_r($box_bay);';
-		                               
-		                          echo '<hr/>';
-		                          		echo 'print_r($box_location);';
-		                          echo '<hr/>';
-		                          		echo "Function to obtain program office from database <br/>";
-		                                echo 'print_r($box_program_office);';
-		                          echo '<hr/>';
-		                          echo 'Function to obtain shelf from database <br/>';
-                                        echo 'print_r($box_shelf);';
-                                  echo '<hr/>';
-                                  echo 'Function to obtain bay from database <br/>';
-		                           		echo 'print_r($box_bay);';
-		                          echo '<hr/>';     
                                   echo '</p>';
                               echo '</div>';
                           echo '</div>';

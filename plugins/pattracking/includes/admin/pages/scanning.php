@@ -414,12 +414,12 @@ TODO:  Add input mask for validating if the miltiline textarea
                       echo '<div class="dvboxid-layer">';
                           echo '<div>';
                               echo '<h2>';
-                                  echo '<label for="boxid-scan">';
+                                  echo '<label for="boxid-textarea">';
                                     echo 'Box ID(s)';
                                   echo '</label>';
                               echo '</h2>';
                               echo '<br/>';
-                              echo '<textarea id="boxid-textarea" name="boxid-textarea" pattern="(\d\d\d\d\d\d\d-\d{1,})" title="The Box ID must consist of {<7 numbers>-<any number of digits>}." id="boxid-scan" rows="15" cols="15">';
+                              echo '<textarea id="boxid-textarea" name="boxid-textarea" pattern="(\d\d\d\d\d\d\d-\d{1,})" title="The Box ID must consist of {<7 numbers>-<any number of digits>}." rows="15" cols="15">';
 
                               echo '</textarea>';  
                           echo '</div>';
@@ -437,14 +437,13 @@ TODO:  Add input mask for validating if the miltiline textarea
                       echo '<div clas="dvscanner-layer">';
                           echo '<div>';
                               echo '<h2>';
-                                  echo '<label for="location-scan">';
-                                      echo 'Scan Location';
+                                  echo '<label for="scan-input">';
+                                      echo 'Location';
                                   echo '</label>';
                               echo '</h2>';
                               echo '<br/>';
-                              echo '<br/>';
                              /* echo '<input id="scan-input" name="scan-input"/>'; */
-                              echo '<textarea id="scan-input" name="scan-input"   id="location-scans" rows="15" cols="15">';
+                              echo '<textarea id="scan-input" name="scan-input" rows="15" cols="15">';
                               echo '</textarea>';
                           echo '</div>';
                           echo '<br/>';

@@ -1,9 +1,9 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
 
 global $wpdb, $current_user, $wpscfunction;
+
+$path = preg_replace('/wp-content.*$/','',__DIR__);
+include($path.'wp-load.php');
 
 
    $shelf_position = $_POST['postvarspname'];

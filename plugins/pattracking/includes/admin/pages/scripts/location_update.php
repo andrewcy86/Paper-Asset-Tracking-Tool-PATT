@@ -5,7 +5,7 @@ global $wpdb, $current_user, $wpscfunction;
 $path = preg_replace('/wp-content.*$/','',__DIR__);
 include($path.'wp-load.php');
 
-
+if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_POST['postvarbname']) && isset($_POST['postvarboxname']) && isset($_POST['postvarcentername'])){
    $shelf_position = $_POST['postvarspname'];
  
    $array = explode('_', $shelf_position);
@@ -41,5 +41,7 @@ $data_where = array('id' => $box_storage_location_id);
 $wpdb->update($table_name , $data_update, $data_where);
 
    echo "Box ID #: " . $boxid . " has been updated. New Location: " .$aisle. "A_" .$bay . "B_" . $shelf ."S_".$position."P_".$center_value;
-
+} else {
+   echo "Update not successful.";
+}
 ?>

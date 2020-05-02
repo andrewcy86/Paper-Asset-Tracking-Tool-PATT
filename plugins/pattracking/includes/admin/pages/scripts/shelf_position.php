@@ -21,8 +21,8 @@ if ($boxlist_dc == 'East') {
 	$boxlist_dc_val = "W";
 }
 				
+//$boxlist_location = '<strong>'.$box_details->aisle . '</strong>A_<strong>' .$box_details->bay .'</strong>B_<strong>' . $box_details->shelf . '</strong>S_<strong>' . $box_details->position .'</strong>P_<strong>'.$boxlist_dc_val.'</strong>';
 $boxlist_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$boxlist_dc_val;
-			
 ?>
 <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="<?php echo WPPATT_PLUGIN_URL.'includes/admin/js/jquery.seat-charts.js';?>"></script>
@@ -31,7 +31,7 @@ $boxlist_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_d
 <style>
 
 .front-indicator {
-	width: 95px;
+	width: 122px;
 	margin: 5px 32px 15px 32px;
 	background-color: #f6f6f6;	
 	color: #adadad;

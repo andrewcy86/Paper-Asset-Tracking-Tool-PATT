@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! class_exists( 'Patt_Tracking' ) ) :
-  
+ 
   final class Patt_Tracking {
   
       
@@ -109,13 +109,18 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));
+          
+          // Add Inventory Modal
+          add_action('wp_ajax_wpsc_get_inventory_editor', array($backend, 'get_inventory_editor'));
+           
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
-            
-          // Set Barcode Scanning Page
-          add_action( 'wpsc_add_admin_page', 'admin_menu_items');
           
-          function admin_menu_items() {
+
+          // Set Barcode Scanning Page
+          add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
+          
+          function epa_admin_menu_items() {
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
             }
             
@@ -150,6 +155,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function file_details(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/folder-file-details.php'
+            );
+            }
+            
+            function inventory_test(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/test_inventory.php'
             );
             }
     

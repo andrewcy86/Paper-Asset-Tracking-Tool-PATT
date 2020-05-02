@@ -95,41 +95,74 @@ width: 204px;
 <h4>Boxes Related to Request</h4>
 
 <?php
-	$box_details = Patt_Custom_Func::fetch_box_details($ticket_id);
+	//$box_details = Patt_Custom_Func::fetch_box_details($ticket_id);
+
+$box_details = $wpdb->get_results(
+"SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_storage_location.digitization_center as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+			);
+			
 			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
 	<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
 <thead>
   <tr>
     	  			<th class="datatable_header">ID</th>
-    	  			<th class="datatable_header">Facility</th>
-    	  			<th class="datatable_header">Bay</th>
-    	  			<th class="datatable_header">Shelf</th>
-    	  			<th class="datatable_header">Index Level</th>
+    	  			<th class="datatable_header">Physical Location</th>
+    	  			<th class="datatable_header">Assigned Location</th>
   </tr>
  </thead><tbody>
 ';
 
 			foreach ($box_details as $info) {
-				$boxlist_id = $info->id;
-				$boxlist_location = $info->location;
-				$boxlist_bay = $info->bay;
+			    $boxlist_dbid = $info->id;
+			    $boxlist_id = $info->box_id;
+			    $boxlist_dc = $info->digitization_center;
+			    if ($boxlist_dc == 'East') {
+					$boxlist_dc_val = "E";
+				} else if ($boxlist_dc == 'West') {
+					$boxlist_dc_val = "W";
+				}
+			    $boxlist_aisle = $info->aisle;
+			    $boxlist_bay = $info->bay;
 				$boxlist_shelf = $info->shelf;
-				$boxlist_il = $info->index_level;
+				$boxlist_position = $info->position;
+				$boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
+				$boxlist_physical_location = $info->physical_location;
 
-				$tbl .= '
+			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+            {
+             $tbl .= '
     <tr class="wpsc_tl_row_item">
             <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
-            <td>' . $boxlist_location . '</td>
-            <td>' . $boxlist_bay . '</td>
-            <td>' . $boxlist_shelf . '</td>
-            <td>' . $boxlist_il . '</td>
+            <td>' . $boxlist_physical_location . '</td>
+            <td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>
             </tr>
-            ';
+            '; 
+            } else {
+            $tbl .= '
+    <tr class="wpsc_tl_row_item">
+            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
+            <td>' . $boxlist_physical_location . '</td>
+            <td>' . $boxlist_location . '</td>
+            </tr>
+            ';   
+            }
+            
+            
+
+            
+            
 			}
 			$tbl .= '</tbody></table></div>';
 
 			echo $tbl;
+            
+            $htmlOutput = 'The current color of the sky is ' . ($time == 'day' ? 'blue' : 'black');
+            
 ?>			
 
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
@@ -140,5 +173,17 @@ width: 204px;
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
 		});
 } );
-
-</script>
+		function wpsc_get_inventory_editor(box_id){
+		  wpsc_modal_open('Assigned Location Editor');
+		  var data = {
+		    action: 'wpsc_get_inventory_editor',
+		    box_id: box_id
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		}
+	</script>

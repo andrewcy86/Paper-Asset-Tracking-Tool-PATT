@@ -7,18 +7,29 @@ include($path.'wp-load.php');
 
 echo '<link rel="stylesheet" type="text/css" href="' . WPPATT_PLUGIN_URL . 'includes/admin/css/jquery.seat-charts.css"/>';
 
+$box_details = $wpdb->get_row(
+"SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_storage_location.digitization_center as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $_GET['box_id'] . "'"
+			);
+
+$boxlist_dc = $box_details->digitization_center;
+if ($boxlist_dc == 'East') {
+	$boxlist_dc_val = "E";
+} else if ($boxlist_dc == 'West') {
+	$boxlist_dc_val = "W";
+}
+				
+$boxlist_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$boxlist_dc_val;
+			
 ?>
 <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="<?php echo WPPATT_PLUGIN_URL.'includes/admin/js/jquery.seat-charts.js';?>"></script>
 
 
 <style>
-body {
-	font-family: 'Lato', sans-serif;
-}
-a {
-	color: #b71a4c;
-}
+
 .front-indicator {
 	width: 95px;
 	margin: 5px 32px 15px 32px;
@@ -28,29 +39,21 @@ a {
 	padding: 3px;
 	border-radius: 5px;
 }
-.wrapper {
-	width: 100%;
-	text-align: center;
-}
-.container {
-	margin: 0 auto;
-	width: 500px;
-	text-align: left;
-}
+
 .booking-details {
 	float: left;
 	text-align: left;
 	margin-left: 35px;
 	font-size: 12px;
 	position: relative;
-	height: 401px;
+	height: 290px;
 }
 .booking-details h2 {
-	margin: 25px 0 20px 0;
+	margin: 25px 0 0 0;
 	font-size: 17px;
 }
 .booking-details h3 {
-	margin: 5px 5px 0 0;
+	margin: 10px 5px 0 0;
 	font-size: 14px;
 }
 div.seatCharts-cell {
@@ -113,6 +116,10 @@ span.seatCharts-legendDescription {
 	overflow-x: none;
 	width: 170px;
 }
+
+.container {
+margin-top: -200px !important;
+}
 </style>
 
 <div class="wrapper">
@@ -123,15 +130,18 @@ span.seatCharts-legendDescription {
 				</div>
 				<div class="booking-details">
 					<h2>Box # <?php echo $_GET['box_id']; ?></h2>
-					<h3> Selected Box Position:</h3>
+					Current Location: [<?php echo $boxlist_location; ?>]
+					<h3>Selected Box Position:</h3>
 					<ul id="selected-seats"></ul>
 					 <input type="hidden" id="selection" name="selection" value="">
 					 <input type="hidden" id="aisle" name="aisle" value="<?php echo $_GET['aisle']; ?>">
 					 <input type="hidden" id="bay" name="bay" value="<?php echo $_GET['bay']; ?>">
 					 <input type="hidden" id="boxid" name="boxid" value="<?php echo $_GET['box_id']; ?>">
 					 <input type="hidden" id="dc" name="dc" value="<?php echo $_GET['center']; ?>">
-					<button class="checkout-button">Submit &raquo;</button>
-					
+					<button type="button" id="checkout-button" class="btn" style="background-color:#419641 !important;color:#FFFFFF !important;border-color:#C3C3C3 !important;">
+									<i class="fa fa-share"></i> Submit 
+								</button>
+								
 					<div id="legend"></div>
 				</div>
 			</div>
@@ -142,16 +152,17 @@ span.seatCharts-legendDescription {
 			var firstSeatLabel = 1;
 			
 	jQuery(document).ready(function() {
+	            jQuery("#checkout-button").hide();
 				var $cart = jQuery('#selected-seats'),
 					$counter = jQuery('#counter'),
 					$total = jQuery('#total'),
 					sc = jQuery('#seat-map').seatCharts({
 					map: [
 						'eeee',
-						'eeee',
-						'eeee',
-						'eeee',
-						'eeee',
+						'e[,1]e[,2]e[,3]e[,4]',
+						'e[,1]e[,2]e[,3]e[,4]',
+						'e[,1]e[,2]e[,3]e[,4]',
+						'e[,1]e[,2]e[,3]e[,4]',
 					],
 					seats: {
 						f: {
@@ -181,8 +192,9 @@ span.seatCharts-legendDescription {
 					},
 					click: function () {
 						if (this.status() == 'available' && sc.find('selected').length < 1) {
+						    jQuery("#checkout-button").show();
 							//let's create a new <li> which we'll add to the cart items
-							jQuery('<li>Position # '+this.settings.label+': <a href="#" class="cancel-cart-item">[cancel]</a></li>')
+							jQuery('<li>Shelf # '+this.settings.id.slice(0, this.settings.id.lastIndexOf('_'))+', Position # '+this.settings.label+': <a href="#" class="cancel-cart-item">[cancel]</a></li>')
 								.attr('id', 'cart-item-'+this.settings.id)
 								.data('seatId', this.settings.id)
 								.appendTo($cart);
@@ -217,12 +229,13 @@ span.seatCharts-legendDescription {
 
 				//this will handle "[cancel]" link clicks
 				jQuery('#selected-seats').on('click', '.cancel-cart-item', function () {
+					jQuery("#checkout-button").hide();
 					//let's just trigger Click event on the appropriate position, so we don't have to repeat the logic here
 					sc.get(jQuery(this).parents('li:first').data('seatId')).click();
 				});
 				
                 
-jQuery(".checkout-button").click(function () {
+jQuery("#checkout-button").click(function () {
    jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/location_update.php',{
     postvarspname: jQuery("#selection").val(),
@@ -233,6 +246,7 @@ jQuery(".checkout-button").click(function () {
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
+      window.location.replace("/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo $_GET['ticket_id']; ?>");
    });
 });
 

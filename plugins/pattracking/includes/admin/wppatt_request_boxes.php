@@ -130,32 +130,27 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			    $boxlist_bay = $info->bay;
 				$boxlist_shelf = $info->shelf;
 				$boxlist_position = $info->position;
-				$boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
-				$boxlist_physical_location = $info->physical_location;
-
-			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-            {
-             $tbl .= '
-    <tr class="wpsc_tl_row_item">
-            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
-            <td>' . $boxlist_physical_location . '</td>
-            <td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>
-            </tr>
-            '; 
-            } else {
+			    $boxlist_physical_location = $info->physical_location;
+				if (($info->digitization_center == '') || ($info->aisle == '') || ($info->bay == '') || ($info->shelf == '') || ($info->position == '')) {
+				$boxlist_location = 'Currently Unassigned';
+				} else {
+                $boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
+				}
+				
             $tbl .= '
     <tr class="wpsc_tl_row_item">
             <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
-            <td>' . $boxlist_physical_location . '</td>
-            <td>' . $boxlist_location . '</td>
-            </tr>
-            ';   
+            <td>' . $boxlist_physical_location . '</td>';
+            
+			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+            {
+            $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';
+            } else {
+            $tbl .= '<td>' . $boxlist_location . '</td>';               
             }
             
-            
+            $tbl .= '</tr>';
 
-            
-            
 			}
 			$tbl .= '</tbody></table></div>';
 

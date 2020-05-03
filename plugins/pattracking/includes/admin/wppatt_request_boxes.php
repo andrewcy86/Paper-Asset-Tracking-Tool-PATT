@@ -144,7 +144,11 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
             {
-            $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';
+            if ($boxlist_location != 'Currently Unassigned') {
+            $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
+            } else {
+            $tbl .= '<td>' . $boxlist_location . '</td>';   
+            }
             } else {
             $tbl .= '<td>' . $boxlist_location . '</td>';               
             }

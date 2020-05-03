@@ -90,6 +90,22 @@ ob_start();
 ?>
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"    onclick="wpsc_modal_close();"><?php _e('Close','supportcandy');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_set_change_ticket_status(<?php echo htmlentities($ticket_id)?>);"><?php _e('Save','supportcandy');?></button>
+<script>
+jQuery(document).ready(function() {
+jQuery(".wpsc_popup_action").click(function () {
+jQuery.post(
+'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/auto_assignment.php',{
+postvartktid: '<?php echo $ticket_id ?>',
+postvardcname: jQuery("[name=category]").val()
+},
+function (response) {
+alert(response);
+});
+});
+
+});
+
+</script>
 <?php
 $footer = ob_get_clean();
 

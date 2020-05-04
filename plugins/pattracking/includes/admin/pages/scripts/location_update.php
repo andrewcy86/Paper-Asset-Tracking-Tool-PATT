@@ -19,9 +19,9 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
    
    $center_value = '';
    
-   if ($center = 'East') {
+   if ($center == 'East') {
      $center_value = 'E';
-   } else if ($center = 'West'){
+   } else if ($center == 'West'){
      $center_value = 'W';       
    }
 
@@ -36,7 +36,7 @@ WHERE box_id = '" . $boxid . "'"
 			
 $table_name = 'wpqa_wpsc_epa_storage_location';
 
-$data_update = array('aisle' => $aisle ,'bay'=>$bay,'shelf'=>$shelf,'position'=>$position);
+$data_update = array('aisle' => $aisle ,'bay'=>$bay,'shelf'=>$shelf,'position'=>$position,'digitization_center'=>$center);
 $data_where = array('id' => $box_storage_location_id);
 $wpdb->update($table_name , $data_update, $data_where);
 

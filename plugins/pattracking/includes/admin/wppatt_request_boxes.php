@@ -113,6 +113,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
     	  			<th class="datatable_header">ID</th>
     	  			<th class="datatable_header">Physical Location</th>
     	  			<th class="datatable_header">Assigned Location</th>
+    	  			<th class="datatable_header">Digitizaton Center</th>
   </tr>
  </thead><tbody>
 ';
@@ -133,24 +134,29 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			    $boxlist_physical_location = $info->physical_location;
 				if (($info->digitization_center == '') || ($info->aisle == '') || ($info->bay == '') || ($info->shelf == '') || ($info->position == '')) {
 				$boxlist_location = 'Currently Unassigned';
+				$boxlist_dc_location = 'Currently Unassigned';
 				} else {
                 $boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
+                $boxlist_dc_location = $info->digitization_center;
 				}
 				
             $tbl .= '
     <tr class="wpsc_tl_row_item">
-            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
-            <td>' . $boxlist_physical_location . '</td>';
-            
+            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>';
+           
+            $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
             {
-            if ($boxlist_location != 'Currently Unassigned') {
+            if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
+            $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
             } else {
             $tbl .= '<td>' . $boxlist_location . '</td>';   
+            $tbl .= '<td>' . $boxlist_dc_location . '</td>';
             }
             } else {
-            $tbl .= '<td>' . $boxlist_location . '</td>';               
+            $tbl .= '<td>' . $boxlist_location . '</td>';   
+            $tbl .= '<td>' . $boxlist_dc_location . '</td>';
             }
             
             $tbl .= '</tr>';
@@ -185,4 +191,16 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 		    jQuery('#wpsc_cat_name').focus();
 		  });  
 		}
+		
+	function wpsc_get_digitization_editor(box_id){		
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_digitization_center.php',{
+    postvarsboxidname: box_id
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket_id); ?>");
+   });
+} 
+   
 	</script>

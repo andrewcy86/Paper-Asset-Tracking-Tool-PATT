@@ -132,13 +132,19 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 				$boxlist_shelf = $info->shelf;
 				$boxlist_position = $info->position;
 			    $boxlist_physical_location = $info->physical_location;
-				if (($info->digitization_center == '') || ($info->aisle == '') || ($info->bay == '') || ($info->shelf == '') || ($info->position == '')) {
+			    
+				if (($info->aisle == '0') || ($info->bay == '0') || ($info->shelf == '0') || ($info->position == '0')) {
 				$boxlist_location = 'Currently Unassigned';
-				$boxlist_dc_location = 'Currently Unassigned';
 				} else {
                 $boxlist_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_dc_val;
+				}
+				
+				if ($info->digitization_center == '') {
+				$boxlist_dc_location = 'Currently Unassigned';
+				} else {
                 $boxlist_dc_location = $info->digitization_center;
 				}
+				
 				
             $tbl .= '
     <tr class="wpsc_tl_row_item">
@@ -150,7 +156,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
             $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
-            } else {
+            } elseif ($boxlist_location == 'Currently Unassigned' && $boxlist_dc_location == 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . '</td>';   
             $tbl .= '<td>' . $boxlist_dc_location . '</td>';
             }

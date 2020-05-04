@@ -96,7 +96,6 @@ div.seatCharts-container {
 div.seatCharts-legend {
 	padding-left: 0px;
 	position: absolute;
-	bottom: 16px;
 }
 ul.seatCharts-legendList {
 	padding-left: 0px;
@@ -118,7 +117,7 @@ span.seatCharts-legendDescription {
 }
 
 .container {
-margin-top: -200px !important;
+margin-top: -180px !important;
 }
 </style>
 
@@ -130,19 +129,28 @@ margin-top: -200px !important;
 				</div>
 				<div class="booking-details">
 					<h2>Box # <?php echo $_GET['box_id']; ?></h2>
-					Current Location: [<?php echo $boxlist_location; ?>]
-					<h3>Selected Box Position:</h3>
+					<i>Current Location: [<?php echo $boxlist_location; ?>]</i><br /><br />
+					<span style="margin: 10px 5px 0 0; font-size: 14px; font-weight: bold;">Change Digitization Center:</span> <br />
+					<select id="dc" name="dc" class="form-control">  
+					<?php if ($_GET['center'] == 'East') { ?>
+                    <option value="East" selected>East</option>
+                    <option value="West">West</option>
+                    <?php } elseif ($_GET['center'] == 'West') { ?>
+                    <option value="East">East</option>
+                    <option value="West" selected>West</option>
+                    <?php } ?>
+                    </select><br />
+					<span style="margin: 10px 5px 0 0; font-size: 14px; font-weight: bold;">Selected Box Position:</span>
 					<ul id="selected-seats"></ul>
 					 <input type="hidden" id="selection" name="selection" value="">
 					 <input type="hidden" id="aisle" name="aisle" value="<?php echo $_GET['aisle']; ?>">
 					 <input type="hidden" id="bay" name="bay" value="<?php echo $_GET['bay']; ?>">
 					 <input type="hidden" id="boxid" name="boxid" value="<?php echo $_GET['box_id']; ?>">
-					 <input type="hidden" id="dc" name="dc" value="<?php echo $_GET['center']; ?>">
 					<button type="button" id="checkout-button" class="btn" style="background-color:#419641 !important;color:#FFFFFF !important;border-color:#C3C3C3 !important;">
 									<i class="fa fa-share"></i> Submit 
 								</button>
 								
-					<div id="legend"></div>
+					<!--<div id="legend"></div>-->
 				</div>
 			</div>
 		</div>

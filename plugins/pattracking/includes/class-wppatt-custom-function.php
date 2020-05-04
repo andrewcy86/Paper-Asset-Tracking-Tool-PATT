@@ -118,6 +118,22 @@ if (!class_exists('Patt_Custom_Func')) {
             $key = $id_key->id;
             return $key;
         }
+	    
+	//Convert id to patt request id
+        public static function convert_request_db_id( $id )
+        {
+            global $wpdb;
+            $id = '"'.$id.'"';
+            $args = [
+                'select' => 'request_id',
+                'where' => ['id',  $id],
+            ];
+            $wpqa_wpsc_request = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_ticket");
+            $id_key = $wpqa_wpsc_request->get_row($args, false);
+
+            $key = $id_key->request_id;
+            return $key;
+        }
         
         //Function to obtain box ID, title, date and contact 
         

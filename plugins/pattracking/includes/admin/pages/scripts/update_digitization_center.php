@@ -31,7 +31,7 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'"
 $table_name = 'wpqa_wpsc_epa_storage_location';
 
 
-$data_update = array('digitization_center' => $box_storage_digitization_center_val);
+$data_update = array('digitization_center' => $box_storage_digitization_center_val, 'aisle' => '0' ,'bay'=>'0','shelf'=>'0','position'=>'0');
 $data_where = array('id' => $box_storage_location_id);
 $wpdb->update($table_name , $data_update, $data_where);
 

@@ -22,7 +22,12 @@ if ($boxlist_dc == 'East') {
 }
 				
 //$boxlist_location = '<strong>'.$box_details->aisle . '</strong>A_<strong>' .$box_details->bay .'</strong>B_<strong>' . $box_details->shelf . '</strong>S_<strong>' . $box_details->position .'</strong>P_<strong>'.$boxlist_dc_val.'</strong>';
-$boxlist_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$boxlist_dc_val;
+
+if (($box_details->aisle == '0') || ($box_details->bay == '0') || ($box_details->shelf == '0') || ($box_details->position == '0')) {
+				$boxlist_location = 'Currently Unassigned';
+				} else {
+                $boxlist_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$boxlist_dc_val;
+				}
 ?>
 <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
 <script type="text/javascript" src="<?php echo WPPATT_PLUGIN_URL.'includes/admin/js/jquery.seat-charts.js';?>"></script>
@@ -118,7 +123,7 @@ span.seatCharts-legendDescription {
 }
 
 .container {
-margin-top: -200px !important;
+margin-top: -196px !important;
 }
 </style>
 

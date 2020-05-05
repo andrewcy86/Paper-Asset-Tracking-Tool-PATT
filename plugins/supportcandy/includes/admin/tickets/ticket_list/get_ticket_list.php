@@ -567,7 +567,7 @@ var link = true;
 		if($ticket_list){
 			foreach($ticket_list as $ticket){
 				?>
-				<tr class="wpsc_tl_row_item" data-id="<?php echo $ticket['id']?>" onclick="if(link)wpsc_get_individual_ticket(this);">
+				<tr class="wpsc_tl_row_item" data-id="<?php echo $ticket['id']?>" onclick="window.location.replace('/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket['id']); ?>');">
 					<td onmouseover="link=false;" onmouseout="link=true;">
 						<input type="checkbox" name="chk_ticket_list_item[]" class="chk_ticket_list_item" onchange="toggle_ticket_list_actions();" value="<?php echo $ticket['id']; ?>"/>
 					</td>

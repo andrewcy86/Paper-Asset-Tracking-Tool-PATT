@@ -146,7 +146,30 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
         function print_ticket_category(){
           $category = get_term_by('id',$this->val,'wpsc_categories');
 					$wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
-          echo $wpsc_custom_category_localize['custom_category_'.$this->val];
+          //echo $wpsc_custom_category_localize['custom_category_'.$this->val];
+
+global $wpdb;
+
+$ticket_id = $this->ticket['id'];
+          
+$box_details = $wpdb->get_results(
+"SELECT wpqa_wpsc_epa_storage_location.digitization_center as digitization_center
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+			);
+			$array = [];
+			foreach ($box_details as $info) {
+			    array_push($array, $info->digitization_center);
+			}
+			$unique = array_unique($array);
+			$unique_string = implode(",",$unique);
+			
+			if(empty($unique) || $unique_string == '') {
+			echo 'Unassigned';
+			} else {
+			echo $unique_string;
+			}
         }
         
         function print_ticket_priority(){

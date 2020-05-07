@@ -55,7 +55,7 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
         $box_details_is = $box_details->id;
         $box_details_count = $box_details->count;
 
-        // Is the box count <= 3?:: Continuing shelf space not requried. Find first available gap.
+        // Is the box count <= 3?:: Continuous shelf space not requried. Find first available gap.
         if ($box_details_count <= 3)
         {
 
@@ -130,12 +130,13 @@ ORDER BY id ASC
                 }
                 
                 $prefixed_array = preg_filter('/^/', $findgaps_aislebay.'_', $shelfnum_unique_array);
-                print_r($prefixed_array);
+
                 if ($box_details_count <= $sum) {
+                print_r($prefixed_array);
                 break;       
                 }
-
-            }            
+            }       
+            
         } else {
            
         // Finds Shelf ID of next available sequence
@@ -177,8 +178,9 @@ ORDER BY COUNT(*) DESC LIMIT 1;
             {
                 $find_sequence_shelfid = $info->shelf_id;
                 array_push($sequence_array, $find_sequence_shelfid);
+                
             }
-     echo $sequence_array;
+    echo $sequence_array;
         }
 
 

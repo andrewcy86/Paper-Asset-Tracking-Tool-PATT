@@ -12,6 +12,15 @@ if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['p
     $dc = $_POST['postvardcname'];
 
     //Convert $dc Place in where clause of each select statement
+    $dc_final = '';
+    
+    if($dc == 62) {
+    $dc_final = 'East';
+    } else if ($dc == 2) {
+    $dc_final = 'West';   
+    }
+    
+    
 $ticket_details = $wpdb->get_row("
 SELECT ticket_status 
 FROM wpqa_wpsc_ticket 
@@ -63,7 +72,10 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 $shelf_not_continuous = $wpdb->get_row("
 SELECT shelf_id, min(remaining) as remaining
 FROM wpqa_wpsc_epa_storage_status
-WHERE occupied = 1 and remaining <> 0 and remaining = '" . $box_details_count . "'
+WHERE occupied = 1 AND
+remaining <> 0 AND
+remaining = '" . $box_details_count . "' AND
+digitization_center = '" . $dc_final . "'
 GROUP BY shelf_id
 ORDER BY id asc
 limit 1
@@ -81,7 +93,10 @@ limit 1
 $find_gaps = $wpdb->get_results("
 SELECT SUBSTRING_INDEX(shelf_id, '_', 2) as aisle_bay, GROUP_CONCAT(SUBSTRING_INDEX(shelf_id, '_', -1)) as shelf_concat, GROUP_CONCAT(remaining) as remaining_concat 
 FROM wpqa_wpsc_epa_storage_status 
-WHERE (occupied = 1 AND remaining BETWEEN 1 AND 3) OR (occupied = 0 AND remaining = 4) 
+WHERE (occupied = 1 AND 
+remaining BETWEEN 1 AND 3) 
+OR (occupied = 0 AND remaining = 4) AND
+digitization_center = '" . $dc_final . "'
 GROUP BY aisle_bay 
 HAVING remaining_concat <> '4,4,4,4,4' 
 ORDER BY id ASC
@@ -151,6 +166,7 @@ SELECT id,
             ELSE 1 
             END values_differs
 FROM wpqa_wpsc_epa_storage_status
+WHERE digitization_center = '" . $dc_final . "'
 ),
 cte2 AS 
 (
@@ -170,7 +186,12 @@ ORDER BY COUNT(*) DESC LIMIT 1;
             // Calculate Upper Limit
             $sequence_upperlimit = $sequence_shelfid+ceil($box_details_count/4)-1;
             
-            $find_sequence_details = $wpdb->get_results("SELECT shelf_id FROM wpqa_wpsc_epa_storage_status WHERE ID BETWEEN '" . $sequence_shelfid . "' AND '" . $sequence_upperlimit . "'");
+            $find_sequence_details = 
+$wpdb->get_results("
+SELECT shelf_id FROM wpqa_wpsc_epa_storage_status 
+WHERE ID BETWEEN '" . $sequence_shelfid . "' AND '" . $sequence_upperlimit . "' AND
+digitization_center = '" . $dc_final . "'
+");
 
     $sequence_array = array();
 
@@ -187,7 +208,7 @@ ORDER BY COUNT(*) DESC LIMIT 1;
         if ($ticket_details_status == 3 && $box_details_count > 0)
         {
             echo 'Single Ticket selected, # of unassigned boxes = ' . $box_details_count . ' ';
-            echo "Ticket ID #: " . $tkid . " Digitization Center: " . $dc . " Status: " . $ticket_details_status;
+            echo "Ticket ID #: " . $tkid . " Digitization Center: " . $dc_final . " Status: " . $ticket_details_status;
         }
 
     }

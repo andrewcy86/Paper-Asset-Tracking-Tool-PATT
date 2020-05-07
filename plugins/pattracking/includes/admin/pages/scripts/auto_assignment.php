@@ -165,13 +165,21 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 ");
 
             $sequence_shelfid = $find_sequence->id;
-
-            $find_sequence_details = $wpdb->get_row("SELECT * FROM wpqa_wpsc_epa_storage_status WHERE id = '" . $sequence_shelfid . "'");
-
-            $sequence_shelf_id = $find_sequence_details->shelf_id;
-
-            echo $sequence_shelf_id. ' ';
             
+            // Calculate Upper Limit
+            $sequence_upperlimit = $sequence_shelfid+ceil($box_details_count/4);
+            
+            $find_sequence_details = $wpdb->get_results("SELECT shelf_id FROM wpqa_wpsc_epa_storage_status LIMIT '" . $sequence_shelfid . "', '" . $sequence_upperlimit . "'");
+
+    $sequence_array = array();
+
+    foreach ($find_sequence_details as $info)
+            {
+                $find_sequence_shelfid = $info->shelf_id;
+                array_push($sequence_array, $find_sequence_shelfid);
+                
+            }
+
         }
 
 

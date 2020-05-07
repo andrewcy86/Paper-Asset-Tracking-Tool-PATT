@@ -177,9 +177,8 @@ ORDER BY COUNT(*) DESC LIMIT 1;
             {
                 $find_sequence_shelfid = $info->shelf_id;
                 array_push($sequence_array, $find_sequence_shelfid);
-                
             }
-
+     echo $sequence_array;
         }
 
 

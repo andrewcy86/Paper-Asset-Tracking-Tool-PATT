@@ -21,6 +21,68 @@ if (!class_exists('Patt_Custom_Func')) {
             $this->table_prefix = $wpdb->prefix;
         }
 
+	    public function calc_max_gap_val(){
+            // Determine largest Gap of consecutive shelf space
+$find_gaps = $wpdb->get_results("
+SELECT SUBSTRING_INDEX(shelf_id, '_', 2) as aisle_bay, GROUP_CONCAT(SUBSTRING_INDEX(shelf_id, '_', -1)) as shelf_concat, GROUP_CONCAT(remaining) as remaining_concat 
+FROM wpqa_wpsc_epa_storage_status 
+WHERE (occupied = 1 AND remaining BETWEEN 1 AND 3) OR (occupied = 0 AND remaining = 4) 
+GROUP BY aisle_bay 
+HAVING remaining_concat <> '4,4,4,4,4' 
+ORDER BY id ASC
+");
+
+$gap_array = array();
+
+            foreach ($find_gaps as $info)
+            {
+                $findgaps_aislebay = $info->aisle_bay;
+                $findgaps_shelf = $info->shelf_concat;
+                $findgaps_remaining = $info->remaining_concat;
+
+                $sarray = explode(",", $findgaps_shelf);
+                $shelfnum_array = array();
+                $position_array = array();
+                for ($c = 0;$c < count($sarray);$c++)
+                {
+                    $next_arr_pos = $c + 1;
+
+                    if ($c == (count($sarray) - 1))
+                    {
+                        $cons_check = $sarray[$c];
+                    }
+                    else
+                    {
+                        $cons_check = $sarray[$next_arr_pos];
+                        $gap_calc = $cons_check - $sarray[$c];
+                    }
+
+                    if ($sarray[$c] < $cons_check && $gap_calc == 1)
+                    {
+                        array_push($shelfnum_array, $sarray[$c]);
+                        array_push($shelfnum_array, $cons_check);
+                        array_push($position_array, array_search($sarray[$c], $sarray));
+                        array_push($position_array, array_search($cons_check, $sarray));
+                    }
+                }
+
+                $shelfnum_unique_array = array_unique($shelfnum_array);
+                $position_unique_array = array_unique($position_array);
+
+                $rarray = explode(",", $findgaps_remaining);
+                $sum = 0;
+                foreach ($position_unique_array as & $value)
+                {
+                    $sum += $rarray[$value];
+                }
+                
+                array_push($gap_array, $sum);
+            }
+            
+            $max_gap_value = max($gap_array);
+            
+            return $max_gap_value;
+    }
         public static function fetch_request_id($id)
         {
             global $wpdb; 

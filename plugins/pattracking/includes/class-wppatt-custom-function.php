@@ -21,67 +21,61 @@ if (!class_exists('Patt_Custom_Func')) {
             $this->table_prefix = $wpdb->prefix;
         }
 
-	    public function calc_max_gap_val(){
-            // Determine largest Gap of consecutive shelf space
-$find_gaps = $wpdb->get_results("
-SELECT SUBSTRING_INDEX(shelf_id, '_', 2) as aisle_bay, GROUP_CONCAT(SUBSTRING_INDEX(shelf_id, '_', -1)) as shelf_concat, GROUP_CONCAT(remaining) as remaining_concat 
-FROM wpqa_wpsc_epa_storage_status 
-WHERE (occupied = 1 AND remaining BETWEEN 1 AND 3) OR (occupied = 0 AND remaining = 4) 
-GROUP BY aisle_bay 
-HAVING remaining_concat <> '4,4,4,4,4' 
-ORDER BY id ASC
+public static function calc_max_gap_val($dc_final){
+
+global $wpdb; 
+$find_sequence = $wpdb->get_row("
+WITH 
+cte1 AS
+(
+SELECT id, 
+       CASE WHEN     occupied  = LAG(occupied) OVER (ORDER BY id)
+                 AND remaining = LAG(remaining) OVER (ORDER BY id)
+            THEN 0
+            ELSE 1 
+            END values_differs
+FROM wpqa_wpsc_epa_storage_status
+WHERE digitization_center = '" . $dc_final . "'
+),
+cte2 AS 
+(
+SELECT id,
+       SUM(values_differs) OVER (ORDER BY id) group_num
+FROM cte1
+ORDER BY id
+)
+SELECT MIN(id) as id
+FROM cte2
+GROUP BY group_num
+ORDER BY COUNT(*) DESC LIMIT 1;
 ");
 
-$gap_array = array();
-
-            foreach ($find_gaps as $info)
-            {
-                $findgaps_aislebay = $info->aisle_bay;
-                $findgaps_shelf = $info->shelf_concat;
-                $findgaps_remaining = $info->remaining_concat;
-
-                $sarray = explode(",", $findgaps_shelf);
-                $shelfnum_array = array();
-                $position_array = array();
-                for ($c = 0;$c < count($sarray);$c++)
-                {
-                    $next_arr_pos = $c + 1;
-
-                    if ($c == (count($sarray) - 1))
-                    {
-                        $cons_check = $sarray[$c];
-                    }
-                    else
-                    {
-                        $cons_check = $sarray[$next_arr_pos];
-                        $gap_calc = $cons_check - $sarray[$c];
-                    }
-
-                    if ($sarray[$c] < $cons_check && $gap_calc == 1)
-                    {
-                        array_push($shelfnum_array, $sarray[$c]);
-                        array_push($shelfnum_array, $cons_check);
-                        array_push($position_array, array_search($sarray[$c], $sarray));
-                        array_push($position_array, array_search($cons_check, $sarray));
-                    }
-                }
-
-                $shelfnum_unique_array = array_unique($shelfnum_array);
-                $position_unique_array = array_unique($position_array);
-
-                $rarray = explode(",", $findgaps_remaining);
-                $sum = 0;
-                foreach ($position_unique_array as & $value)
-                {
-                    $sum += $rarray[$value];
-                }
-                
-                array_push($gap_array, $sum);
-            }
+$sequence_shelfid = $find_sequence->id;
             
-            $max_gap_value = max($gap_array);
             
-            return $max_gap_value;
+// Determine largest Gap of consecutive shelf space
+$find_gaps = $wpdb->get_row("
+WITH 
+cte1 AS
+(
+SELECT shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
+FROM wpqa_wpsc_epa_storage_status
+WHERE digitization_center = '" . $dc_final . "' AND
+id BETWEEN 1 AND '" . $sequence_shelfid . "'
+)
+SELECT GROUP_CONCAT(shelf_id) as shelf_id,
+       GROUP_CONCAT(remaining) as remaining,
+       SUM(remaining) as total
+FROM cte1
+WHERE remaining != 0
+GROUP BY group_num
+ORDER BY total DESC
+LIMIT 1
+");
+
+$max_gap_value = $find_gaps->total;
+
+return $max_gap_value;
     }
         public static function fetch_request_id($id)
         {

@@ -143,7 +143,7 @@ GROUP BY group_num
 
 			$shelfid_gaps_array = explode(",", $findgaps_array[$counter]);
 
-			print_r($shelfid_gaps_array);
+			//print_r($shelfid_gaps_array);
 		    $missing_gap_array = array();
 		    $position_gap_array = array();		    
 			foreach ($shelfid_gaps_array as &$value) {
@@ -177,17 +177,26 @@ AND digitization_center = '" . $dc_final . "'
             
 			}
 			
-				$gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_count);
+$gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_count);
 				
-				//print_r($gap_aisle_bay_shelf_position);
-				
-				foreach ($gap_aisle_bay_shelf_position as &$gap_aisle_bay_shelf_position_val) {
-				[$gap_aisle, $gap_bay, $gap_shelf, $gap_position] = explode("_", $gap_aisle_bay_shelf_position_val);
-				echo $gap_aisle.'+';
-				echo $gap_bay.'+';
-				echo $gap_shelf.'+';
-				echo $gap_position.', ';
-				}
+$gap_box_id_assignment = Patt_Custom_Func::get_unassigned_boxes($tkid);
+
+//print_r($gap_aisle_bay_shelf_position);
+//print_r($gap_box_id_assignment);
+
+foreach($gap_aisle_bay_shelf_position as $key => $value){
+    
+[$gap_aisle, $gap_bay, $gap_shelf, $gap_position] = explode("_", $value);
+
+$table_name = 'wpqa_wpsc_epa_storage_location';
+$data_update = array('aisle' => $gap_aisle ,'bay'=>$gap_bay,'shelf'=>$gap_shelf,'position'=>$gap_position,'digitization_center'=>$dc_final);
+$data_where = array('id' => $gap_box_id_assignment[$key]);
+
+$wpdb->update($table_name , $data_update, $data_where);
+
+}
+
+
 			
 		} else {
             // Calculate Upper Limit

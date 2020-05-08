@@ -70,8 +70,8 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$docQuery = "SELECT CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>') as folderdocinfo_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, d.location as location, c.acronym as acronym FROM wpqa_wpsc_epa_folderdocinfo as a
-INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
+$docQuery = "SELECT CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>') as folderdocinfo_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, d.digitization_center as location, c.acronym as acronym FROM wpqa_wpsc_epa_folderdocinfo as a
+INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
 INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_program_office as c ON d.program_office_id = c.id
 WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;

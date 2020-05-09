@@ -91,9 +91,9 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 	} else {
         // Is the box count <= 3?:: Continuous shelf space not requried. Find first available gap.
 		if ($box_details_count <= 3) {
-
+    
             // Find first available slot for requests with boxes under 3
-			$shelf_not_continuous = $wpdb->get_row("
+			$nc_shelf = $wpdb->get_row("
 SELECT shelf_id, min(remaining) as remaining
 FROM wpqa_wpsc_epa_storage_status
 WHERE occupied = 1 AND
@@ -105,12 +105,12 @@ ORDER BY id asc
 LIMIT 1
 ");
 
-			$not_continuous_shelf_id = $shelf_not_continuous->shelf_id;
+			$nc_shelf_id = $nc_shelf->shelf_id;
 			
-[$nc_aisle, $nc_bay, $nc_shelf] = explode("_", $not_continuous_shelf_id);
+[$nc_aisle, $nc_bay, $nc_shelf] = explode("_", $nc_shelf_id);
 
 // Get first available position
-$not_continuous_details = $wpdb->get_results("
+$nc_position_details = $wpdb->get_results("
 SELECT position FROM wpqa_wpsc_epa_storage_location 
 WHERE aisle = '" . $nc_aisle . "' 
 AND bay = '" . $nc_bay . "' 
@@ -118,29 +118,53 @@ AND shelf = '" . $nc_shelf . "'
 AND digitization_center = '" . $dc_final . "'
 ");
 $nc_position_gap_array = array();
+$nc_aisle_bay_shelf_position = array();
 
-				foreach ($not_continuous_details as $info) {
+				foreach ($nc_position_details as $info) {
 					$position_nc_position = $info->position;
 					array_push($nc_position_gap_array, $position_nc_position);
 				}
+				
                 // Determine missing positions and push to an array         
 				$nc_missing = array_diff(range(1, 4), $nc_position_gap_array);
 				
-				$nc_missing_final = array_slice($nc_missing, 0, 1);
+				$nc_missing_final = array_slice($nc_missing, 0, $box_details_count);
+				////
 				
-                $nc_aisle_bay_shelf_position = $not_continuous_shelf_id.'_'.implode(",",$nc_missing_final);
+				foreach ($nc_missing_final as &$nc_missing_val) {
+				    $nc_position_id_val = $nc_shelf_id.'_'.$nc_missing_val;
+				array_push($nc_aisle_bay_shelf_position, $nc_position_id_val);
+				}
+				print_r($nc_aisle_bay_shelf_position);
 
+foreach($nc_aisle_bay_shelf_position as $key => $value){
+    
+[$ncf_aisle, $ncf_bay, $ncf_shelf, $ncf_position] = explode("_", $value);
 
-[$ncf_aisle, $ncf_bay, $ncf_shelf, $ncf_position] = explode("_", $nc_aisle_bay_shelf_position);
+$ncsl_table_name = 'wpqa_wpsc_epa_storage_location';
+$ncsl_data_update = array('aisle' => $ncf_aisle ,'bay'=>$ncf_bay,'shelf'=>$ncf_shelf,'position'=>$ncf_position,'digitization_center'=>$dc_final);
+$ncsl_data_where = array('id' => $box_id_assignment[$key]);
 
-$nc_box_id_assignment = implode(",",$box_id_assignment);
+$wpdb->update($ncsl_table_name , $ncsl_data_update, $ncsl_data_where); 
 
-$table_name = 'wpqa_wpsc_epa_storage_location';
-$data_update = array('aisle' => $ncf_aisle ,'bay'=>$ncf_bay,'shelf'=>$ncf_shelf,'position'=>$ncf_position,'digitization_center'=>$dc_final);
-$data_where = array('id' => $nc_box_id_assignment);
+$nc_shelf_id_update = $ncf_aisle . '_' . $ncf_bay . '_' .  $ncf_shelf;
 
-$wpdb->update($table_name , $data_update, $data_where);   
+$nc_shelf_update = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $nc_shelf_id_update . "' AND
+digitization_center = '" . $dc_final . "'
+");
 
+$nc_shelf_update_remaining = $nc_shelf_update->remaining-1;
+
+$ncss_table_name = 'wpqa_wpsc_epa_storage_status';
+$ncss_data_update = array('occupied' => 1 ,'remaining'=>$nc_shelf_update_remaining);
+$ncss_data_where = array('shelf_id' => $nc_shelf_id_update);
+
+$wpdb->update($ncss_table_name , $ncss_data_update, $ncss_data_where); 
+}
             // When Continuing shelf space space is required
 
 		} else if ($box_details_count <= Patt_Custom_Func::calc_max_gap_val($dc_final)) {
@@ -219,11 +243,30 @@ foreach($gap_aisle_bay_shelf_position as $key => $value){
     
 [$gap_aisle, $gap_bay, $gap_shelf, $gap_position] = explode("_", $value);
 
-$table_name = 'wpqa_wpsc_epa_storage_location';
-$data_update = array('aisle' => $gap_aisle ,'bay'=>$gap_bay,'shelf'=>$gap_shelf,'position'=>$gap_position,'digitization_center'=>$dc_final);
-$data_where = array('id' => $box_id_assignment[$key]);
+$gapsl_table_name = 'wpqa_wpsc_epa_storage_location';
+$gapsl_data_update = array('aisle' => $gap_aisle ,'bay'=>$gap_bay,'shelf'=>$gap_shelf,'position'=>$gap_position,'digitization_center'=>$dc_final);
+$gapsl_data_where = array('id' => $box_id_assignment[$key]);
 
-$wpdb->update($table_name , $data_update, $data_where);
+$wpdb->update($gapsl_table_name , $gapsl_data_update, $gapsl_data_where);
+
+
+$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' .  $gap_shelf;
+
+$gap_shelf_update = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $gap_shelf_id_update . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+$gap_shelf_update_remaining = $gap_shelf_update->remaining-1;
+
+$gapss_table_name = 'wpqa_wpsc_epa_storage_status';
+$gapss_data_update = array('occupied' => 1 ,'remaining'=>$gap_shelf_update_remaining);
+$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
+
+$wpdb->update($gapss_table_name , $gapss_data_update, $gapss_data_where); 
 
 }
 
@@ -263,11 +306,29 @@ foreach($seq_aisle_bay_shelf_position as $key => $value){
     
 [$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);
 
-$table_name = 'wpqa_wpsc_epa_storage_location';
-$data_update = array('aisle' => $seq_aisle ,'bay'=>$seq_bay,'shelf'=>$seq_shelf,'position'=>$seq_position,'digitization_center'=>$dc_final);
-$data_where = array('id' => $box_id_assignment[$key]);
+$seqsl_table_name = 'wpqa_wpsc_epa_storage_location';
+$seqsl_data_update = array('aisle' => $seq_aisle ,'bay'=>$seq_bay,'shelf'=>$seq_shelf,'position'=>$seq_position,'digitization_center'=>$dc_final);
+$seqsl_data_where = array('id' => $box_id_assignment[$key]);
 
-$wpdb->update($table_name , $data_update, $data_where);
+$wpdb->update($seqsl_table_name , $seqsl_data_update, $seqsl_data_where);
+
+$seq_shelf_id_update = $seq_aisle . '_' . $seq_bay . '_' .  $seq_shelf;
+
+$seq_shelf_update = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $seq_shelf_id_update . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+$seq_shelf_update_remaining = $seq_shelf_update->remaining-1;
+
+$seqss_table_name = 'wpqa_wpsc_epa_storage_status';
+$seqss_data_update = array('occupied' => 1 ,'remaining'=>$seq_shelf_update_remaining);
+$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
+
+$wpdb->update($seqss_table_name , $seqss_data_update, $seqss_data_where); 
 
 }
 

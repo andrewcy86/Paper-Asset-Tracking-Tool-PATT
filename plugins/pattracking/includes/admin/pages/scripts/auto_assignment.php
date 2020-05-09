@@ -1,4 +1,5 @@
 <?php
+//Update wpqa_wpsc_epa_storage_status on each component of the script
 global $wpdb, $current_user, $wpscfunction;
 
 $path = preg_replace('/wp-content.*$/', '', __DIR__);
@@ -57,6 +58,8 @@ id = '" . $tkid . "'
 
 	$ticket_details_status = $ticket_details->ticket_status;
 
+    $box_id_assignment = Patt_Custom_Func::get_unassigned_boxes($tkid);
+
         //Select count on boxes that have not been auto assigned
         // Get boxes associated to passed ticket id.
         // Check to see if auto assignments have been made.
@@ -99,12 +102,44 @@ remaining = '" . $box_details_count . "' AND
 digitization_center = '" . $dc_final . "'
 GROUP BY shelf_id
 ORDER BY id asc
-limit 1
+LIMIT 1
 ");
 
 			$not_continuous_shelf_id = $shelf_not_continuous->shelf_id;
+			
+[$nc_aisle, $nc_bay, $nc_shelf] = explode("_", $not_continuous_shelf_id);
 
-			echo $not_continuous_shelf_id . ' ';
+// Get first available position
+$not_continuous_details = $wpdb->get_results("
+SELECT position FROM wpqa_wpsc_epa_storage_location 
+WHERE aisle = '" . $nc_aisle . "' 
+AND bay = '" . $nc_bay . "' 
+AND shelf = '" . $nc_shelf . "' 
+AND digitization_center = '" . $dc_final . "'
+");
+$nc_position_gap_array = array();
+
+				foreach ($not_continuous_details as $info) {
+					$position_nc_position = $info->position;
+					array_push($nc_position_gap_array, $position_nc_position);
+				}
+                // Determine missing positions and push to an array         
+				$nc_missing = array_diff(range(1, 4), $nc_position_gap_array);
+				
+				$nc_missing_final = array_slice($nc_missing, 0, 1);
+				
+                $nc_aisle_bay_shelf_position = $not_continuous_shelf_id.'_'.implode(",",$nc_missing_final);
+
+
+[$ncf_aisle, $ncf_bay, $ncf_shelf, $ncf_position] = explode("_", $nc_aisle_bay_shelf_position);
+
+$nc_box_id_assignment = implode(",",$box_id_assignment);
+
+$table_name = 'wpqa_wpsc_epa_storage_location';
+$data_update = array('aisle' => $ncf_aisle ,'bay'=>$ncf_bay,'shelf'=>$ncf_shelf,'position'=>$ncf_position,'digitization_center'=>$dc_final);
+$data_where = array('id' => $nc_box_id_assignment);
+
+$wpdb->update($table_name , $data_update, $data_where);   
 
             // When Continuing shelf space space is required
 
@@ -149,14 +184,14 @@ GROUP BY group_num
 			foreach ($shelfid_gaps_array as &$value) {
 
 // Explode into variables
-				[$aisle, $bay, $shelf] = explode("_", $value);
+				[$gap_aisle, $gap_bay, $gap_shelf] = explode("_", $value);
 
 // Get all positions in an array to determine available positions
 				$position_gap_details = $wpdb->get_results("
 SELECT position FROM wpqa_wpsc_epa_storage_location 
-WHERE aisle = '" . $aisle . "' 
-AND bay = '" . $bay . "' 
-AND shelf = '" . $shelf . "' 
+WHERE aisle = '" . $gap_aisle . "' 
+AND bay = '" . $gap_bay . "' 
+AND shelf = '" . $gap_shelf . "' 
 AND digitization_center = '" . $dc_final . "'
 ");
 	
@@ -172,17 +207,13 @@ AND digitization_center = '" . $dc_final . "'
 				    $shelf_position_id_val = $value.'_'.$missing_val;
 				array_push($missing_gap_array, $shelf_position_id_val);
 				}
-				
-
             
 			}
 			
 $gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_count);
-				
-$gap_box_id_assignment = Patt_Custom_Func::get_unassigned_boxes($tkid);
-
+//print_r($missing_gap_array);
 //print_r($gap_aisle_bay_shelf_position);
-//print_r($gap_box_id_assignment);
+//print_r($box_id_assignment);
 
 foreach($gap_aisle_bay_shelf_position as $key => $value){
     
@@ -190,7 +221,7 @@ foreach($gap_aisle_bay_shelf_position as $key => $value){
 
 $table_name = 'wpqa_wpsc_epa_storage_location';
 $data_update = array('aisle' => $gap_aisle ,'bay'=>$gap_bay,'shelf'=>$gap_shelf,'position'=>$gap_position,'digitization_center'=>$dc_final);
-$data_where = array('id' => $gap_box_id_assignment[$key]);
+$data_where = array('id' => $box_id_assignment[$key]);
 
 $wpdb->update($table_name , $data_update, $data_where);
 
@@ -209,12 +240,38 @@ digitization_center = '" . $dc_final . "'
 ");
 
 			$sequence_array = array();
-
+			$four_array = array();
+			foreach (range(1, 4) as $number) {
+                array_push($four_array, $number);
+                }
+                
 			foreach ($find_sequence_details as $info) {
 				$find_sequence_shelfid = $info->shelf_id;
-				array_push($sequence_array, $find_sequence_shelfid);
+				//array_push($sequence_array, $find_sequence_shelfid);
+				
+				foreach ($four_array as &$seq_position_val) {
+				    $shelf_position_id_val = $find_sequence_shelfid.'_'.$seq_position_val;
+				array_push($sequence_array, $shelf_position_id_val);
+				}
 			}
-			print_r($sequence_array);
+			
+			//print_r($sequence_array);
+			$seq_aisle_bay_shelf_position = array_slice($sequence_array, 0, $box_details_count);
+			//print_r($seq_aisle_bay_shelf_position);
+			
+foreach($seq_aisle_bay_shelf_position as $key => $value){
+    
+[$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);
+
+$table_name = 'wpqa_wpsc_epa_storage_location';
+$data_update = array('aisle' => $seq_aisle ,'bay'=>$seq_bay,'shelf'=>$seq_shelf,'position'=>$seq_position,'digitization_center'=>$dc_final);
+$data_where = array('id' => $box_id_assignment[$key]);
+
+$wpdb->update($table_name , $data_update, $data_where);
+
+}
+
+
 		}
 
 		if ($ticket_details_status == 3 && $box_details_count > 0) {

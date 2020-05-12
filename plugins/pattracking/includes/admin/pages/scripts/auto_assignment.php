@@ -304,30 +304,51 @@ if($previous_sequence_shelfid_value != 4) {
 			}
 
             $sequence_array = array();
-
+$position_seq_array = array();
 			foreach ($shelfid_array as &$value) {
 
 				[$seq_aisle, $seq_bay, $seq_shelf] = explode("_", $value);
 
-if($get_remaining_details_value != 4) {
-// Get all positions in an array to determine available positions
-				$position_seq_details = $wpdb->get_row("
+				$current_row_details = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $value . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+				$get_current_row_details_value = $current_row_details->remaining;
+				
+				
+if($get_current_row_details_value != 4) {
+// Get all positions in an array to determine available positions ////NEED TO TEST WITH STEHPANIE
+				$position_seq_details = $wpdb->get_results("
 SELECT position FROM wpqa_wpsc_epa_storage_location 
 WHERE aisle = '" . $seq_aisle . "' 
 AND bay = '" . $seq_bay . "' 
 AND shelf = '" . $seq_shelf . "' 
 AND digitization_center = '" . $dc_final . "'
 ");
-			$position_seq_array = array();
-$array_seq_val_final = $position_seq_details->position;
 
-} else {
-    			$position_seq_array = array();
-$array_seq_val_final = '';
+
+
+foreach ($position_seq_details as $item) {
+    
+$array_seq_val_final = $item->position;
+array_push($position_seq_array, $array_seq_val_final);
 
 }
 
+//echo $get_current_row_details_value;
+
+} else {
+
+$position_seq_array = array();
+$array_seq_val_final = '';
 array_push($position_seq_array, $array_seq_val_final);
+
+//echo $get_current_row_details_value;
+}
 
 
 				//print_r($position_seq_array);
@@ -340,7 +361,7 @@ array_push($position_seq_array, $array_seq_val_final);
 					array_push($sequence_array, $shelf_position_id_val);
 				}
 			}
-//print_r($sequence_array);
+print_r($sequence_array);
 
 } else {
 
@@ -377,7 +398,7 @@ array_push($position_seq_array, $array_seq_val_final);
 				);
 				$seqsl_data_where = array('id' => $box_id_assignment[$key]);
 
-				$wpdb->update($seqsl_table_name, $seqsl_data_update, $seqsl_data_where);
+				//$wpdb->update($seqsl_table_name, $seqsl_data_update, $seqsl_data_where);
 
 				$seq_shelf_id_update = $seq_aisle . '_' . $seq_bay . '_' . $seq_shelf;
 // Update storage status table
@@ -395,7 +416,7 @@ digitization_center = '" . $dc_final . "'
 				$seqss_data_update = array('occupied' => 1, 'remaining' => $seq_shelf_update_remaining);
 				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
 
-				$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
+				//$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
 			}
 		}
 // Display message to end user

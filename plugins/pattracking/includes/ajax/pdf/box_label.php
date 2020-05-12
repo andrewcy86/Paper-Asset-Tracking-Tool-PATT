@@ -454,20 +454,21 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_bay, $y_loc_bay);
             $obj_pdf->SetFont('helvetica', 'B', 30);*/
 
-//Top half of page containing cell   
+//Top half of page containing cell with aisle/bay/shelf/position  
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
             $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 25);
-            $obj_pdf->Cell(90, 0, $box_location_position[$i], 1, 0, 'C', 1);
+            $obj_pdf->Cell(90, 13, $box_location_position[$i], 1, 0, 'C', 1);
 
 }
 
+//Bottom half of page containing cell with aisle/bay/shelf/position  
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
             $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 25);
-            $obj_pdf->Cell(90, 0, $request_location_position_a, 1, 0, 'C', 1);
+            $obj_pdf->Cell(90, 13, $request_location_position_a, 1, 0, 'C', 1);
 
 }
             
@@ -491,7 +492,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetTextColor(0,0,0);
             
             //Dashed border around aisle/bay/shelf/position
-            $obj_pdf->RoundedRect($x_loc_dashed_border, $y_loc_dashed_border, 96, 16, 2, '1111', null, $style_box_dash);
+            $obj_pdf->RoundedRect($x_loc_dashed_border, $y_loc_dashed_border, 96, 18, 2, '1111', null, $style_box_dash);
             
             //RFID Box Location
             $obj_pdf->RoundedRect($x_loc_ba1, $y_loc_ba1, $x_loc_la2, $y_loc_la2, 5, '1111', null, $style_box_dash);

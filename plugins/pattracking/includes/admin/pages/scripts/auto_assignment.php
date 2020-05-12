@@ -85,16 +85,16 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 		echo 'Multiple Tickets selected';
 		print_r($ticketid_array);
 	} else {
-// Is the box count <= 3?:: Continuous shelf space not requried. Find first available gap.
-		if ($box_details_count <= 3) {
+// Is the box count = 1?:: Continuous shelf space not requried. Find first available gap.
+		if ($box_details_count == 1) {
     
-// Find first available slot for requests with boxes under 3
+// Find first available slot for requests with boxes equal to 1
 			$nc_shelf = $wpdb->get_row("
 SELECT shelf_id, min(remaining) as remaining
 FROM wpqa_wpsc_epa_storage_status
 WHERE occupied = 1 AND
 remaining <> 0 AND
-remaining = '" . $box_details_count . "' AND
+remaining = 1 AND
 digitization_center = '" . $dc_final . "'
 GROUP BY shelf_id
 ORDER BY id asc
@@ -142,7 +142,7 @@ AND digitization_center = '" . $dc_final . "'
 				$wpdb->update($ncsl_table_name, $ncsl_data_update, $ncsl_data_where);
 
 				$nc_shelf_id_update = $ncf_aisle . '_' . $ncf_bay . '_' . $ncf_shelf;
-
+// Update storage status table
 				$nc_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM wpqa_wpsc_epa_storage_status
@@ -150,7 +150,7 @@ WHERE
 shelf_id = '" . $nc_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
 ");
-// Update storage status table
+
 				$nc_shelf_update_remaining = $nc_shelf_update->remaining - 1;
 
 				$ncss_table_name = 'wpqa_wpsc_epa_storage_status';
@@ -244,7 +244,7 @@ AND digitization_center = '" . $dc_final . "'
 				$wpdb->update($gapsl_table_name, $gapsl_data_update, $gapsl_data_where);
 
 				$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' . $gap_shelf;
-
+// Update storage status table
 				$gap_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM wpqa_wpsc_epa_storage_status
@@ -252,7 +252,7 @@ WHERE
 shelf_id = '" . $gap_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
 ");
-// Update storage status table
+
 				$gap_shelf_update_remaining = $gap_shelf_update->remaining - 1;
 
 				$gapss_table_name = 'wpqa_wpsc_epa_storage_status';
@@ -263,14 +263,87 @@ digitization_center = '" . $dc_final . "'
 			}
 // For every other case assign box to next available slot of available shelfs
 		} else {
-// Calculate Upper Limit
-			$sequence_upperlimit = $sequence_shelfid + ceil($box_details_count / 4) - 1;
+		    
+// Calculate previous remaining value
+                $previous_sequence_shelfid = $sequence_shelfid - 1;
+
+				$previous_row_details = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+id = '" . $previous_sequence_shelfid . "' AND
+digitization_center = '" . $dc_final . "'
+");
+
+				$previous_sequence_shelfid_value = $previous_row_details->remaining;
+
+if($previous_sequence_shelfid_value != 4) {
+$sequence_shelfid = $sequence_shelfid - 1;
+$box_details_count_new = $box_details_count - $previous_sequence_shelfid_value;
+$sequence_upperlimit = $sequence_shelfid + ceil($box_details_count_new / 4);
+} else {
+$sequence_upperlimit = $sequence_shelfid + ceil($box_details_count / 4) - 1;
+}
 
 			$find_sequence_details = $wpdb->get_results("
 SELECT shelf_id FROM wpqa_wpsc_epa_storage_status 
 WHERE ID BETWEEN '" . $sequence_shelfid . "' AND '" . $sequence_upperlimit . "' AND
 digitization_center = '" . $dc_final . "'
 ");
+
+//echo $box_details_count. '>>';
+//echo $previous_sequence_shelfid_value. '>>';
+//echo $sequence_shelfid. '>>';
+//echo $sequence_upperlimit;
+
+if($previous_sequence_shelfid_value != 4) {
+            $shelfid_array = array();
+			foreach ($find_sequence_details as $info) {
+				$find_sequence_shelfid = $info->shelf_id;
+				array_push($shelfid_array, $find_sequence_shelfid);
+			}
+
+            $sequence_array = array();
+
+			foreach ($shelfid_array as &$value) {
+
+				[$seq_aisle, $seq_bay, $seq_shelf] = explode("_", $value);
+
+if($get_remaining_details_value != 4) {
+// Get all positions in an array to determine available positions
+				$position_seq_details = $wpdb->get_row("
+SELECT position FROM wpqa_wpsc_epa_storage_location 
+WHERE aisle = '" . $seq_aisle . "' 
+AND bay = '" . $seq_bay . "' 
+AND shelf = '" . $seq_shelf . "' 
+AND digitization_center = '" . $dc_final . "'
+");
+			$position_seq_array = array();
+$array_seq_val_final = $position_seq_details->position;
+
+} else {
+    			$position_seq_array = array();
+$array_seq_val_final = '';
+
+}
+
+array_push($position_seq_array, $array_seq_val_final);
+
+
+				//print_r($position_seq_array);
+// Determine missing positions and push to an array.         
+				$missing = array_diff(range(1, 4), $position_seq_array);
+				//print_r($missing);
+
+				foreach ($missing as &$missing_val) {
+					$shelf_position_id_val = $value . '_' . $missing_val;
+					array_push($sequence_array, $shelf_position_id_val);
+				}
+			}
+//print_r($sequence_array);
+
+} else {
+
 // Create an array of four positions
 			$sequence_array = array();
 			$four_array = array();
@@ -287,14 +360,17 @@ digitization_center = '" . $dc_final . "'
 					array_push($sequence_array, $shelf_position_id_val);
 				}
 			}
-			
-			//print_r($sequence_array);
+
+//print_r($sequence_array);
+
+}
+
 			$seq_aisle_bay_shelf_position = array_slice($sequence_array, 0, $box_details_count);
 			//print_r($seq_aisle_bay_shelf_position);
 // Only use portion of array that equals the number of boxes that are unassigned
 			foreach ($seq_aisle_bay_shelf_position as $key => $value) {
 				[$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);
-
+// Make auto-assignment in database
 				$seqsl_table_name = 'wpqa_wpsc_epa_storage_location';
 				$seqsl_data_update = array(
 					'aisle' => $seq_aisle, 'bay' => $seq_bay, 'shelf' => $seq_shelf, 'position' => $seq_position, 'digitization_center' => $dc_final
@@ -304,7 +380,7 @@ digitization_center = '" . $dc_final . "'
 				$wpdb->update($seqsl_table_name, $seqsl_data_update, $seqsl_data_where);
 
 				$seq_shelf_id_update = $seq_aisle . '_' . $seq_bay . '_' . $seq_shelf;
-
+// Update storage status table
 				$seq_shelf_update = $wpdb->get_row("
 SELECT remaining
 FROM wpqa_wpsc_epa_storage_status
@@ -312,7 +388,7 @@ WHERE
 shelf_id = '" . $seq_shelf_id_update . "' AND
 digitization_center = '" . $dc_final . "'
 ");
-// Make auto-assignment in database
+
 				$seq_shelf_update_remaining = $seq_shelf_update->remaining - 1;
 
 				$seqss_table_name = 'wpqa_wpsc_epa_storage_status';

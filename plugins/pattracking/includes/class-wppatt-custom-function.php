@@ -51,7 +51,8 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 ");
 
 $sequence_shelfid = $find_sequence->id;
-            
+
+$seq_shelfid_final = $sequence_shelfid-1;
             
 // Determine largest Gap of consecutive shelf space
 $find_gaps = $wpdb->get_row("
@@ -61,7 +62,7 @@ cte1 AS
 SELECT shelf_id, remaining, SUM(remaining = 0) OVER (ORDER BY id) group_num
 FROM wpqa_wpsc_epa_storage_status
 WHERE digitization_center = '" . $dc_final . "' AND
-id BETWEEN 1 AND '" . $sequence_shelfid . "'
+id BETWEEN 1 AND '" . $seq_shelfid_final . "'
 )
 SELECT GROUP_CONCAT(shelf_id) as shelf_id,
        GROUP_CONCAT(remaining) as remaining,

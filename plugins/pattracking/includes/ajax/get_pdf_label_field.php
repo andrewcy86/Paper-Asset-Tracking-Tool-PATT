@@ -11,15 +11,16 @@ $wpsc_appearance_modal_window = get_option('wpsc_modal_window');
 
 $list_array = array();
         
-// $box_index_result = $wpdb->get_results( "SELECT DISTINCT index_level FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $ticket_id);
+$box_index_result = $wpdb->get_results( "SELECT DISTINCT wpqa_wpsc_epa_folderdocinfo.index_level FROM wpqa_wpsc_epa_boxinfo INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id  WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id);
 
+/*
 $args = [
     'select' => 'SELECT DISTINCT index_level',
     'where' => ['ticket_id', $ticket_id],
 ];
 $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
 $box_index_result = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
-
+*/
 
 
 foreach ( $box_index_result as $box_index )
@@ -33,11 +34,11 @@ ob_start();
 
 <h3>Step 1</h3>
 <p>Print box label and afix it to the side of the box.</p>
-<strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box Label</a></strong>
+<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_label.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box Label</a></strong>
 
 <h3>Step 2</h3>
 <p>Print Box list and place it into the first box of earch record schedule series.</p>
-<strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/box_list.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box List Printout</a></strong>
+<strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/box_list.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Box List Printout</a></strong>
 
 <h3>Step 3</h3>
 <p>Print folder/file labels. Folder seperate sheets must be placed as the first document in the folder. File labels must be placed on the top right of each document within the box.</p>
@@ -50,19 +51,19 @@ $list_array_count = count($list_array);
 <?php
 if ($box_index_value == 1 && $list_array_count == 1) {
 ?>
-    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong>
+    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong>
 <?php
 } elseif ($box_index_value == 2 && $list_array_count == 1) {
 ?>
-    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
+    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
 <?php
 } else {
 ?>
 <?php
 if ($list_array_count>1) {
     ?>
-    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong><br />
-    <strong><a href="<?php echo 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress2/wp-content/plugins/pattracking/includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
+    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/folder_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">Folder Labels</a></strong><br />
+    <strong><a href="<?php echo WPPATT_PLUGIN_URL . 'includes/ajax/pdf/file_separator_sheet.php?id=' . htmlentities($ticket_id); ?>" target="_blank">File Labels</a></strong>
 <?php
 } else {
 ?>

@@ -78,6 +78,33 @@ $max_gap_value = $find_gaps->total;
 
 return $max_gap_value;
     }
+
+
+public static function get_unassigned_boxes($tkid){
+
+global $wpdb; 
+
+$obtain_box_ids_details = $wpdb->get_results("
+SELECT wpqa_wpsc_epa_boxinfo.storage_location_id
+FROM wpqa_wpsc_epa_boxinfo 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
+WHERE
+wpqa_wpsc_epa_storage_location.aisle = 0 AND 
+wpqa_wpsc_epa_storage_location.bay = 0 AND 
+wpqa_wpsc_epa_storage_location.shelf = 0 AND 
+wpqa_wpsc_epa_storage_location.position = 0 AND
+wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
+");
+
+$box_id_array = array();
+foreach ($obtain_box_ids_details as $box_id_val) {
+$box_id_array_val = $box_id_val->storage_location_id;
+array_push($box_id_array, $box_id_array_val);
+}
+return $box_id_array;
+
+    }
+    
         public static function fetch_request_id($id)
         {
             global $wpdb; 
@@ -107,8 +134,8 @@ return $max_gap_value;
             }
             return $array;
         }
-       
-	//Function to obtain full list of Program Offices
+        
+        //Function to obtain full list of Program Offices
         public static function fetch_program_office_array()
         {
             global $wpdb;
@@ -124,7 +151,7 @@ return $max_gap_value;
             }
             return $array;
         }
-
+        
         //Convert box patt id to id
         public static function convert_box_id( $id )
         {
@@ -175,8 +202,8 @@ return $max_gap_value;
             $key = $id_key->id;
             return $key;
         }
-	    
-	//Convert id to patt request id
+        
+        //Convert id to patt request id
         public static function convert_request_db_id( $id )
         {
             global $wpdb;
@@ -226,26 +253,19 @@ return $max_gap_value;
             // die(print_r($wpdb->prefix));
             $array = array();
             $args = [
-                'where' => ['ticket_id', $id],
+                'where' => [
+                    ['ticket_id',  $id],
+                    ['wpqa_wpsc_epa_boxinfo.storage_location_id', 'wpqa_wpsc_epa_storage_location.id', 'AND'],
+                ]
             ];
-            $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo");
+            $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo, {$wpdb->prefix}wpqa_wpsc_epa_storage_location");
             $box_result = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
-
+        
             foreach ($box_result as $box) {
-                $boxlist_il = $box->index_level;
-				$boxlist_il_val = '';
-				if ($boxlist_il == 1) {
-					$boxlist_il_val = "Folder";
-				} else {
-					$boxlist_il_val = "File";
-				}
-				
+                $box_shelf_location = $box->aisle . 'a_' .$box->bay .'b_' . $box->shelf . 's_' . $box->position .'p';
                 $parent = new stdClass;
                 $parent->id = $box->box_id;
-                $parent->index_level = $boxlist_il_val;
-                $parent->location = $box->location;
-                $parent->bay = strtoupper($box->bay);
-                $parent->shelf = strtoupper($box->shelf);
+                $parent->shelf_location = $box_shelf_location;
                 $array[] = $parent;
 
             }
@@ -397,6 +417,27 @@ return $max_gap_value;
 
             $count_val = $box_count->count;
             return $count_val;
+        }
+        
+        function convert_epc_pattboxid($epc) 
+        {
+            $remove_E = strtok($epc, 'E');
+            
+            $newstr = substr_replace($remove_E, '-', 7, 0);
+            
+            return $newstr;
+        }
+            
+        function convert_pattboxid_epc($pattid) 
+        {
+            $add_E = str_replace('-', '', $pattid).'E';
+            
+            $str_length = 24;
+            
+            $newstr = str_pad($add_E, $str_length, 0);
+            
+            
+            return $newstr;
         }
 
     }

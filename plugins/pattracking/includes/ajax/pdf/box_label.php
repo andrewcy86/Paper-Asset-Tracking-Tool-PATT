@@ -306,7 +306,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_rid = 165;
                 $y_loc_rid = 50;
                 //EPC Vertical Text Coordinates
-                $x_loc_rfid = 22;
+                $x_loc_rfid = 15;
                 $y_loc_rfid = 124;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
@@ -371,7 +371,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_rid = 165;
                 $y_loc_rid = 180;
                 //EPC Vertical Text Coordinates
-                $x_loc_rfid = 22;
+                $x_loc_rfid = 15;
                 $y_loc_rfid = 254;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
@@ -502,11 +502,12 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 
             //EPC Vertical Text
             $obj_pdf->StartTransform();
-            $obj_pdf->SetFont('helvetica', '', 14);
+            //$obj_pdf->SetFont('helvetica', '', 14);
             $obj_pdf->Rotate(90, $x_loc_rfid, $y_loc_rfid);
             //switch out with epc barcode
             //$obj_pdf->Text($x_loc_rfid,$y_loc_rfid,'Place RFID Tag Here');
-            $obj_pdf->Text($x_loc_rfid,$y_loc_rfid, $epc);
+            //$obj_pdf->Text($x_loc_rfid,$y_loc_rfid, $epc);
+            $obj_pdf->write1DBarcode($epc, 'C128', $x_loc_rfid, $y_loc_rfid, '', 20, 0.3, $style_barcode, 'N');
             $obj_pdf->StopTransform();
             
             //1D Box ID Barcode

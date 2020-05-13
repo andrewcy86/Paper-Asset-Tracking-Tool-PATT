@@ -194,16 +194,28 @@ GROUP BY group_num
 				}
 				$counter++;
 			}
-
+            //echo $counter;
 			$shelfid_gaps_array = explode(",", $findgaps_array[$counter]);
-
-			//print_r($shelfid_gaps_array);
+            //print_r($shelfid_gaps_array);
+            
 			$missing_gap_array = array();
-			$position_gap_array = array();
+			//$position_gap_array = array();
 			foreach ($shelfid_gaps_array as &$value) {
 
 				[$gap_aisle, $gap_bay, $gap_shelf] = explode("_", $value);
+				//echo $value;
+				$current_row_details = $wpdb->get_row("
+SELECT remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE
+shelf_id = '" . $value . "' AND
+digitization_center = '" . $dc_final . "'
+");
 
+				$get_current_row_details_value = $current_row_details->remaining;
+				
+				
+if($get_current_row_details_value != 4) {
 // Get all positions in an array to determine available positions
 				$position_gap_details = $wpdb->get_results("
 SELECT position FROM wpqa_wpsc_epa_storage_location 
@@ -213,10 +225,28 @@ AND shelf = '" . $gap_shelf . "'
 AND digitization_center = '" . $dc_final . "'
 ");
 
-				foreach ($position_gap_details as $info) {
-					$position_gap_position = $info->position;
-					array_push($position_gap_array, $position_gap_position);
-				}
+$position_gap_array = array();
+foreach ($position_gap_details as $item) {
+    
+$array_gap_val_final = $item->position;
+
+//echo $array_gap_val_final;
+array_push($position_gap_array, $array_gap_val_final);
+
+}
+
+//echo $get_current_row_details_value;
+
+} else {
+
+$position_gap_array = array();
+$array_gap_val_final = '';
+array_push($position_gap_array, $array_gap_val_final);
+
+//echo $get_current_row_details_value;
+}
+
+//print_r($position_gap_array);
 // Determine missing positions and push to an array.         
 				$missing = array_diff(range(1, 4), $position_gap_array);
 				//print_r($missing);
@@ -226,6 +256,7 @@ AND digitization_center = '" . $dc_final . "'
 					array_push($missing_gap_array, $shelf_position_id_val);
 				}
 			}
+			
 // Only use portion of array that equals the number of boxes that are unassigned
 			$gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_count);
                 //print_r($missing_gap_array);
@@ -241,7 +272,7 @@ AND digitization_center = '" . $dc_final . "'
 				);
 				$gapsl_data_where = array('id' => $box_id_assignment[$key]);
 
-				$wpdb->update($gapsl_table_name, $gapsl_data_update, $gapsl_data_where);
+				//$wpdb->update($gapsl_table_name, $gapsl_data_update, $gapsl_data_where);
 
 				$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' . $gap_shelf;
 // Update storage status table
@@ -259,7 +290,7 @@ digitization_center = '" . $dc_final . "'
 				$gapss_data_update = array('occupied' => 1, 'remaining' => $gap_shelf_update_remaining);
 				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
 
-				$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
+				//$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
 			}
 // For every other case assign box to next available slot of available shelfs
 		} else {
@@ -277,7 +308,7 @@ digitization_center = '" . $dc_final . "'
 
 				$previous_sequence_shelfid_value = $previous_row_details->remaining;
 
-if($previous_sequence_shelfid_value != 4) {
+if($previous_sequence_shelfid_value > 0 && $previous_sequence_shelfid_value < 4) {
 $sequence_shelfid = $sequence_shelfid - 1;
 $box_details_count_new = $box_details_count - $previous_sequence_shelfid_value;
 $sequence_upperlimit = $sequence_shelfid + ceil($box_details_count_new / 4);
@@ -304,7 +335,6 @@ if($previous_sequence_shelfid_value != 4) {
 			}
 
             $sequence_array = array();
-$position_seq_array = array();
 			foreach ($shelfid_array as &$value) {
 
 				[$seq_aisle, $seq_bay, $seq_shelf] = explode("_", $value);
@@ -321,7 +351,7 @@ digitization_center = '" . $dc_final . "'
 				
 				
 if($get_current_row_details_value != 4) {
-// Get all positions in an array to determine available positions ////NEED TO TEST WITH STEHPANIE
+// Get all positions in an array to determine available positions
 				$position_seq_details = $wpdb->get_results("
 SELECT position FROM wpqa_wpsc_epa_storage_location 
 WHERE aisle = '" . $seq_aisle . "' 
@@ -331,7 +361,7 @@ AND digitization_center = '" . $dc_final . "'
 ");
 
 
-
+$position_seq_array = array();
 foreach ($position_seq_details as $item) {
     
 $array_seq_val_final = $item->position;
@@ -361,7 +391,7 @@ array_push($position_seq_array, $array_seq_val_final);
 					array_push($sequence_array, $shelf_position_id_val);
 				}
 			}
-print_r($sequence_array);
+//print_r($sequence_array);
 
 } else {
 
@@ -387,7 +417,7 @@ print_r($sequence_array);
 }
 
 			$seq_aisle_bay_shelf_position = array_slice($sequence_array, 0, $box_details_count);
-			//print_r($seq_aisle_bay_shelf_position);
+			print_r($seq_aisle_bay_shelf_position);
 // Only use portion of array that equals the number of boxes that are unassigned
 			foreach ($seq_aisle_bay_shelf_position as $key => $value) {
 				[$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);

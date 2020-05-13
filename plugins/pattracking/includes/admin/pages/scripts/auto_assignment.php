@@ -86,21 +86,20 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 		print_r($ticketid_array);
 	} else {
 // Is the box count = 1?:: Continuous shelf space not requried. Find first available gap.
-		if ($box_details_count == 1) {
+		if ($box_details_count = 1) {
     
 // Find first available slot for requests with boxes equal to 1
 			$nc_shelf = $wpdb->get_row("
-SELECT shelf_id, min(remaining) as remaining
+SELECT shelf_id
 FROM wpqa_wpsc_epa_storage_status
 WHERE occupied = 1 AND
-remaining <> 0 AND
 remaining = 1 AND
 digitization_center = '" . $dc_final . "'
-GROUP BY shelf_id
 ORDER BY id asc
 LIMIT 1
 ");
 			$nc_shelf_id = $nc_shelf->shelf_id;
+
 			[$nc_aisle, $nc_bay, $nc_shelf] = explode("_", $nc_shelf_id);
 
 // Get first available position
@@ -272,7 +271,7 @@ array_push($position_gap_array, $array_gap_val_final);
 				);
 				$gapsl_data_where = array('id' => $box_id_assignment[$key]);
 
-				//$wpdb->update($gapsl_table_name, $gapsl_data_update, $gapsl_data_where);
+				$wpdb->update($gapsl_table_name, $gapsl_data_update, $gapsl_data_where);
 
 				$gap_shelf_id_update = $gap_aisle . '_' . $gap_bay . '_' . $gap_shelf;
 // Update storage status table
@@ -290,7 +289,7 @@ digitization_center = '" . $dc_final . "'
 				$gapss_data_update = array('occupied' => 1, 'remaining' => $gap_shelf_update_remaining);
 				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
 
-				//$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
+				$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
 			}
 // For every other case assign box to next available slot of available shelfs
 		} else {
@@ -417,7 +416,7 @@ array_push($position_seq_array, $array_seq_val_final);
 }
 
 			$seq_aisle_bay_shelf_position = array_slice($sequence_array, 0, $box_details_count);
-			print_r($seq_aisle_bay_shelf_position);
+			//print_r($seq_aisle_bay_shelf_position);
 // Only use portion of array that equals the number of boxes that are unassigned
 			foreach ($seq_aisle_bay_shelf_position as $key => $value) {
 				[$seq_aisle, $seq_bay, $seq_shelf, $seq_position] = explode("_", $value);
@@ -428,7 +427,7 @@ array_push($position_seq_array, $array_seq_val_final);
 				);
 				$seqsl_data_where = array('id' => $box_id_assignment[$key]);
 
-				//$wpdb->update($seqsl_table_name, $seqsl_data_update, $seqsl_data_where);
+				$wpdb->update($seqsl_table_name, $seqsl_data_update, $seqsl_data_where);
 
 				$seq_shelf_id_update = $seq_aisle . '_' . $seq_bay . '_' . $seq_shelf;
 // Update storage status table
@@ -446,7 +445,7 @@ digitization_center = '" . $dc_final . "'
 				$seqss_data_update = array('occupied' => 1, 'remaining' => $seq_shelf_update_remaining);
 				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
 
-				//$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
+				$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
 			}
 		}
 // Display message to end user

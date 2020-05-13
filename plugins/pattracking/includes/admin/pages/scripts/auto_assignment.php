@@ -86,8 +86,24 @@ wpqa_wpsc_epa_boxinfo.ticket_id = '" . $tkid . "'
 		print_r($ticketid_array);
 	} else {
 // Is the box count = 1?:: Continuous shelf space not requried. Find first available gap.
-		if ($box_details_count = 1) {
-    
+
+// Get count of first available position
+$nc_count_single_rows = $wpdb->get_row("
+SELECT count(shelf_id) as count
+FROM wpqa_wpsc_epa_storage_status
+WHERE occupied = 1 AND
+remaining = 1 AND
+digitization_center = '" . $dc_final . "'
+ORDER BY id asc
+LIMIT 1
+");
+
+$nc_count = $nc_count_single_rows->count;
+
+//echo $nc_count;
+
+if (($box_details_count == 1) && ($nc_count > 0)) {
+
 // Find first available slot for requests with boxes equal to 1
 			$nc_shelf = $wpdb->get_row("
 SELECT shelf_id
@@ -161,6 +177,7 @@ digitization_center = '" . $dc_final . "'
 // When Continuing shelf space space is required
 
 		} else if ($box_details_count <= Patt_Custom_Func::calc_max_gap_val($dc_final)) {
+		    
 			$find_gaps = $wpdb->get_results("
 WITH 
 cte1 AS
@@ -203,6 +220,9 @@ GROUP BY group_num
 
 				[$gap_aisle, $gap_bay, $gap_shelf] = explode("_", $value);
 				//echo $value;
+				//echo $gap_aisle;
+				//echo $gap_bay;
+				//echo $gap_shelf;
 				$current_row_details = $wpdb->get_row("
 SELECT remaining
 FROM wpqa_wpsc_epa_storage_status
@@ -213,7 +233,7 @@ digitization_center = '" . $dc_final . "'
 
 				$get_current_row_details_value = $current_row_details->remaining;
 				
-				
+
 if($get_current_row_details_value != 4) {
 // Get all positions in an array to determine available positions
 				$position_gap_details = $wpdb->get_results("
@@ -225,6 +245,7 @@ AND digitization_center = '" . $dc_final . "'
 ");
 
 $position_gap_array = array();
+
 foreach ($position_gap_details as $item) {
     
 $array_gap_val_final = $item->position;
@@ -259,6 +280,7 @@ array_push($position_gap_array, $array_gap_val_final);
 // Only use portion of array that equals the number of boxes that are unassigned
 			$gap_aisle_bay_shelf_position = array_slice($missing_gap_array, 0, $box_details_count);
                 //print_r($missing_gap_array);
+                //echo $box_details_count;
                 //print_r($gap_aisle_bay_shelf_position);
                 //print_r($box_id_assignment);
 
@@ -294,7 +316,7 @@ digitization_center = '" . $dc_final . "'
 // For every other case assign box to next available slot of available shelfs
 		} else {
 		    
-// Calculate previous remaining value
+// Calculate previous remaining value:: Need to fix. Needs to find previous sequence up to where remaining = 0
                 $previous_sequence_shelfid = $sequence_shelfid - 1;
 
 				$previous_row_details = $wpdb->get_row("

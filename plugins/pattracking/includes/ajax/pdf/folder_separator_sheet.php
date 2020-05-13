@@ -22,7 +22,7 @@ if (isset($_GET['id']))
         $array = array();
         // $request_folderdocinfo = $wpdb->get_results("SELECT folderdocinfo_id FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " . $GLOBALS['id']);
 
-        $args = [
+        /*$args = [
             'select' => 'folderdocinfo_id',
             'where' => [
                         ['ticket_id', $GLOBALS['id']],
@@ -30,7 +30,9 @@ if (isset($_GET['id']))
                     ]
         ];
         $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo');
-        $request_folderdocinfo = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);
+        $request_folderdocinfo = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);*/
+        
+        $request_folderdocinfo = $wpdb->get_results("SELECT folderdocinfo_id FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " . $GLOBALS['id']);
         
         foreach($request_folderdocinfo as $folderdocinfo)
         {
@@ -47,7 +49,7 @@ if (isset($_GET['id']))
         $array = array();
         // $request_title = $wpdb->get_results("SELECT title FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " .$GLOBALS['id']);
 
-        $args = [
+        /*$args = [
             'select' => 'title',
             'where' => [
                         ['wpqa_wpsc_epa_folderdocinfo.box_id', 'wpqa_wpsc_epa_boxinfo.id'],
@@ -56,8 +58,9 @@ if (isset($_GET['id']))
                     ]
         ];
         $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo');
-        $request_title = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);
+        $request_title = $wpqa_wpsc_epa_folderdocinfo_wpqa_wpsc_epa_boxinfo->get_results($args, false);*/
         
+        $request_title = $wpdb->get_results("SELECT title FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND index_level = 1 AND ticket_id = " .$GLOBALS['id']);
         
         foreach($request_title as $folder_title)
         {

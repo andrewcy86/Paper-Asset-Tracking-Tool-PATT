@@ -112,6 +112,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add Inventory Modal
           add_action('wp_ajax_wpsc_get_inventory_editor', array($backend, 'get_inventory_editor'));
+          
+          // Add Digitization Switch Modal
+          add_action('wp_ajax_wpsc_get_digitization_editor', array($backend, 'get_digitization_editor'));
            
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);

@@ -31,8 +31,9 @@ if (isset($_GET['id']))
     $obj_pdf->SetFont('helvetica', '', 11);
 
 // $record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_boxinfo INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id WHERE wpqa_wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
-
-        $args = [
+        
+        //gets record schedule
+        /*$args = [
             'select' => 'DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum',
             'join' => [
                 ['type' => 'INNER JOIN', 'table' => 'wpqa_epa_record_schedule', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'record_schedule_id'],
@@ -40,8 +41,14 @@ if (isset($_GET['id']))
             'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $GLOBALS['id']],
         ];
         $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $record_schedules = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+        $record_schedules = $wpqa_wpsc_epa_boxinfo->get_results($args, false);*/
+        
+        $record_schedules = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_boxinfo.record_schedule_id as record_schedule_id, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum 
+FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo 
+WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id AND wpqa_wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
+//print_r($record_schedules);
 
+//empty array
 $box_id_array = array();
 
 foreach($record_schedules as $rs_num)
@@ -52,25 +59,35 @@ foreach($record_schedules as $rs_num)
 // INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
 // INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
 // WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
-
-        $args = [
-            'select' => 'wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format',
+        
+        //do we still need index level for boxes? how does removing it affect sorting?
+        //get column information
+        /*$args = [
+            //'select' => 'wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format',
+            'select' => 'wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format',
             'join' => [
-                ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_boxinfo', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'box_id'],
+                ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_boxinfo', 'key' => 'id', 'compare' => '=', 'f oreign_key' => 'box_id'],
                 ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id']
             ],
             'where' => ['wpqa_wpsc_epa_boxinfo.record_schedule_id', $rs_num->record_schedule_id],
-        ];
-        $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
-        $box_list = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
-
+        ];*/
+        
+        //$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
+        //$box_list = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
+        
+        $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
+        FROM wpqa_wpsc_epa_folderdocinfo INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id 
+        WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+        
+        //print_r($box_list);
 
 // $box_list_get_count = $wpdb->get_row("SELECT count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count
 // FROM wpqa_wpsc_epa_folderdocinfo
 // INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
 // WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
 
-        $args = [
+        //get total boxes in accession
+        /*$args = [
             'select' => 'count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count',
             'join' => [
                 ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_boxinfo', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'box_id']
@@ -78,12 +95,15 @@ foreach($record_schedules as $rs_num)
             'where' => ['wpqa_wpsc_epa_boxinfo.record_schedule_id', $rs_num->record_schedule_id],
         ];
         $wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
-        $box_list_get_count = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
-
-
-
+        $box_list_get_count = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);*/
+        
+        $box_list_get_count = $wpdb->get_row("SELECT count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+//print_r($box_list_get_count);
 
 $box_list_count = $box_list_get_count->box_count;
+//echo $box_list_count;
 
 $program_office_array_id = array();
 
@@ -93,7 +113,7 @@ $program_office_array_id = array();
 // INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
 // WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']
 // );
-        $args = [
+        /*$args = [
             'select' => 'DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office',
             'join' => [
                 ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id']
@@ -101,8 +121,12 @@ $program_office_array_id = array();
             'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $GLOBALS['id']],
         ];
         $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-        $boxlist_get_po = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
-
+        $boxlist_get_po = $wpqa_wpsc_epa_boxinfo->get_results($args, false);*/
+        
+        $boxlist_get_po = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office
+WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
+//print_r($boxlist_get_po);
 
 foreach ($boxlist_get_po as $item) {
 	array_push($program_office_array_id, $item->program_office);
@@ -175,14 +199,14 @@ foreach($box_list as $info){
     $boxlist_contact = $info->contact;
     $boxlist_sf = $info->source_format;
     $boxlist_po = $info->program_office;
-    $boxlist_il = $info->index_level;
+    //$boxlist_il = $info->index_level;
     $boxlist_il_val = '';
-    if($boxlist_il == 1) {
+    /*if($boxlist_il == 1) {
         $boxlist_il_val = "(Folder)"; 
         
     } else {
         $boxlist_il_val = "(File)";
-    }
+    }*/
     
     $tbl .= '<tr>
             <td style="border: 1px solid #000000; width: 180px;"><tcpdf method="write1DBarcode" params="'.$boxlist_barcode.'" /></td>

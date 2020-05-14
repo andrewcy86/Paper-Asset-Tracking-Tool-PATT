@@ -113,7 +113,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
     	  			<th class="datatable_header">ID</th>
     	  			<th class="datatable_header">Physical Location</th>
     	  			<th class="datatable_header">Assigned Location</th>
-    	  			<th class="datatable_header">Digitizaton Center</th>
+    	  			<th class="datatable_header">Digitization Center</th>
   </tr>
  </thead><tbody>
 ';
@@ -198,15 +198,18 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 		  });  
 		}
 		
-	function wpsc_get_digitization_editor(box_id){		
-		   jQuery.post(
-   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_digitization_center.php',{
-    postvarsboxidname: box_id
-}, 
-   function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket_id); ?>");
-   });
-} 
+		function wpsc_get_digitization_editor(box_id){
+		  wpsc_modal_open('Re-assign Digitization Center');
+		  var data = {
+		    action: 'wpsc_get_digitization_editor',
+		    box_id: box_id
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		}
    
 	</script>

@@ -325,21 +325,26 @@ require get_template_directory() . '/inc/template-tags.php';
 require get_template_directory() . '/inc/customizer.php';
 
 /**
- * Remove Wordpress Logo.
+ * Remove Wordpress Logo. 
+ * Added function_exists as function is declared in the child theme. This will be acceptably overwritten once the theme is updated. 
  */
-function example_admin_bar_remove_logo() {
-    global $wp_admin_bar;
-    $wp_admin_bar->remove_menu( 'wp-logo' );
+if( !function_exists( 'example_admin_bar_remove_logo' )) {
+	function example_admin_bar_remove_logo() {
+	    global $wp_admin_bar;
+	    $wp_admin_bar->remove_menu( 'wp-logo' );
+	}
 }
 add_action( 'wp_before_admin_bar_render', 'example_admin_bar_remove_logo', 0 );
 
 /**
  * Add ERMD Footer.
+ * Added function_exists as function is declared in the child theme. This will be acceptably overwritten once the theme is updated. 
  */
-  
-function remove_footer_admin () 
-{
-    echo '<span id="footer-thankyou">For technical support please contact ERMD: <a href="mailto:ecms@epa.gov">ecms@epa.gov</a></span>';
+if( !function_exists( 'remove_footer_admin' )) {  
+	function remove_footer_admin () 
+	{
+	    echo '<span id="footer-thankyou">For technical support please contact ERMD: <a href="mailto:ecms@epa.gov">ecms@epa.gov</a></span>';
+	}
 }
  
 add_filter('admin_footer_text', 'remove_footer_admin');
@@ -347,16 +352,21 @@ add_filter('admin_footer_text', 'remove_footer_admin');
 
 /**
  * Add jsgrid css and JavaScript.
+ * Added function_exists as function is declared in the child theme. This will be acceptably overwritten once the theme is updated. 
  */
-
-function jsgrid_load_scripts() {
-
-    wp_enqueue_style('admin-jsgrid-css', get_template_directory_uri().'/jsgrid/css/jsgrid.min.css');
-    wp_enqueue_style('admin-jsgrid-css-theme', get_template_directory_uri().'/jsgrid/css/jsgrid-theme.min.css');
-	wp_enqueue_script('admin-jsgrid', get_template_directory_uri().'/jsgrid/js/jsgrid.min.js');
+if( !function_exists( 'jsgrid_load_scripts' )) {
+	function jsgrid_load_scripts() {
+	
+	    wp_enqueue_style('admin-jsgrid-css', get_template_directory_uri().'/jsgrid/css/jsgrid.min.css');
+	    wp_enqueue_style('admin-jsgrid-css-theme', get_template_directory_uri().'/jsgrid/css/jsgrid-theme.min.css');
+		wp_enqueue_script('admin-jsgrid', get_template_directory_uri().'/jsgrid/js/jsgrid.min.js');
+	}
 }
 add_action('admin_enqueue_scripts', 'jsgrid_load_scripts');
 
+/**
+ * Add jsgrid css and JavaScript.
+ */
 if(function_exists('add_db_table_editor')){
 add_db_table_editor('title=Record Schedule Editor&table=wpqa_epa_record_schedule');
 add_db_table_editor('title=File Folder Details&table=wpqa_wpsc_epa_folderdocinfo');

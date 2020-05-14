@@ -1,1 +1,0 @@
-Child theme for TwentyNineteen.

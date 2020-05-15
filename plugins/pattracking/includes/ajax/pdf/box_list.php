@@ -24,7 +24,7 @@ if (isset($_GET['id']))
     $obj_pdf->setFooterFont(Array(PDF_FONT_NAME_DATA,'',PDF_FONT_SIZE_DATA));
     $obj_pdf->SetDefaultMonospacedFont('helvetica');
     $obj_pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
-    $obj_pdf->SetMargins(PDF_MARGIN_LEFT, '10', PDF_MARGIN_RIGHT);
+    $obj_pdf->SetMargins(6, '10', 5);
     $obj_pdf->setPrintHeader(false);
     $obj_pdf->setPrintFooter(false);
     $obj_pdf->SetAutoPageBreak(true, 10);
@@ -47,9 +47,6 @@ if (isset($_GET['id']))
 FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo 
 WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id AND wpqa_wpsc_epa_boxinfo.ticket_id =" .$GLOBALS['id']);
 //print_r($record_schedules);
-
-//empty array
-$box_id_array = array();
 
 foreach($record_schedules as $rs_num)
     {
@@ -75,9 +72,14 @@ foreach($record_schedules as $rs_num)
         //$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
         //$box_list = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
         
-        $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
+        //removed index_level from sql statement
+        /*$box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
         FROM wpqa_wpsc_epa_folderdocinfo INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id 
-        WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+        WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);*/
+        
+        $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office  
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
         
         //print_r($box_list);
 
@@ -181,11 +183,12 @@ $tbl = '
   <tr>
     <th style="border: 1px solid #000000; width: 180px; background-color: #f5f5f5; font-weight: bold;">ID</th>
     <th style="border: 1px solid #000000; width: 45px; background-color: #f5f5f5; font-weight: bold;">Box #</th>
+    <th style="border: 1px solid #000000; width: 45px; background-color: #f5f5f5; font-weight: bold;">Index Level</th>
     <th style="border: 1px solid #000000; width: 150px; background-color: #f5f5f5; font-weight: bold;">Title</th>
-    <th style="border: 1px solid #000000; width: 95px; background-color: #f5f5f5; font-weight: bold;">Date</th>
+    <th style="border: 1px solid #000000; width: 75px; background-color: #f5f5f5; font-weight: bold;">Date</th>
     <th style="border: 1px solid #000000; width: 120px; background-color: #f5f5f5; font-weight: bold;">Contact</th>
     <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Source Format</th>    
-    <th style="border: 1px solid #000000; width: 80px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>  
+    <th style="border: 1px solid #000000; width: 65px; background-color: #f5f5f5; font-weight: bold;">Program Office</th>  
   </tr>
 ';
 
@@ -199,23 +202,24 @@ foreach($box_list as $info){
     $boxlist_contact = $info->contact;
     $boxlist_sf = $info->source_format;
     $boxlist_po = $info->program_office;
-    //$boxlist_il = $info->index_level;
+    $boxlist_il = $info->index_level;
     $boxlist_il_val = '';
-    /*if($boxlist_il == 1) {
+    if($boxlist_il == 1) {
         $boxlist_il_val = "(Folder)"; 
         
     } else {
         $boxlist_il_val = "(File)";
-    }*/
+    }
     
     $tbl .= '<tr>
             <td style="border: 1px solid #000000; width: 180px;"><tcpdf method="write1DBarcode" params="'.$boxlist_barcode.'" /></td>
-            <td style="border: 1px solid #000000; width: 45px;">'.$boxlist_box.'<br />'. $boxlist_il_val .'</td>
+            <td style="border: 1px solid #000000; width: 45px;">'.$boxlist_box.'</td>
+            <td style="border: 1px solid #000000; width: 45px;">'.$boxlist_il_val.'</td>
             <td style="border: 1px solid #000000; width: 150px;">'.$boxlist_title.'</td>
-            <td style="border: 1px solid #000000; width: 95px;">'.$boxlist_date.'</td>
+            <td style="border: 1px solid #000000; width: 75px;">'.$boxlist_date.'</td>
             <td style="border: 1px solid #000000; width: 120px;">'.$boxlist_contact.'</td>
             <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_sf.'</td>
-            <td style="border: 1px solid #000000; width: 80px;">'.$boxlist_po.'</td>
+            <td style="border: 1px solid #000000; width: 65px;">'.$boxlist_po.'</td>
             </tr>';
     
 }

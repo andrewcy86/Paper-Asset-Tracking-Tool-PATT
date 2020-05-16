@@ -26,24 +26,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 <div class="bootstrap-iso">
 <?php
 			$folderfile_details = $wpdb->get_row(
-				"SELECT 
-			wpqa_wpsc_epa_folderdocinfo.id,
-            wpqa_wpsc_epa_folderdocinfo.box_id,
-            wpqa_wpsc_epa_folderdocinfo.title, 
-            wpqa_wpsc_epa_folderdocinfo.date, 
-            wpqa_wpsc_epa_folderdocinfo.author, 
-            wpqa_wpsc_epa_folderdocinfo.record_type,
-            wpqa_wpsc_epa_folderdocinfo.site_name, 
-            wpqa_wpsc_epa_folderdocinfo.site_id, 
-            wpqa_wpsc_epa_folderdocinfo.close_date,
-            wpqa_wpsc_epa_folderdocinfo.epa_contact_email,
-            wpqa_wpsc_epa_folderdocinfo.access_type,
-            wpqa_wpsc_epa_folderdocinfo.source_format,
-            wpqa_wpsc_epa_folderdocinfo.rights, 
-            wpqa_wpsc_epa_folderdocinfo.contract_number,  
-            wpqa_wpsc_epa_folderdocinfo.grant_number,
-            wpqa_wpsc_epa_folderdocinfo.file_location,
-            wpqa_wpsc_epa_folderdocinfo.file_name
+				"SELECT *
             FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $GLOBALS['id'] . "'"
 			);
 

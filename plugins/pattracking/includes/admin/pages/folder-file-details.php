@@ -8,9 +8,9 @@ global $wpdb, $current_user, $wpscfunction;
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
 
-include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
-$load_styles = new wppatt_Functions();
-$load_styles->addStyles();
+//include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
+//$load_styles = new wppatt_Functions();
+//$load_styles->addStyles();
 
 $general_appearance = get_option('wpsc_appearance_general_settings');
 
@@ -27,6 +27,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 <?php
 			$folderfile_details = $wpdb->get_row(
 				"SELECT 
+			wpqa_wpsc_epa_folderdocinfo.id,
             wpqa_wpsc_epa_folderdocinfo.box_id,
             wpqa_wpsc_epa_folderdocinfo.title, 
             wpqa_wpsc_epa_folderdocinfo.date, 
@@ -46,6 +47,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
             FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $GLOBALS['id'] . "'"
 			);
 
+            $folderfile_id = $folderfile_details->id;
 			$folderfile_boxid = $folderfile_details->box_id;
 			$folderfile_title = $folderfile_details->title;
 			$folderfile_date = $folderfile_details->date;
@@ -155,6 +157,15 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
         	[Folder ID # <?php
             echo $GLOBALS['id']; ?>]
 		  <?php } ?>		
+		  
+		  <?php 
+		  $agent_permissions = $wpscfunction->get_current_agent_permissions();
+          $agent_permissions['label'];
+		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+                {
+			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderfile_id . ')"><i class="fas fa-edit fa-xs"></i></a>';
+			    }
+		  ?>
       </h3>
 <?php
 			} else {
@@ -169,106 +180,50 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 			}
 ?>
     </div>
-<form method="POST" action="#">
+
 <?php
-            $agent_permissions = $wpscfunction->get_current_agent_permissions();
-            $agent_permissions['label'];
-            
 			echo "<strong>Program Office:</strong> " . $box_po . "<br />";
             echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
-            
-			//only admins/agents have the ability to edit folder/file details			
-			if (!empty($folderfile_title)) {
+  
+  			if (!empty($folderfile_title)) {
 				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-			        echo "<input type='text' id='title' placeholder= 'Enter title...'></br></br>";
-			    }
 			}
-			//make a calendar picker
+
 			if (!empty($folderfile_date)) {
 				echo "<strong>Date:</strong> " . $folderfile_date . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    			    echo "<input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_author)) {
 				echo "<strong>Author:</strong> " . $folderfile_author . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='author' placeholder= 'Enter author...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_record_type)) {
 				echo "<strong>Record Type:</strong> " . $folderfile_record_type . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='record_type' placeholder= 'Enter record type...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_site_name)) {
 				echo "<strong>Site Name:</strong> " . $folderfile_site_name . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_site_id)) {
 				echo "<strong>Site ID #:</strong> " . $folderfile_site_id . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_close_date)) {
 				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_epa_contact_email)) {
 				echo "<strong>Contact Email:</strong> " . $folderfile_epa_contact_email . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='contact_email' placeholder= 'Enter contact email...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_access_type)) {
 				echo "<strong>Access Type:</strong> " . $folderfile_access_type . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='access_type' placeholder= 'Enter access type...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_source_format)) {
 				echo "<strong>Source Format:</strong> " . $folderfile_source_format . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='source_format' placeholder= 'Enter source format...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_rights)) {
 				echo "<strong>Rights:</strong> " . $folderfile_rights . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='rights' placeholder= 'Enter folder/file rights...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_contract_number)) {
 				echo "<strong>Contract #:</strong> " . $folderfile_contract_number . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='contract_number' placeholder= 'Enter contract number...'></br></br>"; 
-    			}
 			}
 			if (!empty($folderfile_grant_number)) {
 				echo "<strong>Grant #:</strong> " . $folderfile_grant_number . "<br />";
-				if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-    				echo "<input type='text' id='grant_number' placeholder= 'Enter grant number...'></br></br>"; 
-    			}
 			}
 			
 			if (!empty($folderfile_file_location) || !empty($folderfile_file_name)) {
@@ -276,17 +231,24 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 			}
 ?>
 
-<br />
-<!--Submit and Reset Buttons-->
-<?php
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-    echo '<input type="hidden" id="folderfileid" name="folderfileid" value="'.$GLOBALS['id'].'">';
-    echo '<button type="submit" value="Submit" id="wpsc_create_ticket_submit" class="btn" style="background-color:#419641 !important;color:#FFFFFF !important;border-color:#C3C3C3 !important;" onclick="wpsc_edit_folder_file_details();">Submit</button>';
-    echo '<button type="reset" value ="Reset" id="wpsc_create_ticket_reset" class="btn" style="background-color:#FFFFFF !important;color:#000000 !important;border-color:#C3C3C3 !important;">Reset</button>';
-}
-?>
-</form>
+<!-- Pop-up snippet start -->
+<div id="wpsc_popup_background" style="display:none;"></div>
+<div id="wpsc_popup_container" style="display:none;">
+  <div class="bootstrap-iso">
+    <div class="row">
+      <div id="wpsc_popup" class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        <div id="wpsc_popup_title" class="row"><h3>Modal Title</h3></div>
+        <div id="wpsc_popup_body" class="row">I am body!</div>
+        <div id="wpsc_popup_footer" class="row">
+          <button type="button" class="btn wpsc_popup_close"><?php _e('Close','supportcandy');?></button>
+          <button type="button" class="btn wpsc_popup_action"><?php _e('Save Changes','supportcandy');?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Pop-up snippet end -->
+
 <br />
 
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
@@ -325,31 +287,31 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 ?>
 } );
 
-function wpsc_edit_folder_file_details(){		
-		   jQuery.post(
-   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
-postvarsffid: jQuery("#folderfileid").val(),
-postvarsrs: jQuery("#record_schedule").val(),
-postvarstitle: jQuery("#title").val(),
-postvarsdate: jQuery("#date").val(),
-postvarsauthor: jQuery("#author").val(),
-postvarsrt: jQuery("#record_type").val(),
-postvarssn: jQuery("#site_name").val(),
-postvarssid: jQuery("#site_id").val(),
-postvarscd: jQuery("#close_date").val(),
-postvarsce: jQuery("#contact_email").val(),
-postvarsat: jQuery("#access_type").val(),
-postvarssf: jQuery("#source_format").val(),
-postvarsrights: jQuery("#rights").val(),
-postvarscn: jQuery("#contract_number").val(),
-postvarsgn: jQuery("#grant_number").val()
-}, 
-   function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?page=boxdetails&pid=boxsearch&id=<?php echo $box_boxid; ?>");
-   });
-} 
+		function wpsc_get_folderfile_editor(doc_id){
+<?php
+			$box_il_val = '';
+			if ($box_il == 1) {
+?>
+		  wpsc_modal_open('Edit Folder Metadata');
+<?php
+			} else {
+?>
+		  wpsc_modal_open('Edit File Metadata');
+<?php
+			}
+?>
 
+		  var data = {
+		    action: 'wpsc_get_folderfile_editor',
+		    doc_id: doc_id
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		}
 </script>
 
 

@@ -19,12 +19,18 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
 
 $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'].' !important;color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'].' !important;border-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'].'!important';
 
+			$rfid_count = $wpdb->get_row(
+				"SELECT count(id) as count
+            FROM wpqa_wpsc_epa_rfid_data"
+			);
+
+    $rfid_count_num = $rfid_count->count;
 ?>
 
 
 <div class="bootstrap-iso">
   
-  <h3>RFID Dashboard - Box Editor</h3>
+  <h3>RFID Dashboard</h3>
   
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
@@ -33,6 +39,9 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+		<?php if($rfid_count_num > 0) { ?>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="wpsc_clear_rfid();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-eraser"></i> Clear by RFID Reader ID</button>
+		<?php } ?>
   </div>
 
 </div>
@@ -50,6 +59,27 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 Enter one or more Box IDs:<br />
          <input type='text' id='searchByBoxID' class="form-control" data-role="tagsinput">
 <br />
+
+         <?php
+ $rfid_details = $wpdb->get_results("
+SELECT DISTINCT
+Reader_Name
+FROM wpqa_wpsc_epa_rfid_data
+");
+
+			$rfid_readerid_array = array();
+			
+			foreach ($rfid_details as $info) {
+				$readerid = $info->Reader_Name;
+				array_push($rfid_readerid_array, $readerid);
+			}
+			
+			?>
+<select id='searchByReaderID'>
+     <option value=''>-- Select RFID Reader --</option>
+     <?php foreach($rfid_readerid_array as $key => $value) { ?>
+      <option value='<?php echo $value; ?>'><?php echo $value; ?></option>
+     <?php } ?></select>
 
 	                            </div>
 			    		</div>
@@ -82,6 +112,7 @@ color: rgb(255, 255, 255) !important;
             <tr>
                 <th class="datatable_header">Reader ID</th>
                 <th class="datatable_header">Box ID</th>
+                <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">EPC</th>
                 <th class="datatable_header">Date Added</th>
             </tr>
@@ -110,14 +141,17 @@ jQuery(document).ready(function(){
           // Read values
           var sg = jQuery('#searchGeneric').val();
           var boxid = jQuery('#searchByBoxID').val();
+          var readerid = jQuery('#searchByReaderID').val();
           // Append to data
           data.searchGeneric = sg;
           data.searchByBoxID = boxid;
+          data.searchByReaderID = readerid;
        }
     },
     'columns': [
        { data: 'Reader_Name' }, 
        { data: 'box_id' },
+       { data: 'request_id' },
        { data: 'epc' },
        { data: 'DateAdded' },
     ]
@@ -181,6 +215,19 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
 
 });
 
+		function wpsc_clear_rfid(){
+
+		  wpsc_modal_open('Clear Scanned Boxes by RFID Reader ID');
+		  var data = {
+		    action: 'wpsc_get_clear_rfid'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		}
 </script>
 
 
@@ -191,3 +238,21 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
 </div>
 </div>
 </div>
+
+<!-- Pop-up snippet start -->
+<div id="wpsc_popup_background" style="display:none;"></div>
+<div id="wpsc_popup_container" style="display:none;">
+  <div class="bootstrap-iso">
+    <div class="row">
+      <div id="wpsc_popup" class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        <div id="wpsc_popup_title" class="row"><h3>Modal Title</h3></div>
+        <div id="wpsc_popup_body" class="row">I am body!</div>
+        <div id="wpsc_popup_footer" class="row">
+          <button type="button" class="btn wpsc_popup_close"><?php _e('Close','supportcandy');?></button>
+          <button type="button" class="btn wpsc_popup_action"><?php _e('Save Changes','supportcandy');?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Pop-up snippet end -->

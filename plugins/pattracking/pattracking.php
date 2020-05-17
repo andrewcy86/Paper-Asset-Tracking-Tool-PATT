@@ -121,6 +121,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add Box Editor Modal
           add_action('wp_ajax_wpsc_get_box_editor', array($backend, 'get_box_editor'));
+          
+          // Add RFID Reader Modal
+          add_action('wp_ajax_wpsc_get_clear_rfid', array($backend, 'get_clear_rfid'));
            
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
@@ -131,6 +134,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           function epa_admin_menu_items() {
             add_submenu_page( 'wpsc-tickets', 'Barcode Scanning', 'Barcode Scanning', 'wpsc_agent', 'scanning', 'scanning_page' );
+            add_submenu_page( 'wpsc-tickets', 'RFID Dashboard', 'RFID Dashboard', 'wpsc_agent', 'rfid', 'rfid_page' );
             }
             
           function scanning_page(){

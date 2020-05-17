@@ -7,9 +7,9 @@ global $wpdb, $current_user, $wpscfunction;
 
 $GLOBALS['id'] = $_GET['id'];
 
-include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
-$load_styles = new wppatt_Functions();
-$load_styles->addStyles();
+//include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
+//$load_styles = new wppatt_Functions();
+//$load_styles->addStyles();
 
 $general_appearance = get_option('wpsc_appearance_general_settings');
 
@@ -92,7 +92,7 @@ color: rgb(255, 255, 255) !important;
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
-<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
+<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
                 <th class="datatable_header">Box ID</th>

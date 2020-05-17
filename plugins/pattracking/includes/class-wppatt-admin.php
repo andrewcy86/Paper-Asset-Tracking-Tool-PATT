@@ -182,6 +182,11 @@ switch ($company_name) {
     include WPPATT_ABSPATH . 'includes/ajax/get_folder_file_editor.php';
     die();
     }
+	  
+    public function get_box_editor(){    
+    include WPPATT_ABSPATH . 'includes/ajax/get_box_editor.php';
+    die();
+    }
   }
   
 endif;

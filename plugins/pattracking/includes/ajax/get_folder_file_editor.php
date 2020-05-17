@@ -59,8 +59,8 @@ ob_start();
 <strong>Rights:</strong><br /><input type='text' id='rights' placeholder= 'Enter folder/file rights...'></br></br>
 <strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= 'Enter contract number...'></br></br>
 <strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= 'Enter grant number...'>
-<input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_folderdocinfoid; ?>">
-
+<input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
+<input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_folderdocinfoid; ?>">
 </form>
 <?php 
 $body = ob_get_clean();
@@ -73,6 +73,7 @@ function wpsc_edit_folder_file_details(){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
 postvarsffid: jQuery("#folderfileid").val(),
+postvarspdid: jQuery("#pattdocid").val(),
 postvarsil: jQuery("#il").val(),
 postvarsrs: jQuery("#record_schedule").val(),
 postvarstitle: jQuery("#title").val(),

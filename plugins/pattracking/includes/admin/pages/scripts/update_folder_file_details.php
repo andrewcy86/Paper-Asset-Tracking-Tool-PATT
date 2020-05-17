@@ -22,6 +22,7 @@ if(
 !empty($_POST['postvarsgn'])
 ){
    $folderfileid = $_POST['postvarsffid'];
+   $pattdocid = $_POST['postvarspdid'];
    $il = $_POST['postvarsil'];
    $title = $_POST['postvarstitle'];
    $date = $_POST['postvarsdate'];  
@@ -41,12 +42,12 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 
 if(!empty($title)) {
 $data_update = array('title' => $title);
-$data_where = array('folderdocinfo_id' => $folderfileid);
+$data_where = array('id' => $folderfileid);
 $wpdb->update($table_name , $data_update, $data_where);
 }
 
 
- echo "Document ID #: " . $folderfileid . " has been updated.";
+ echo "Document ID #: " . $pattdocid . " has been updated.";
  
 } else {
    echo "Please make an edit.";

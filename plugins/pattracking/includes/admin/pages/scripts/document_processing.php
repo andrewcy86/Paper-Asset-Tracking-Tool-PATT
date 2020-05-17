@@ -39,7 +39,7 @@ if($searchByProgramOffice != ''){
 }
 
 if($searchByDigitizationCenter != ''){
-   $searchQuery .= " and (d.location='".$searchByDigitizationCenter."') ";
+   $searchQuery .= " and (e.digitization_center ='".$searchByDigitizationCenter."') ";
 }
 
 if($searchGeneric != ''){

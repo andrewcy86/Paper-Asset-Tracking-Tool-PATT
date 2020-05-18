@@ -57,7 +57,10 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
 ## Total number of records with filtering
-$sel = mysqli_query($con,"select count(a.box_id) as allcount FROM wpqa_wpsc_epa_rfid_data as a WHERE 1 ".$searchQuery);
+$sel = mysqli_query($con,"select count(a.box_id) as allcount FROM wpqa_wpsc_epa_rfid_data as a 
+INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.box_id = b.box_id
+INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
+WHERE 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 

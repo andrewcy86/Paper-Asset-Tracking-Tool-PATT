@@ -56,6 +56,10 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_boxes.php';    
     }
     
+    public function request_hide_logs(){
+    include WPPATT_ABSPATH . 'includes/admin/wppatt_request_hide_logs.php';    
+    }
+	  
     public function get_pdf_label_field(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_pdf_label_field.php';
     die();

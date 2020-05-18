@@ -45,14 +45,14 @@ if($searchByDigitizationCenter != ''){
 if($searchGeneric != ''){
    $searchQuery .= " and (a.folderdocinfo_id like '%".$searchGeneric."%' or 
       b.request_id like '%".$searchGeneric."%' or 
-      d.location like '%".$searchGeneric."%' or
+      e.digitization_center like '%".$searchGeneric."%' or
       c.acronym like '%".$searchGeneric."%') ";
 }
 
 if($searchValue != ''){
    $searchQuery .= " and (a.folderdocinfo_id like '%".$searchValue."%' or 
       b.request_id like '%".$searchValue."%' or 
-      d.location like '%".$searchValue."%' or
+      e.digitization_center like '%".$searchValue."%' or
       c.acronym like '%".$searchValue."%') ";
 }
 
@@ -64,8 +64,10 @@ $totalRecords = $records['allcount'];
 ## Total number of records with filtering
 $sel = mysqli_query($con,"select count(a.folderdocinfo_id) as allcount FROM wpqa_wpsc_epa_folderdocinfo as a
 INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
-INNER JOIN wpqa_wpsc_epa_program_office as c ON d.program_office_id = c.id WHERE 1 ".$searchQuery);
+INNER JOIN wpqa_wpsc_epa_program_office as c ON d.program_office_id = c.id
+WHERE 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 

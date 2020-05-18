@@ -49,17 +49,18 @@ $rawPostData = file_get_contents('php://input');
         $array = explode(',', $row);
         $array_strip = str_replace('"', '', $array[1]);
         $box_id = Patt_Custom_Func::convert_epc_pattboxid($array_strip);
-
         
         $row = $readerName . "," . $macAddress . ",'" . $box_id . "',"  . $row;
         $fld_value = str_replace("\\", "", $row);
         $row = $fld_value;
 
-$check_boxid = "SELECT count(box_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '.$box_id.'";
+$check_boxid = "SELECT count(box_id) as count FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '".$box_id."'";
 $boxid_result = mysqli_query($con,$check_boxid);
+$rowcount=mysqli_num_rows($boxid_result);
 
-if ($boxid_result > 0) {
+if ($rowcount > 0) {
 $query = "INSERT INTO wpqa_wpsc_epa_rfid_data ($fieldNames) VALUES ($row)";
+//$query = "INSERT INTO wpqa_wpsc_epa_rfid_data (Reader_Name) VALUES ('".$rowcount."')";
 $retval = mysqli_query($con,$query);
 }
 

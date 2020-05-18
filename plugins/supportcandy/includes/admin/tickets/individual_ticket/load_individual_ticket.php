@@ -426,7 +426,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 					</div>
 					<?php
 				endif;
-
+/*
 				if ( $thread_type == 'log' && apply_filters('wpsc_thread_log_visibility',$current_user->has_cap('wpsc_agent')) && $wpscfunction->has_permission('view_log',$ticket_id)):
 					?>
 					<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_border_color']?> !important;">
@@ -440,7 +440,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 		      </div>
 					<?php
 				endif;
-				
+*/				
 				do_action( 'wpsc_print_thread_type', $thread_type, $thread );
 			  endforeach;
 			?>

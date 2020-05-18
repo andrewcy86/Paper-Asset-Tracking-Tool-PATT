@@ -106,6 +106,9 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));
           
+          // Hide long logs on Request page
+          add_action('wpsc_after_individual_ticket', array($backend, 'request_hide_logs'));
+          
           // Add Shipping Widget
           add_action( 'wpsc_after_ticket_widget', array($backend, 'shipping_widget'));
           add_action('wp_ajax_wpsc_get_shipping_details', array($backend, 'get_shipping_details'));

@@ -47,10 +47,12 @@ WHERE shelf_id = '" . $box_sotrage_shelf_id . "'"
 			);
 
 $box_storage_status_occupied = $box_storage_status->occupied;
-$box_storage_status_remaining = $box_storage_status->remaining + 1;
+$box_storage_status_remaining = $box_storage_status->remaining;
+$box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
+if ($box_storage_status_remaining <= 4) {
 $table_ss = 'wpqa_wpsc_epa_storage_status';
-$ssr_update = array('remaining' => $box_storage_status_remaining);
+$ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
 
@@ -60,8 +62,12 @@ $sso_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' =>
 $wpdb->update($table_ss , $sso_update, $sso_where);
 }
 
+echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$dc;
+   
+} else {
+ echo "Error updating location status table.";    
+}
 
-   echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$dc;
 } else {
    echo "Update not successful.";
 }

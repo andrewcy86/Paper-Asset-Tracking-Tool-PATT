@@ -40,12 +40,93 @@ if(
 
 $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 
+//update index level on document
+//if index level is updated, folderdocinfo_id has to be updated
+
+//updates fields in folder-file-details modal window
 if(!empty($title)) {
 $data_update = array('title' => $title);
 $data_where = array('id' => $folderfileid);
 $wpdb->update($table_name , $data_update, $data_where);
 }
 
+if(!empty($date)) {
+$data_update = array('date' => $date);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($author)) {
+$data_update = array('author' => $author);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($record_type)) {
+$data_update = array('record_type' => $record_type);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($site_name)) {
+$data_update = array('site_name' => $site_name);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($site_id)) {
+$data_update = array('site_id' => $site_id);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($close_date)) {
+$data_update = array('close_date' => $close_date);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($site_id)) {
+$data_update = array('site_id' => $site_id);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($contact_email)) {
+$data_update = array('epa_contact_email' => $contact_email);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($access_type)) {
+$data_update = array('access_type' => $access_type);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($source_format)) {
+$data_update = array('source_format' => $source_format);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($rights)) {
+$data_update = array('rights' => $rights);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($contract_number)) {
+$data_update = array('contract_number' => $contract_number);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
+if(!empty($grant_number)) {
+$data_update = array('grant_number' => $grant_number);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
+}
 
  echo "Document ID #: " . $pattdocid . " has been updated.";
  

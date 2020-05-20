@@ -30,7 +30,13 @@ if (isset($_GET['id']))
 if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
 
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
-    $box_ids = $wpdb->get_results("SELECT id FROM wpqa_wpsc_epa_boxinfo WHERE index_level = 2 AND ticket_id =" .$GLOBALS['id']);
+    $box_ids = $wpdb->get_results("
+    SELECT DISTINCT a.id
+    FROM wpqa_wpsc_epa_boxinfo a
+    LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
+    WHERE b.index_level = 2 AND a.ticket_id =" .$GLOBALS['id']);
+
+//print_r($box_ids);
 
     foreach($box_ids as $item)
     {
@@ -38,6 +44,8 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 $folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
 FROM wpqa_wpsc_epa_folderdocinfo
 WHERE box_id = " .$item->id);
+
+//print_r($folderfile_info);
 
 $maxcols = 3;
 $i = 0;

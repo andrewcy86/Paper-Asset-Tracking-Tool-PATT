@@ -79,7 +79,12 @@ foreach($record_schedules as $rs_num)
         
         $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office  
-WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+WHERE 
+wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
+wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND 
+wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id ." AND
+wpqa_wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']
+);
         
         //print_r($box_list);
 
@@ -101,7 +106,10 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wps
         
         $box_list_get_count = $wpdb->get_row("SELECT count(distinct wpqa_wpsc_epa_folderdocinfo.box_id) as box_count
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule
-WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);
+WHERE 
+wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
+wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id . " AND
+wpqa_wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']);
 //print_r($box_list_get_count);
 
 $box_list_count = $box_list_get_count->box_count;

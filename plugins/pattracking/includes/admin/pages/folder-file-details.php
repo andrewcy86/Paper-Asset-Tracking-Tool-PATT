@@ -325,31 +325,29 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                                }
 	                                } ?>
 	                            </div>
-	                            <div class="wpsp_sidebar_labels"><strong>Digitization Center:</strong> 
 	                            <?php
+	                            //if digitization_center field is empty, will not display location on front end
+	                            if(!empty($box_location)) {
+	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>';
 	                            echo $box_location . "<br />";
-	                            ?>
-	                            </div>
-								<!--switch out aisle, bay, shelf. and position with storage location table-->
-								<div class="wpsp_sidebar_labels"><strong>Aisle:</strong>
-							    <?php
-	                            echo $box_aisle . "<br />";
-	                            ?>
-	                            </div>
-								<div class="wpsp_sidebar_labels"><strong>Bay:</strong>
-							    <?php
-	                            echo $box_bay . "<br />";
-	                            ?>
-	                            </div>
-								<div class="wpsp_sidebar_labels"><strong>Shelf:</strong>
-								<?php
-	                            echo $box_shelf . "<br />";
-	                            ?>
-								</div>
-								<div class="wpsp_sidebar_labels"><strong>Position:</strong>
-							    <?php
-	                            echo $box_position . "<br />";
-	                            ?>
+	                                //if aisle/bay/shelf/position <= 0, does not display location on front end
+    	                            if(!($box_aisle <= 0 || $box_bay <= 0 || $box_shelf <= 0 || $box_position <= 0))
+    								{
+        								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
+        	                            echo $box_aisle . "<br />";
+        	                            echo '</div>';
+        								echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>';
+        	                            echo $box_bay . "<br />";
+        	                            echo '</div>';
+        								echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>';
+        	                            echo $box_shelf . "<br />";
+        								echo '</div>';
+        								echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>';
+        	                            echo $box_position . "<br />";
+        	                            echo '</div>';
+    								}
+	                            }
+	                            ?> 
 	                            </div>
 			    		</div>
 	

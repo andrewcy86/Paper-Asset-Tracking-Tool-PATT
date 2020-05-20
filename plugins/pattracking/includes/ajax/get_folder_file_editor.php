@@ -46,19 +46,101 @@ ob_start();
   <option value="1">Folder</option>
   <option value="2">File</option>
 </select></br></br>
-<strong>Title:</strong><br /><input type='text' id='title' placeholder= 'Enter title...'></br></br>
-<strong>Date:</strong><br /><input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>
-<strong>Author:</strong><br /><input type='text' id='author' placeholder= 'Enter author...'></br></br>
-<strong>Record Type:</strong><br /><input type='text' id='record_type' placeholder= 'Enter record type...'></br></br>
-<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>
-<strong>Site ID:</strong><br /><input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>
-<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>
-<strong>Contact Email:</strong><br /><input type='text' id='contact_email' placeholder= 'Enter contact email...'></br></br>
-<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= 'Enter access type...'></br></br>
-<strong>Source Format:</strong><br /><input type='text' id='source_format' placeholder= 'Enter source format...'></br></br>
-<strong>Rights:</strong><br /><input type='text' id='rights' placeholder= 'Enter folder/file rights...'></br></br>
-<strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= 'Enter contract number...'></br></br>
-<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= 'Enter grant number...'>
+
+<?php
+//placeholders with 'Enter...' only appear if that field is empty in the database, otherwise show current data
+
+if(!empty($folderfile_title)) {
+    echo "<strong>Title:</strong><br /><input type='text' id='title' placeholder= '$folderfile_title'></br></br>";
+}
+else {
+    echo "<strong>Title:</strong><br /><input type='text' id='title' placeholder= 'Enter title...'></br></br>";
+}
+
+if(!empty($folderfile_date)) {
+    echo "<strong>Date:</strong><br /><input type='date' id='date' placeholder= '$folderfile_date'></br></br>";
+}
+else {
+    echo "<strong>Date:</strong><br /><input type='date' id='date' placeholder= 'mm/dd/yyyy'></br></br>";
+}
+
+if(!empty($folderfile_author)) {
+    echo "<strong>Author:</strong><br /><input type='text' id='author' placeholder= '$folderfile_author'></br></br>";
+}
+else {
+    echo "<strong>Author:</strong><br /><input type='text' id='author' placeholder= 'Enter author...'></br></br>";
+}
+
+if(!empty($folderfile_record_type)) {
+echo "<strong>Record Type:</strong><br /><input type='text' id='record_type' placeholder= '$folderfile_record_type'></br></br>";
+}
+else {
+    echo "<strong>Record Type:</strong><br /><input type='text' id='record_type' placeholder= 'Enter record type...'></br></br>";
+}
+
+if(!empty($folderfile_site_name)) {
+    echo "<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= '$folderfile_site_name'></br></br>";
+}
+else {
+    echo "<strong>Site Name:</strong><br /><input type='text' id='site_name' placeholder= 'Enter site name...'></br></br>";
+}
+
+if(!empty($folderfile_site_name)) {
+    echo "<strong>Site ID:</strong><br /><input type='text' id='site_id' placeholder= '$folderfile_site_id'></br></br>";
+}
+else {
+    echo "<strong>Site ID:</strong><br /><input type='text' id='site_id' placeholder= 'Enter site ID...'></br></br>";
+}
+
+if(!empty($folderfile_close_date)) {
+    echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= '$folderfile_close_date'></br></br>";
+}
+else {
+    echo "<strong>Close Date:</strong><br /><input type='date' id='close_date' placeholder= 'Enter close date...'></br></br>";
+}
+
+if(!empty($folderfile_epa_contact_email)) {
+    echo "<strong>Contact Email:</strong><br /><input type='text' id='contact_email' placeholder= '$folderfile_epa_contact_email'></br></br>";
+}
+else {
+    echo "<strong>Contact Email:</strong><br /><input type='text' id='contact_email' placeholder= 'Enter contact email...'></br></br>";
+}
+
+if(!empty($folderfile_access_type)) {
+    echo "<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= '$folderfile_access_type'></br></br>";
+}
+else {
+    echo "<strong>Access Type:</strong><br /><input type='text' id='access_type' placeholder= 'Enter access type...'></br></br>";
+}
+
+if(!empty($folderfile_source_format)) {
+    echo "<strong>Source Format:</strong><br /><input type='text' id='source_format' placeholder= '$folderfile_source_format'></br></br>";
+}
+else {
+    echo "<strong>Source Format:</strong><br /><input type='text' id='source_format' placeholder= 'Enter source format...'></br></br>";
+}
+
+if(!empty($folderfile_rights)) {
+    echo "<strong>Rights:</strong><br /><input type='text' id='rights' placeholder= '$folderfile_rights'></br></br>";
+}
+else {
+    echo "<strong>Rights:</strong><br /><input type='text' id='rights' placeholder= 'Enter folder/file rights...'></br></br>";
+}
+
+if(!empty($folderfile_contract_number)) {
+    echo "<strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= '$folderfile_contract_number'></br></br>";
+}
+else {
+    echo "<strong>Contract Number:</strong><br /><input type='text' id='contract_number' placeholder= 'Enter contract number...'></br></br>";
+}
+
+if(!empty($folderfile_grant_number)) {
+    echo "<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= '$folderfile_grant_number'>";
+}
+else {
+    echo "<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= 'Enter grant number...'>";
+}
+?>
 <input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_folderdocinfoid; ?>">
 </form>

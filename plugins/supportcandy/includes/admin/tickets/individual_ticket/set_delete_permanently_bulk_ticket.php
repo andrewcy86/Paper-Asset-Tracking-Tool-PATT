@@ -54,18 +54,20 @@ $table_ss = 'wpqa_wpsc_epa_storage_status';
 $ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
+}
 
 if($box_storage_status_remaining == 4){
 $sso_update = array('occupied' => 0);
 $sso_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $sso_update, $sso_where);
 }
-		$wpdb->delete($wpdb->prefix.'wpsc_epa_boxinfo', array( 'id' => $associated_box_ids));
+
 		$wpdb->delete($wpdb->prefix.'wpsc_epa_storage_location', array( 'id' => $associated_storage_ids));
+		$wpdb->delete($wpdb->prefix.'wpsc_epa_boxinfo', array( 'id' => $associated_box_ids));
 	}
 // End PATT Code
 
-	$wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
+        $wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
 	
 	$args = array(
 		'post_type'      => 'wpsc_ticket_thread',

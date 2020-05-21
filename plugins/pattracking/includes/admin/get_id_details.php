@@ -7,6 +7,8 @@ if (!defined('ABSPATH')) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+$path = site_url( '', 'relative');
+
 $GLOBALS['id'] = $_GET['id'];
 
 $id = $GLOBALS['id'];
@@ -136,7 +138,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
 				$tbl .= '
     <tr>
             <td></td>
-            <td><a href="/wordpress3/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
+            <td><a href="'.$path.'/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
             <td>' . $boxlist_location . '</td>
             <td>' . $boxlist_shelf_location . '</td>
             <td>' . $boxlist_il_val . '</td>
@@ -246,7 +248,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 				$tbl .= '
     <tr>
             <td></td>
-            <td><a href="/wordpress3/data?id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
+            <td><a href="'.$path.'/data?id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>
@@ -256,7 +258,7 @@ WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
 			$tbl .= '</tbody></table></span>';
 
 			echo $tbl;
-			echo "<a href='/wordpress3/data?id=" . $request_id . "'>< Back to Request</a>";
+			echo "<a href='" . $path . "/data?id=" . $request_id . "'>< Back to Request</a>";
 			break;
 
 		case 3:
@@ -397,7 +399,7 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 				echo "<strong>This file is located in the following box:</strong><br />";
 			}
 			if (!empty($box_boxid)) {
-				echo "<strong>Box ID:</strong> <a href='/wordpress3/data?id=" . $box_boxid . "'>" . $box_boxid . "</a><br />";
+				echo "<strong>Box ID:</strong> <a href='" . $path . "/data?id=" . $box_boxid . "'>" . $box_boxid . "</a><br />";
 			}
 			if (!empty($box_location)) {
 				echo "<strong>Digitization Center Location:</strong> " . $box_location . "<br />";
@@ -408,7 +410,7 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
 			if (!empty($folderfile_file_location) || !empty($folderfile_file_name)) {
 				echo '<strong>Link to File:</strong> <a href="' . $folderfile_file_location . '" target="_blank">' . $folderfile_file_name . '</a><br />';
 			}
-			echo "<a href='/wordpress3/data?id=" . $request_id . "'>< Back to Request</a>";
+			echo "<a href='" . $path . "/data?id=" . $request_id . "'>< Back to Request</a>";
 			break;
             //default:
             //echo "Please enter a valid PATT ID";

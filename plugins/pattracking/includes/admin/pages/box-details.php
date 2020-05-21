@@ -190,9 +190,9 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
  <?php
     //get widget fields
     //$location_details = $wpdb->get_row("SELECT acronym, location, shelf, bay, record_schedule_number FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
-    $location_details = $wpdb->get_row("SELECT acronym, digitization_center, locations, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.position as position, record_schedule_number 
-FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule, wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_storage_location
-WHERE wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_location_status.id = wpqa_wpsc_epa_boxinfo.location_status_id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
+    $location_details = $wpdb->get_row("SELECT acronym, wpqa_terms.name as digitization_center, locations, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.position as position, record_schedule_number 
+FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule, wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_storage_location, wpqa_terms
+WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_location_status.id = wpqa_wpsc_epa_boxinfo.location_status_id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
 AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
 
     

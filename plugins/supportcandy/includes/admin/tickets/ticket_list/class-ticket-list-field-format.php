@@ -153,9 +153,10 @@ global $wpdb;
 $ticket_id = $this->ticket['id'];
           
 $box_details = $wpdb->get_results(
-"SELECT wpqa_wpsc_epa_storage_location.digitization_center as digitization_center
+"SELECT wpqa_terms.name as digitization_center
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
 			$array = [];

@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 if (!isset($_SESSION)) {
     session_start();    
 }
@@ -174,7 +176,7 @@ postvarsgn: jQuery("#grant_number").val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php echo $folderfile_folderdocinfoid; ?>");
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php echo $folderfile_folderdocinfoid; ?>");
    });
 }
 </script>

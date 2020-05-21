@@ -57,8 +57,13 @@ if (isset($_GET['id']))
     {
         global $wpdb;
         $array = array();
-        $box_digitization_center = $wpdb->get_results( "SELECT digitization_center FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location WHERE wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id AND ticket_id = " . $GLOBALS['id']);
-        
+        $box_digitization_center = $wpdb->get_results( "
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
+
                 foreach ( $box_digitization_center as $location )
             {
                 array_push($array, strtoupper($location->digitization_center));

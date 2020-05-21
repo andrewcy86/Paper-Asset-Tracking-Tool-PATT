@@ -39,20 +39,20 @@ if($searchByProgramOffice != ''){
 }
 
 if($searchByDigitizationCenter != ''){
-   $searchQuery .= " and (d.digitization_center ='".$searchByDigitizationCenter."') ";
+   $searchQuery .= " and (e.name ='".$searchByDigitizationCenter."') ";
 }
 
 if($searchGeneric != ''){
    $searchQuery .= " and (a.box_id like '%".$searchGeneric."%' or 
       b.request_id like '%".$searchGeneric."%' or 
-      d.digitization_center like '%".$searchGeneric."%' or
+      e.name like '%".$searchGeneric."%' or
       c.acronym like '%".$searchGeneric."%') ";
 }
 
 if($searchValue != ''){
    $searchQuery .= " and (a.box_id like '%".$searchValue."%' or 
       b.request_id like '%".$searchValue."%' or 
-      d.digitization_center like '%".$searchValue."%' or
+      e.name like '%".$searchValue."%' or
       c.acronym like '%".$searchValue."%') ";
 }
 
@@ -66,15 +66,17 @@ $sel = mysqli_query($con,"select count(a.box_id) as allcount FROM wpqa_wpsc_epa_
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_program_office as c ON a.program_office_id = c.id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
+INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
 WHERE 1 ".$searchQuery);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$boxQuery = "SELECT CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, d.digitization_center as location, c.acronym as acronym FROM wpqa_wpsc_epa_boxinfo as a
+$boxQuery = "SELECT CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, e.name as location, c.acronym as acronym FROM wpqa_wpsc_epa_boxinfo as a
 INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id
 INNER JOIN wpqa_wpsc_epa_program_office as c ON a.program_office_id = c.id
 INNER JOIN wpqa_wpsc_epa_storage_location as d ON a.storage_location_id = d.id
+INNER JOIN wpqa_terms e ON e.term_id = d.digitization_center
 WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();

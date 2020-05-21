@@ -34,13 +34,25 @@ $patt_ticket_id = $box_details->request_id;
 <h4>Switch Digitization Center Location</h4>
 
   <label for="dc">Choose a Location:</label>
-  <select id="dc" name="dc">
-    <option value="" selected disabled>--Select a Location--</option>
-    <option value="East" <?php echo ($digitization_center == 'East') ? 'disabled' : ''; ?>>East</option>
-    <option value="East_CUI" <?php echo ($digitization_center == 'East_CUI') ? 'disabled' : ''; ?>>East CUI</option>
-    <option value="West" <?php echo ($digitization_center == 'West') ? 'disabled' : ''; ?>>West</option>
-    <option value="West_CUI" <?php echo ($digitization_center == 'West_CUI') ? 'disabled' : ''; ?>>West CUI</option>
-  </select>
+ 
+      <select class="form-control" name="dc" id="dc">
+        <?php
+				$categories = get_terms([
+				  'taxonomy'   => 'wpsc_categories',
+				  'hide_empty' => false,
+					'orderby'    => 'meta_value_num',
+				  'order'    	 => 'ASC',
+					'meta_query' => array('order_clause' => array('key' => 'wpsc_category_load_order')),
+				]);
+				//$wpsc_default_ticket_category = get_option('wpsc_default_ticket_category');
+        foreach ( $categories as $category ) :
+          $selected = $category->term_id == 666 ? 'selected="selected" disabled' : '';
+          $disabled = $digitization_center == $category->term_id ? 'disabled' : '';
+          echo '<option '.$selected.' '.$disabled.' value="'.$category->term_id.'">'.$category->name.'</option>';
+        endforeach;
+        ?>
+      </select>
+      
 
 <?php 
 $body = ob_get_clean();

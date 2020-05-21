@@ -564,10 +564,11 @@ var link = true;
 	
 	include_once WPSC_ABSPATH . 'includes/admin/tickets/ticket_list/class-ticket-list-field-format.php';
 	$format = new WPSC_Ticket_List_Field();
+	$subfolder_path = site_url( '', 'relative'); 
 		if($ticket_list){
 			foreach($ticket_list as $ticket){
 				?>
-				<tr class="wpsc_tl_row_item" data-id="<?php echo $ticket['id']?>" onclick="window.location.replace('/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket['id']); ?>');">
+				<tr class="wpsc_tl_row_item" data-id="<?php echo $ticket['id']?>" onclick="if(link)window.location.replace('<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket['id']); ?>');">
 					<td onmouseover="link=false;" onmouseout="link=true;">
 						<input type="checkbox" name="chk_ticket_list_item[]" class="chk_ticket_list_item" onchange="toggle_ticket_list_actions();" value="<?php echo $ticket['id']; ?>"/>
 					</td>

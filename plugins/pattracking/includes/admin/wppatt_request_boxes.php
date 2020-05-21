@@ -3,6 +3,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
+$subfolder_path = site_url( '', 'relative'); 
+
 global $wpdb, $current_user, $wpscfunction;
 if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 		exit;
@@ -149,7 +151,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 				
             $tbl .= '
     <tr class="wpsc_tl_row_item">
-            <td><a href="/wordpress3/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>';
+            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>';
            
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))

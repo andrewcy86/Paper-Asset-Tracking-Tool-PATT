@@ -16,7 +16,8 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
    $bay = $_POST['postvarbname'];
    $boxid = $_POST['postvarboxname'];
    $center = $_POST['postvarcentername'];
-   
+   $center_term_id = term_exists( $center ); 
+
    $center_value = '';
    
    if ($center == 'East') {
@@ -83,7 +84,7 @@ SELECT remaining
 FROM wpqa_wpsc_epa_storage_status
 WHERE
 shelf_id = '" . $new_shelf_id_update . "' AND
-digitization_center = '" . $center . "'
+digitization_center = '" . $center_term_id . "'
 ");
 
 				$new_shelf_update_remaining = $new_shelf_update->remaining - 1;

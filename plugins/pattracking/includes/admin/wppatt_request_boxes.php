@@ -98,10 +98,11 @@ width: 204px;
 	//$box_details = Patt_Custom_Func::fetch_box_details($ticket_id);
 
 $box_details = $wpdb->get_results(
-"SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_storage_location.digitization_center as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location
+"SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_terms.name as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
 INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
 			
@@ -155,7 +156,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             {
             if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
-            $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
+            $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
             } elseif ($boxlist_location == 'Currently Unassigned' && $boxlist_dc_location == 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . '</td>';   
             $tbl .= '<td>' . $boxlist_dc_location . '</td>';
@@ -184,7 +185,22 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
 		});
 } );
-		function wpsc_get_inventory_editor(box_id){
+
+		function wpsc_get_digitization_editor_final(box_id){
+		  wpsc_modal_open('Re-assign Digitization Center');
+		  var data = {
+		    action: 'wpsc_get_digitization_editor_final',
+		    box_id: box_id
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		}
+   
+   		function wpsc_get_inventory_editor(box_id){
 		  wpsc_modal_open('Assigned Location Editor');
 		  var data = {
 		    action: 'wpsc_get_inventory_editor',
@@ -198,18 +214,4 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 		  });  
 		}
 		
-		function wpsc_get_digitization_editor(box_id){
-		  wpsc_modal_open('Re-assign Digitization Center');
-		  var data = {
-		    action: 'wpsc_get_digitization_editor',
-		    box_id: box_id
-		  };
-		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		    var response = JSON.parse(response_str);
-		    jQuery('#wpsc_popup_body').html(response.body);
-		    jQuery('#wpsc_popup_footer').html(response.footer);
-		    jQuery('#wpsc_cat_name').focus();
-		  });  
-		}
-   
 	</script>

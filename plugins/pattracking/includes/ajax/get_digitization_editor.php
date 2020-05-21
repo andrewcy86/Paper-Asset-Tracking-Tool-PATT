@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 if (!isset($_SESSION)) {
     session_start();    
 }
@@ -78,7 +80,7 @@ function wpsc_get_digitization_editor(box_id){
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($patt_ticket_id); ?>");
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($patt_ticket_id); ?>");
    });
 } 
 </script>

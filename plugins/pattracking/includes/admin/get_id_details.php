@@ -31,23 +31,12 @@ $ticket_id_val = substr($id, 0, 7);
 
 $program_office_array_id = array();
 
-// $boxlist_get_po = $wpdb->get_results(
-// 	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
-// FROM wpqa_wpsc_epa_boxinfo
-// INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-// WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
-// );
-
-
-$args = [
-    'select' => 'DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office',
-    'join' => [
-        ['type' => 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id'],
-    ],
-    'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $ticket_id_val],
-];
-$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-$boxlist_get_po = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
+$boxlist_get_po = $wpdb->get_results(
+	"SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $ticket_id_val
+);
 
 foreach ($boxlist_get_po as $item) {
 	array_push($program_office_array_id, $item->program_office);
@@ -58,26 +47,24 @@ $boxlist_po = join(", ", $program_office_array_id);
 if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $id)) {
 	switch ($dash_count) {
 		case 0:
-			// $request_info = $wpdb->get_row(
-			// "SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
-			// FROM wpqa_wpsc_ticket
-			// INNER JOIN wpqa_terms AS status ON ( wpqa_wpsc_ticket.ticket_status = status.term_id )
-			// INNER JOIN wpqa_terms AS location ON ( wpqa_wpsc_ticket.ticket_category = location.term_id )
-			// INNER JOIN wpqa_terms AS priority ON ( wpqa_wpsc_ticket.ticket_priority = priority.term_id )    
-			// WHERE wpqa_wpsc_ticket.request_id = " . $id );
+			$request_info = $wpdb->get_row(
+				"SELECT wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, wpqa_terms.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created
+FROM wpqa_wpsc_ticket
 
-			$args = [
-				'select' => 'wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created',
-				'join' => [
-					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS status', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_status'],
-					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS location', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_category'],
-					['type' => 'INNER JOIN', 'table' => 'wpqa_terms AS priority', 'key' => 'term_id', 'compare' => '=', 'foreign_key' => 'ticket_priority'],
-				],
-				'where' => ['wpqa_wpsc_ticket.request_id', $id],
-			];
-			$wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');
-			$request_info = $wpqa_wpsc_ticket->get_row($args, false);
+    INNER JOIN wpqa_terms AS status ON (
+        wpqa_wpsc_ticket.ticket_status = status.term_id
+    )
+INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 
+    INNER JOIN wpqa_terms AS priority ON (
+        wpqa_wpsc_ticket.ticket_priority = priority.term_id
+    )  
+
+WHERE wpqa_wpsc_ticket.request_id = " . $id
+			);
 			
 			$status_color = get_term_meta($request_info->ticket_status_id,'wpsc_status_background_color',true);
             $priority_color = get_term_meta($request_info->ticket_priority_id,'wpsc_priority_background_color',true);
@@ -92,19 +79,17 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			echo "<strong>Priority:</strong> " . $request_info->ticket_priority . "  <span style='color: ".$priority_color." ;margin: 0px;'><i class='fas fa-asterisk'></i></span><br />";
 			echo "<strong>Date Created:</strong> " . date("m-d-Y", strtotime($request_info->date_created));
 
-			// $box_details = $wpdb->get_results(
-			// "SELECT wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf
-			// FROM wpqa_wpsc_epa_boxinfo
-			// WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
-			// );
+			$box_details = $wpdb->get_results(
+				"
+SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_terms.name as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 
-			$args = [
-				'select' => 'wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf',
-				'where' => ['wpqa_wpsc_epa_boxinfo.ticket_id', $request_info->id],
-			];
-			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-			$request_info = $wpqa_wpsc_epa_boxinfo->get_results($args, false);
 
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $request_info->id
+			);
 
 			$tbl = '<br /><br /><strong>Boxes associated with this request:</strong>
 <style>
@@ -119,18 +104,27 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
     <th></th>
     <th>ID</th>
     <th>Facility</th>
-    <th class="desktop">Bay</th>
-    <th class="desktop">Shelf</th>
+    <th class="desktop">Shelf Location</th>
     <th class="desktop">Index Level</th>
   </tr>
  </thead><tbody>
 ';
 
 			foreach ($box_details as $info) {
-				$boxlist_id = $info->id;
-				$boxlist_location = $info->location;
-				$boxlist_bay = $info->bay;
-				$boxlist_shelf = $info->shelf;
+				$boxlist_id = $info->box_id;
+				$boxlist_location = $info->digitization_center;
+				if ($boxlist_location == 'East') {
+					$boxlist_location_val = "E";
+				} else {
+					$boxlist_location_val = "W";
+				}
+
+			    if (($info->aisle == '0') || ($info->bay == '0') || ($info->shelf == '0') || ($info->position == '0')) {
+				$boxlist_shelf_location = 'Currently Unassigned';
+				} else {
+                $boxlist_shelf_location = $info->aisle . 'A_' .$info->bay .'B_' . $info->shelf . 'S_' . $info->position .'P_'.$boxlist_location_val;
+				}
+				
 				$boxlist_il = $info->index_level;
 				$boxlist_il_val = '';
 				if ($boxlist_il == 1) {
@@ -144,8 +138,7 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
             <td></td>
             <td><a href="/wordpress3/data?id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>
             <td>' . $boxlist_location . '</td>
-            <td>' . $boxlist_bay . '</td>
-            <td>' . $boxlist_shelf . '</td>
+            <td>' . $boxlist_shelf_location . '</td>
             <td>' . $boxlist_il_val . '</td>
             </tr>
             ';
@@ -156,44 +149,43 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			break;
 
 		case 1:
-			// $box_details = $wpdb->get_row(
-			// 	"SELECT wpqa_wpsc_epa_boxinfo.id as pk, wpqa_wpsc_epa_boxinfo.ticket_id as ticket, wpqa_wpsc_epa_boxinfo.box_id as id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
-			// 	FROM wpqa_wpsc_epa_boxinfo
-			// 	INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-			// 	WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
-			// );
+			$box_details = $wpdb->get_row(
+				"
+SELECT 
+wpqa_wpsc_epa_boxinfo.id as pk, 
+wpqa_wpsc_ticket.request_id as ticket,
+wpqa_wpsc_epa_boxinfo.box_id as id, 
+wpqa_wpsc_epa_folderdocinfo.index_level as index_level,
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 
-			$args = [
-				'select' => 'wpqa_wpsc_ticket.id as id, wpqa_wpsc_ticket.customer_name as customer_name, wpqa_wpsc_ticket.customer_email as customer_email, status.name as ticket_status, status.term_id as ticket_status_id, location.name as ticket_location, priority.name as ticket_priority, priority.term_id as ticket_priority_id, wpqa_wpsc_ticket.date_created as date_created',
-				'join' => [
-					['type' => 'INNER JOIN', 'table' => 'wpqa_epa_record_schedule', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'record_schedule_id']
-				],
-				'where' => ['wpqa_wpsc_epa_boxinfo.box_id', "$id"],
-			];
-			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-			$box_details = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
+WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "'"
+
+			);
 
 			$box_details_id = $box_details->pk;
 
-			// $box_content = $wpdb->get_results(
-			// 	"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
-			// 	FROM wpqa_wpsc_epa_folderdocinfo
-			// 	INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
-			// 	WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
-			// );
+			$box_content = $wpdb->get_results(
+				"SELECT wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format
+FROM wpqa_wpsc_epa_folderdocinfo
+INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = '" . $box_details_id . "'"
+			);
 
-			$args = [
-				'select' => 'wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format',
-				'join' => [
-					['type'=> 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_boxinfo', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'box_id'],
-				],
-				'where' => ['wpqa_wpsc_epa_folderdocinfo.box_id', $box_details_id],
-			];
-			$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
-			$box_content = $wpqa_wpsc_epa_folderdocinfo->get_results($args, false);
 
-			$str_length = 7;
-			$request_id = substr("000000{$box_details->ticket}", -$str_length);
+			$request_id = $box_details->ticket;
 
 			$boxlist_il = $box_details->index_level;
 			$boxlist_il_val = '';
@@ -202,12 +194,25 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			} else {
 				$boxlist_il_val = "File";
 			}
+			
+				$box_details_location = $box_details->location;
+				if ($box_details_location == 'East') {
+					$box_details_location_val = "E";
+				} else {
+					$box_details_location_val = "W";
+				}
+				
+			    if (($box_details->aisle == '0') || ($box_details->bay == '0') || ($box_details->shelf == '0') || ($box_details->position == '0')) {
+				$box_details_shelf_location = 'Currently Unassigned';
+				} else {
+                $box_details_shelf_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$box_details_location_val;
+				}
+				
 			echo "<h3>Box</h3>";
 			echo "<strong>Box ID:</strong> " . $id . "<br />";
 			echo "<strong>Program Office:</strong> " . $boxlist_po . "<br />";
 			echo "<strong>Digitization Center Location:</strong> " . $box_details->location . "</strong><br />";
-			echo "<strong>Bay:</strong> " . $box_details->bay . "<br />";
-			echo "<strong>Shelf:</strong> " . $box_details->shelf . "<br />";
+			echo "<strong>Shelf Location:</strong> " . $box_details_shelf_location . "<br />";
 			echo "<strong>Record Schedule:</strong> " . $box_details->rsnum . "<br />";
 			echo "<strong>Index Level:</strong>  " . $boxlist_il_val;
 
@@ -255,36 +260,26 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			break;
 
 		case 3:
-			// $folderfile_details = $wpdb->get_row(
-			// 	"SELECT 
-            // wpqa_wpsc_epa_folderdocinfo.box_id,
-            // wpqa_wpsc_epa_folderdocinfo.title, 
-            // wpqa_wpsc_epa_folderdocinfo.date, 
-            // wpqa_wpsc_epa_folderdocinfo.author, 
-            // wpqa_wpsc_epa_folderdocinfo.record_type,
-            // wpqa_wpsc_epa_folderdocinfo.site_name, 
-            // wpqa_wpsc_epa_folderdocinfo.site_id, 
-            // wpqa_wpsc_epa_folderdocinfo.close_date,
-            // wpqa_wpsc_epa_folderdocinfo.epa_contact_email,
-            // wpqa_wpsc_epa_folderdocinfo.access_type,
-            // wpqa_wpsc_epa_folderdocinfo.source_format,
-            // wpqa_wpsc_epa_folderdocinfo.rights, 
-            // wpqa_wpsc_epa_folderdocinfo.contract_number,  
-            // wpqa_wpsc_epa_folderdocinfo.grant_number,
-            // wpqa_wpsc_epa_folderdocinfo.file_location,
-            // wpqa_wpsc_epa_folderdocinfo.file_name
-            // FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
-			// );
-
-			$args = [
-				'select' => 'box_id, title,  date,  author,  record_type, site_name,  site_id,  close_date, epa_contact_email, access_type, source_format, rights,  contract_number,   grant_number, file_location, file_name',
-				'where' => ['folderdocinfo_id', $id],
-			];
-			$wpqa_wpsc_epa_folderdocinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_folderdocinfo');
-			$folderfile_details = $wpqa_wpsc_epa_folderdocinfo->get_row($args, false);
-
-
-
+			$folderfile_details = $wpdb->get_row(
+				"SELECT 
+            wpqa_wpsc_epa_folderdocinfo.box_id,
+            wpqa_wpsc_epa_folderdocinfo.title, 
+            wpqa_wpsc_epa_folderdocinfo.date, 
+            wpqa_wpsc_epa_folderdocinfo.author, 
+            wpqa_wpsc_epa_folderdocinfo.record_type,
+            wpqa_wpsc_epa_folderdocinfo.site_name, 
+            wpqa_wpsc_epa_folderdocinfo.site_id, 
+            wpqa_wpsc_epa_folderdocinfo.close_date,
+            wpqa_wpsc_epa_folderdocinfo.epa_contact_email,
+            wpqa_wpsc_epa_folderdocinfo.access_type,
+            wpqa_wpsc_epa_folderdocinfo.source_format,
+            wpqa_wpsc_epa_folderdocinfo.rights, 
+            wpqa_wpsc_epa_folderdocinfo.contract_number,  
+            wpqa_wpsc_epa_folderdocinfo.grant_number,
+            wpqa_wpsc_epa_folderdocinfo.file_location,
+            wpqa_wpsc_epa_folderdocinfo.file_name
+            FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $id . "'"
+			);
 
 			$folderfile_boxid = $folderfile_details->box_id;
 			$folderfile_title = $folderfile_details->title;
@@ -302,27 +297,27 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			$folderfile_grant_number = $folderfile_details->grant_number;
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
+			$box_details = $wpdb->get_row(
+"SELECT wpqa_wpsc_epa_boxinfo.id, 
+wpqa_wpsc_epa_boxinfo.box_id as box_id, 
+wpqa_wpsc_epa_folderdocinfo.index_level as index_level, 
 
+wpqa_terms.name as location, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
 
-// 			$box_details = $wpdb->get_row(
-// 				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
-// FROM wpqa_wpsc_epa_boxinfo
-// INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-// INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-// WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
-// 			);
-
-			$args = [
-				'select' => 'wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office',
-				'join' => [
-					['type'=> 'INNER JOIN', 'table' => 'wpqa_epa_record_schedule', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'record_schedule_id'],
-					['type'=> 'INNER JOIN', 'table' => 'wpqa_wpsc_epa_program_office', 'key' => 'id', 'compare' => '=', 'foreign_key' => 'program_office_id']
-				],
-				'where' => ['wpqa_wpsc_epa_boxinfo.id', $folderfile_boxid],
-			];
-			$wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
-			$box_details = $wpqa_wpsc_epa_boxinfo->get_row($args, false);
-
+wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, 
+wpqa_wpsc_epa_program_office.acronym as program_office
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
+INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
+			);
 
 			$box_boxid = $box_details->box_id;
 			$box_rs = $box_details->rsnum;
@@ -330,8 +325,18 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			$request_id = substr($box_boxid, 0, 7);
 			$box_il = $box_details->index_level;
 			$box_location = $box_details->location;
-			$box_bay = $box_details->bay;
-			$box_shelf = $box_details->shelf;
+			
+				if ($box_location == 'East') {
+					$box_location_val = "E";
+				} else {
+					$box_location_val = "W";
+				}
+
+			    if (($box_details->aisle == '0') || ($box_details->bay == '0') || ($box_details->shelf == '0') || ($box_details->position == '0')) {
+				$box_details_shelf_location = 'Currently Unassigned';
+				} else {
+                $box_details_shelf_location = $box_details->aisle . 'A_' .$box_details->bay .'B_' . $box_details->shelf . 'S_' . $box_details->position .'P_'.$box_location_val;
+				}
 
 			$box_il_val = '';
 			if ($box_il == 1) {
@@ -397,11 +402,8 @@ if (preg_match("/^[0-9]{7}$/", $id) || preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $id
 			if (!empty($box_location)) {
 				echo "<strong>Digitization Center Location:</strong> " . $box_location . "<br />";
 			}
-			if (!empty($box_bay)) {
-				echo "<strong>Bay:</strong> " . $box_bay . "<br />";
-			}
-			if (!empty($box_shelf)) {
-				echo "<strong>Shelf:</strong> " . $box_shelf . "<br />";
+			if (!empty($box_details_shelf_location)) {
+				echo "<strong>Shelf Location:</strong> " . $box_details_shelf_location . "<br />";
 			}
 			if (!empty($folderfile_file_location) || !empty($folderfile_file_name)) {
 				echo '<strong>Link to File:</strong> <a href="' . $folderfile_file_location . '" target="_blank">' . $folderfile_file_name . '</a><br />';

@@ -32,11 +32,6 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'"
 			$box_storage_shelf = $box_details->shelf;
 			$box_sotrage_shelf_id = $box_storage_aisle . '_' . $box_storage_bay . '_' . $box_storage_shelf;
 			$box_id_val = $box_details->box_id;
-            
-$table_sl = 'wpqa_wpsc_epa_storage_location';
-$sl_update = array('digitization_center' => $dc, 'aisle' => '0' ,'bay'=>'0','shelf'=>'0','position'=>'0');
-$sl_where = array('id' => $box_storage_location_id);
-$wpdb->update($table_sl , $sl_update, $sl_where);
 
 $box_storage_status = $wpdb->get_row(
 "SELECT 
@@ -61,6 +56,11 @@ $sso_update = array('occupied' => 0);
 $sso_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $sso_update, $sso_where);
 }
+
+$table_sl = 'wpqa_wpsc_epa_storage_location';
+$sl_update = array('digitization_center' => $dc, 'aisle' => '0' ,'bay'=>'0','shelf'=>'0','position'=>'0');
+$sl_where = array('id' => $box_storage_location_id);
+$wpdb->update($table_sl , $sl_update, $sl_where);
 
 echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$dc;
    

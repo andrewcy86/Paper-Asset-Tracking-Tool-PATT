@@ -2,6 +2,8 @@
 
 global $wpdb, $current_user, $wpscfunction;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 $path = preg_replace('/wp-content.*$/','',__DIR__);
 include($path.'wp-load.php');
 
@@ -252,7 +254,7 @@ jQuery("#checkout-button").click(function () {
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo $_GET['ticket_id']; ?>");
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo $_GET['ticket_id']; ?>");
    });
 });
 

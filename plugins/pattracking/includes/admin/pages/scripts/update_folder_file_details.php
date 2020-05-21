@@ -42,6 +42,28 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 
 //update index level on document
 //if index level is updated, folderdocinfo_id has to be updated
+if (isset($il)) {
+        //updates index_level to either folder/file
+        $data_update_il = array('index_level' => $il);
+        
+        //pattdocid = folderdocinfo_id
+        $pattdocid_split = explode('-', $pattdocid);
+        //rewrite the folderdocinfo_id
+        if($data_update_il == 1) {
+            $folderdocinfo_id_update = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '01' . '-' . $pattdocid_split[3];
+        } 
+        else {
+            $folderdocinfo_id_update = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '02' . '-' . $pattdocid_split[3];
+        }
+        //assign new index level to folderdocinfo_id
+        
+        $data_update_folderdocinfo_id = array('folderdocinfo_id' => $folderdocinfo_id_update);
+        $data_where = array('id' => $folderfileid);
+        //update index_level
+        $wpdb->update($table_name, $data_update_il, $data_where);
+        //update folderdocinfo_id
+        $wpdb->update($table_name, $data_update_folderdocinfo_id, $data_where);
+}
 
 //updates fields in folder-file-details modal window
 if(!empty($title)) {

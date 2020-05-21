@@ -222,19 +222,26 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
 			
 			</h4>
 			<hr class="widget_divider">
-			
-            <div class="wpsp_sidebar_labels"><strong>Program Office: </strong> <?php echo $location_program_office ?></div>
-            <div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong> <?php echo $location_digitization_center ?></div>
-			<div class="wpsp_sidebar_labels"><strong>Location: </strong> <?php echo $location_general ?></div>
-			<!--Only displays aisle, bay, shelf, and position if location status is 'On Shelf', otherwise only display general location in facility-->
+			<!--error handling implemented, will not display a field if it is empty/null-->
 			<?php
-			    if($location_general == 'On Shelf')
-			    {
-			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
-			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $location_bay . '</div>';
-			        echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>' . $location_shelf . '</div>';
-			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
+			if(!empty($location_program_office)) {
+                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
+            }
+            if(!empty($location_digitization_center)) {
+                echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>' . $location_digitization_center . '</div>';
+                
+                if(!empty($location_general)) {
+			        echo '<div class="wpsp_sidebar_labels"><strong>Location: </strong>' . $location_general . '</div>';
+			       
+			       //checks to make sure location of box is 'On Shelf' and that aisle/bay/shelf/position != 0
+			       if($location_general == 'On Shelf' && (!($location_aisle <= 0 || $location_bay <= 0 || $location_shelf <= 0 || $location_position <= 0))) {
+    			        echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>' . $location_aisle . '</div>';
+    			        echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>' . $location_bay . '</div>';
+    			        echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>' . $location_shelf . '</div>';
+    			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
+			        } 
 			    }
+            }
 			?>
 			
 			<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong> <?php echo $location_record_schedule ?></div>

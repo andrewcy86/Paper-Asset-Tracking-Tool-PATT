@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 if (!isset($_SESSION)) {
     session_start();    
 }
@@ -54,7 +56,7 @@ postvarsrs: jQuery("#rs").val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("/wordpress3/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id=<?php echo $patt_box_id; ?>");
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=boxdetails&id=<?php echo $patt_box_id; ?>");
    });
 }
 </script>

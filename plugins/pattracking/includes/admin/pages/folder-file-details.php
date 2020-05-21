@@ -157,7 +157,16 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
         	[File ID # <?php
             echo $GLOBALS['id']; ?>]
-		  <?php } ?>		
+		  <?php } ?>
+		  
+		  <?php
+		  $agent_permissions = $wpscfunction->get_current_agent_permissions();
+          $agent_permissions['label'];
+		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+                {
+			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderfile_id . ')"><i class="fas fa-edit fa-xs"></i></a>';
+			    }
+		  ?>
       </h3>
 <?php
 			}

@@ -22,7 +22,6 @@ if ( ! class_exists( 'wppatt_Functions' ) ) :
     include WPPATT_ABSPATH . 'includes/admin/ecms_cron.php';
     }
     
-    
 }  
 endif;
 

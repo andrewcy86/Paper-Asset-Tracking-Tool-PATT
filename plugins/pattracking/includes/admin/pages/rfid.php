@@ -107,9 +107,11 @@ color: rgb(255, 255, 255) !important;
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
+<form id="frm-example" method="POST">
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
+                <th class="datatable_header"></th>
                 <th class="datatable_header">Reader ID</th>
                 <th class="datatable_header">Box ID</th>
                 <th class="datatable_header">Request ID</th>
@@ -119,8 +121,15 @@ color: rgb(255, 255, 255) !important;
         </thead>
     </table>
 <br /><br />
+
+<button type="submit" class="btn btn-primary" id="editselectedbox"><i class="fas fa-edit"></i> Edit Selected Boxes</button>
+<br /><br />
+</form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
+
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
@@ -129,7 +138,6 @@ color: rgb(255, 255, 255) !important;
 <script>
 
 jQuery(document).ready(function(){
-
   var dataTable = jQuery('#tbl_templates_boxes').DataTable({
     'processing': true,
     'serverSide': true,
@@ -148,7 +156,20 @@ jQuery(document).ready(function(){
           data.searchByReaderID = readerid;
        }
     },
+    'columnDefs': [
+         {
+            'targets': 0,
+            'checkboxes': {
+               'selectRow': true
+            }
+         }
+      ],
+      'select': {
+         'style': 'multi'
+      },
+      'order': [[1, 'asc']],
     'columns': [
+       { data: 'box_id' },
        { data: 'Reader_Name' }, 
        { data: 'box_id' },
        { data: 'request_id' },
@@ -213,8 +234,54 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
 });
 
 
-});
+// Handle form submission event 
+   jQuery('#frm-example').on('submit', function(e){
+      var form = this;
+      
+      var rows_selected = dataTable.column(0).checkboxes.selected();
 
+      // Iterate over all selected checkboxes
+      jQuery.each(rows_selected, function(index, rowId){
+         // Create a hidden element 
+         jQuery(form).append(
+             jQuery('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'id[]')
+                .val(rowId)
+         );
+         
+    	  wpsc_modal_open('Edit Box Information');
+		  var data = {
+		    action: 'wpsc_get_rfid_box_editor',
+		    box_id : rows_selected.join(",")
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  });  
+		  
+      });
+
+      // FOR DEMONSTRATION ONLY
+      // The code below is not needed in production
+      
+      // Output form data to a console     
+      //jQuery('#example-console-rows').text(rows_selected.join(","));
+      
+      // Output form data to a console     
+      //jQuery('#example-console-form').text(jQuery(form).serialize());
+       
+      // Remove added elements
+      //jQuery('input[name="id\[\]"]', form).remove();
+       
+      // Prevent actual form submission
+      e.preventDefault();
+   });   
+   
+
+});
 		function wpsc_clear_rfid(){
 
 		  wpsc_modal_open('Clear Scanned Boxes by RFID Reader ID');

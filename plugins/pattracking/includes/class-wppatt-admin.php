@@ -196,6 +196,11 @@ switch ($company_name) {
     include WPPATT_ABSPATH . 'includes/ajax/get_clear_rfid.php';
     die();
     }
+	  
+    public function get_rfid_box_editor(){    
+    include WPPATT_ABSPATH . 'includes/ajax/get_rfid_box_editor.php';
+    die();
+    }
   }
   
 endif;

@@ -127,7 +127,8 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add RFID Reader Modal
           add_action('wp_ajax_wpsc_get_clear_rfid', array($backend, 'get_clear_rfid'));
-           
+          add_action('wp_ajax_wpsc_get_rfid_box_editor', array($backend, 'get_rfid_box_editor'));
+          
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);
           

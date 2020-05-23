@@ -5,7 +5,7 @@ $path = preg_replace('/wp-content.*$/', '', __DIR__);
 include ($path . 'wp-load.php');
 include ($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
 
-if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '620') {
+if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
 	$dc = $_POST['postvardcname'];
@@ -154,7 +154,7 @@ AND digitization_center = '" . $dc_final . "'
 				);
 				$ncsl_data_where = array('id' => $box_id_assignment[$key]);
 
-				$wpdb->update($ncsl_table_name, $ncsl_data_update, $ncsl_data_where);
+			    $wpdb->update($ncsl_table_name, $ncsl_data_update, $ncsl_data_where);
 
 				$nc_shelf_id_update = $ncf_aisle . '_' . $ncf_bay . '_' . $ncf_shelf;
 // Update storage status table
@@ -198,7 +198,7 @@ GROUP BY group_num
 			$findgaps_array = array();
 
 			$counter = 0;
-			
+
 // Obtain total from above query and determine next available gap that fits the unassigned box total
 			foreach ($find_gaps as $info) {
 				$findgaps_shelfid = $info->shelf_id;
@@ -211,6 +211,8 @@ GROUP BY group_num
 				$counter++;
 			}
             //echo $counter;
+            
+            //print_r($findgaps_array);
 			$shelfid_gaps_array = explode(",", $findgaps_array[$counter]);
             //print_r($shelfid_gaps_array);
             
@@ -474,7 +476,10 @@ digitization_center = '" . $dc_final . "'
 		if ($ticket_details_status == 3 && $box_details_count > 0) {
 			echo 'Single Ticket selected, # of unassigned boxes = ' . $box_details_count . ' ';
 			echo "Ticket ID #: " . $tkid . " Digitization Center: " . $dc_final . " Status: " . $ticket_details_status;
+		} else {
+		    echo "No automatic assignments made.";
 		}
+		
 	}
 
 } else {

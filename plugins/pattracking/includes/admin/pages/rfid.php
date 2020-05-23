@@ -39,7 +39,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="wpsc_clear_rfid();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-eraser"></i> Clear by RFID Reader ID</button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_clear_rfid_btn" onclick="wpsc_clear_rfid();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-eraser"></i> Clear by RFID Reader ID</button>
   </div>
 
 </div>
@@ -119,7 +119,6 @@ color: rgb(255, 255, 255) !important;
         </thead>
     </table>
 <br /><br />
-
 <button type="submit" class="btn btn-primary" id="editselectedbox"><i class="fas fa-edit"></i> Edit Selected Boxes</button>
 <br /><br />
 </form>
@@ -178,7 +177,21 @@ jQuery(document).ready(function(){
   
   setInterval( function () {
     dataTable.ajax.reload( null, false ); // user paging is not reset on reload
-}, 2000 );
+
+if(dataTable.data().length !== 0) {
+show_rfid_clear();
+} else {
+hide_rfid_clear();
+}
+
+var check = jQuery('#tbl_templates_boxes').find('input[type=checkbox]:checked').length;
+if (check>0) {
+enable_rfid_button();
+}else{
+disable_rfid_button();
+}
+
+}, 1000 );
 
 jQuery('#tbl_templates_boxes_processing').remove();
 
@@ -280,6 +293,26 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
 
 
 });
+        jQuery('#wpsc_clear_rfid_btn').hide();
+        
+		function show_rfid_clear(){
+        jQuery('#wpsc_clear_rfid_btn').show();
+		}
+		
+		function hide_rfid_clear(){
+		jQuery('#wpsc_clear_rfid_btn').hide();
+		}
+		
+		jQuery('#editselectedbox').attr('disabled', 'disabled');
+        
+		function enable_rfid_button(){
+        jQuery('#editselectedbox').removeAttr('disabled');
+		}
+		
+		function disable_rfid_button(){
+		jQuery('#editselectedbox').attr('disabled', 'disabled');
+		}
+		
 		function wpsc_clear_rfid(){
 
 		  wpsc_modal_open('Clear Scanned Boxes by RFID Reader ID');

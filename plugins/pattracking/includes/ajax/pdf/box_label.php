@@ -237,9 +237,14 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         $asset_id = $asset_request_id->request_id;
         
         
-        $box_digitization_center = $wpdb->get_row( "SELECT wpqa_wpsc_epa_storage_location.digitization_center as digitization_center FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location WHERE wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id AND box_id = '" . $box_array[$i] ."'");
+        $box_digitization_center = $wpdb->get_row( "
+        SELECT wpqa_terms.name as digitization_center
+        FROM wpqa_wpsc_epa_boxinfo
+        INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+        INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+        WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $box_array[$i] ."'");
         
-        $box_location_a = strtoupper($box_digitization_center->location);
+        $box_location_a = strtoupper($box_digitization_center->digitization_center);
 
 
         $request_program_office = $wpdb->get_row("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");

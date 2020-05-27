@@ -141,13 +141,13 @@ return $box_id_array;
             global $wpdb;
             $array = array();
             $args = [
-                'select' => 'acronym',
+                'select' => 'office_acronym',
             ];
             $wpqa_wpsc_epa_program_office = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_program_office");
             $po_result = $wpqa_wpsc_epa_program_office->get_results($args, false);
 
             foreach ($po_result as $po) {
-                array_push($array, $po->acronym);
+                array_push($array, $po->office_acronym);
             }
             return $array;
         }

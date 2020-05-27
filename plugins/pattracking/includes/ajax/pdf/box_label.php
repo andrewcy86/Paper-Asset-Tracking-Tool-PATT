@@ -79,11 +79,11 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
 
-        $request_program_office = $wpdb->get_results("SELECT acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
+        $request_program_office = $wpdb->get_results("SELECT organization_acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND ticket_id = " . $GLOBALS['id']);
         
         foreach($request_program_office as $program_office)
         {
-            array_push($array, strtoupper($program_office->acronym));
+            array_push($array, strtoupper($program_office->organization_acronym));
         }
         
         return $array;

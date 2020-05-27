@@ -78,11 +78,11 @@ foreach($record_schedules as $rs_num)
         FROM wpqa_wpsc_epa_folderdocinfo INNER JOIN wpqa_wpsc_epa_boxinfo ON wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id 
         WHERE wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id);*/
         
-        $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.acronym as program_office, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
+        $box_list = $wpdb->get_results("SELECT wpqa_wpsc_epa_program_office.office_acronym as program_office, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as id, SUBSTR(wpqa_wpsc_epa_boxinfo.box_id, INSTR(wpqa_wpsc_epa_boxinfo.box_id, '-') + 1) as box, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.date as date, wpqa_wpsc_epa_folderdocinfo.site_name as site, wpqa_wpsc_epa_folderdocinfo.epa_contact_email as contact, wpqa_wpsc_epa_folderdocinfo.source_format as source_format 
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office  
 WHERE 
 wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND 
-wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND 
+wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND 
 wpqa_wpsc_epa_boxinfo.record_schedule_id = " .$rs_num->record_schedule_id ." AND
 wpqa_wpsc_epa_boxinfo.ticket_id = ".$GLOBALS['id']
 );
@@ -134,9 +134,9 @@ $program_office_array_id = array();
         $wpqa_wpsc_epa_boxinfo = new WP_CUST_QUERY('wpqa_wpsc_epa_boxinfo');
         $boxlist_get_po = $wpqa_wpsc_epa_boxinfo->get_results($args, false);*/
         
-        $boxlist_get_po = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office
+        $boxlist_get_po = $wpdb->get_results("SELECT DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office
 FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office
-WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
+WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND wpqa_wpsc_epa_boxinfo.ticket_id = " .$GLOBALS['id']);
 //print_r($boxlist_get_po);
 
 foreach ($boxlist_get_po as $item) {
@@ -165,7 +165,7 @@ $request_id = substr("000000{$GLOBALS['id']}", -$str_length);
 
 // $request_key = $wpdb->get_row( "SELECT ticket_auth_code FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
         $args = [
-            'select' => 'DISTINCT wpqa_wpsc_epa_program_office.acronym as program_office',
+            'select' => 'DISTINCT wpqa_wpsc_epa_program_office.office_acronym as program_office',
             'where' => ['id', $GLOBALS['id']],
         ];
         $wpqa_wpsc_ticket = new WP_CUST_QUERY('wpqa_wpsc_ticket');

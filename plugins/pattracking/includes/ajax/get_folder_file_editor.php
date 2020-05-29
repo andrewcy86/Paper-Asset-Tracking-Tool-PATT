@@ -150,9 +150,14 @@ else {
 $body = ob_get_clean();
 ob_start();
 ?>
+
+
+
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"   onclick="wpsc_modal_close();"><?php _e('Close','wpsc-export-ticket');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_edit_folder_file_details();"><?php _e('Save','supportcandy');?></button>
+
 <script>
+
 function wpsc_edit_folder_file_details(){		
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_folder_file_details.php',{
@@ -174,11 +179,29 @@ postvarsrights: jQuery("#rights").val(),
 postvarscn: jQuery("#contract_number").val(),
 postvarsgn: jQuery("#grant_number").val()
 }, 
+
    function (response) {
       if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php echo $folderfile_folderdocinfoid; ?>");
+
+if(jQuery("#il").val() == 1) {
+window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php
+
+$strings = explode('-',$folderfile_folderdocinfoid);
+echo $strings[0] . '-' . $strings[1] . '-' . '01' . '-' . $strings[3];
+
+?>");
+} 
+
+if(jQuery("#il").val() == 2) {
+window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php
+
+$strings = explode('-',$folderfile_folderdocinfoid);
+echo $strings[0] . '-' . $strings[1] . '-' . '02' . '-' . $strings[3];
+?>");
+}
    });
 }
+
 </script>
 <?php 
 $footer = ob_get_clean();

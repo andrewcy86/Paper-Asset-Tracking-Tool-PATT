@@ -45,20 +45,21 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 if (isset($il)) {
         //updates index_level to either folder/file
         $data_update_il = array('index_level' => $il);
-        
+        print_r($data_update_il);
         //pattdocid = folderdocinfo_id
         $pattdocid_split = explode('-', $pattdocid);
         //rewrite the folderdocinfo_id
-        if($data_update_il == 1) {
-            $folderdocinfo_id_update = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '01' . '-' . $pattdocid_split[3];
+        if($il == '1') {
+            $pattdocid = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '01' . '-' . $pattdocid_split[3];
         } 
-        else {
-            $folderdocinfo_id_update = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '02' . '-' . $pattdocid_split[3];
+        elseif($il == '2') {
+            $pattdocid = $pattdocid_split[0] . '-' . $pattdocid_split[1] . '-' . '02' . '-' . $pattdocid_split[3];
         }
         //assign new index level to folderdocinfo_id
-        
-        $data_update_folderdocinfo_id = array('folderdocinfo_id' => $folderdocinfo_id_update);
+        $data_update_folderdocinfo_id = array('folderdocinfo_id' => $pattdocid);
+        print_r($data_update_folderdocinfo_id);
         $data_where = array('id' => $folderfileid);
+        
         //update index_level
         $wpdb->update($table_name, $data_update_il, $data_where);
         //update folderdocinfo_id
@@ -150,8 +151,8 @@ $data_where = array('id' => $folderfileid);
 $wpdb->update($table_name, $data_update, $data_where);
 }
 
- echo "Document ID #: " . $pattdocid . " has been updated.";
- 
+ //echo "Document ID #: " . $pattdocid . " has been updated.";
+
 } else {
    echo "Please make an edit.";
 }

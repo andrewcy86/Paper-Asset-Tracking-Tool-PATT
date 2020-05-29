@@ -181,7 +181,7 @@ postvarsgn: jQuery("#grant_number").val()
 }, 
 
    function (response) {
-      if(!alert(response)){window.location.reload();}
+      //if(!alert(response)){window.location.reload();}
 
 if(jQuery("#il").val() == 1) {
 window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=boxsearch&page=filedetails&id=<?php

@@ -104,7 +104,61 @@ array_push($box_id_array, $box_id_array_val);
 return $box_id_array;
 
     }
-    
+        
+public static function get_default_digitization_center($id)
+        {
+            global $wpdb;
+
+// Get Distinct program office ID
+$get_program_office_id = $wpdb->get_results("
+SELECT wpqa_wpsc_epa_program_office.organization_acronym as acronym
+FROM wpqa_wpsc_epa_boxinfo 
+LEFT JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code 
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $id . "'
+");
+
+$program_office_east_array = array();
+$program_office_west_array = array();
+
+foreach ($get_program_office_id as $program_office_id_val) {
+$program_office_val = $program_office_id_val->acronym;
+
+$east_region = array("R01", "R02", "R03", "AO", "OITA", "OCFO", "OCSPP", "ORD", "OAR", "OW", "OIG", "OGC", "OMS", "OLEM", "OECA");
+$west_region = array("R04", "R05", "R06", "R07", "R08", "R09", "R10");
+
+if (in_array($program_office_val, $east_region))
+  {
+  array_push($program_office_east_array, $program_office_val);
+  }
+
+if (in_array($program_office_val, $west_region))
+  {
+  array_push($program_office_west_array, $program_office_val);
+  }
+}
+
+$east_count = count($program_office_east_array);
+$west_count = count($program_office_west_array);
+
+$set_center = '';
+
+if ($east_count > $west_count)
+{
+$set_center = 62;
+}
+
+if ($west_count > $east_count)
+{
+$set_center = 2;
+}
+
+if ($west_count == $east_count)
+{
+$set_center = 666;
+}
+
+return $set_center;
+        }
         public static function fetch_request_id($id)
         {
             global $wpdb; 

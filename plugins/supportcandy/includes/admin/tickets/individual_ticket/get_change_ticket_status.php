@@ -51,7 +51,7 @@ ob_start();
 				'meta_query' => array('order_clause' => array('key' => 'wpsc_category_load_order')),
 			]);
 			foreach ( $categories as $category ) :
-				$selected = $category_id == $category->term_id ? 'selected="selected"' : '';
+				$selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
 				echo '<option '.$selected.' value="'.$category->term_id.'">'.$wpsc_custom_category_localize['custom_category_'.$category->term_id].'</option>';
 			endforeach;
 			?>

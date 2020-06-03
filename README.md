@@ -364,50 +364,6 @@ WITH
 ```
 onclick="if(link)window.location.replace('<?php echo $subfolder_path; ?>/wp-admin/admin.php?page=wpsc-tickets&id=<?php echo Patt_Custom_Func::convert_request_db_id($ticket['id']); ?>');"
 ```
-### Fix display of digitization center. May be superseded by Aaron’s Code.
-###### /supportcandy/includes/admin/tickets/ticket_list/class-ticket-list-field-format.php
-REPLACE 
-```
-        function print_ticket_category(){
-          $category = get_term_by('id',$this->val,'wpsc_categories');
-					$wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
-          echo $wpsc_custom_category_localize['custom_category_'.$this->val];
-        }
-```
-WITH
-```
-//PATT BEGIN
-function print_ticket_category(){
-          $category = get_term_by('id',$this->val,'wpsc_categories');
-					$wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
-          //echo $wpsc_custom_category_localize['custom_category_'.$this->val];
-
-global $wpdb;
-
-$ticket_id = $this->ticket['id'];
-          
-$box_details = $wpdb->get_results(
-"SELECT wpqa_terms.name as digitization_center
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
-			);
-			$array = [];
-			foreach ($box_details as $info) {
-			    array_push($array, $info->digitization_center);
-			}
-			$unique = array_unique($array);
-			$unique_string = implode(",",$unique);
-			
-			if(empty($unique) || $unique_string == '') {
-			echo 'Unassigned';
-			} else {
-			echo $unique_string;
-			}
-        }
-//PATT END
-```
 ### Fix all logs displaying on a request page to limit it to the first 10.
 ###### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
 COMMENT OUT
@@ -543,4 +499,56 @@ ADD BELOW
 $data['ticket_id'] = $ticket_id;
 $data['box_info'] = $args["box_info"];
 do_action('patt_process_boxinfo_records', $data);
+```
+### Location Filtering Functionality
+#### /supportcandy/includes/admin/tickets/ticket_list/get_ticket_list.php
+FIND
+```
+	$meta_query[] = array(	
+	'key'     => 'active',	
+	'value'   => $active,	
+	'compare' => '='	
+);
+```
+ADD BELOW
+```
+$meta_query = apply_filters('get_ticket_list_meta_query', $meta_query); // PATT BEGIN - Location Filtering - PATT END	
+```
+FIND
+```
+$sql          = $wpscfunction->get_sql_query( $select_str, $meta_query, $search, $orderby, $order, $post_per_page, $current_page );
+```
+ADD BELOW
+```
+$sql		  = apply_filters('get_ticket_list_sql', $sql, $meta_query); // PATT BEGIN - Location Filtering - PATT END	
+```
+##### /supportcandy/includes/admin/tickets/ticket_list/class-ticket-list-field-format.php
+REPLACE 
+```
+        function print_ticket_category(){
+          $category = get_term_by('id',$this->val,'wpsc_categories');
+					$wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
+          echo $wpsc_custom_category_localize['custom_category_'.$this->val];
+        }
+```
+WITH
+```
+//PATT BEGIN	
+        function print_ticket_category(){	
+          $category = get_term_by('id',$this->val,'wpsc_categories');	
+		  $wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');	
+          //echo $wpsc_custom_category_localize['custom_category_'.$this->val];	
+          	
+          do_action('pattracking_print_ticket_category', $this); // PATT BEGIN - Location Filtering - PATT END	
+        }	
+//PATT END
+```
+##### /supportcandy/includes/admin/tickets/ticket_list/filters/set_default_filter.php
+FIND
+```
+	setcookie('wpsc_ticket_filter',json_encode($filter));
+```
+ADD ABOVE
+```
+$filter = apply_filters('ticket_filter_the_filter',$filter, $order_key, $order); // PATT BEGIN - Location Filtering, allows sidebar filters - PATT END	
 ```

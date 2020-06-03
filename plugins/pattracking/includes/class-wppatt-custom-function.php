@@ -104,8 +104,8 @@ array_push($box_id_array, $box_id_array_val);
 return $box_id_array;
 
     }
-        
-public static function get_default_digitization_center($id)
+
+        public static function get_default_digitization_center($id)
         {
             global $wpdb;
 
@@ -159,6 +159,7 @@ $set_center = 666;
 
 return $set_center;
         }
+
         public static function fetch_request_id($id)
         {
             global $wpdb; 
@@ -202,6 +203,21 @@ return $set_center;
 
             foreach ($po_result as $po) {
                 array_push($array, $po->office_acronym);
+            }
+            return $array;
+        }
+        
+        //gets list of record schedules for the box-details page
+        public static function fetch_record_schedule_array()
+        {
+            global $wpdb;
+            $array = array();
+            
+            $record_schedule = $wpdb->get_results("SELECT * FROM wpqa_epa_record_schedule WHERE Reserved_Flag = 0 ORDER BY Record_Schedule_Number");
+            
+            foreach($record_schedule as $rs)
+            {
+                array_push($array, $rs->Record_Schedule_Number);
             }
             return $array;
         }
@@ -477,7 +493,7 @@ return $set_center;
         {
             $remove_E = strtok($epc, 'E');
             
-            $newstr = substr_replace($remove_E, '-', 7, 0);
+            $newstr = substr_replace($remove_E, '-', 8, 0);
             
             return $newstr;
         }

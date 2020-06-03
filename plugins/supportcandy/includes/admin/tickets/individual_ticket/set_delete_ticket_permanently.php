@@ -11,7 +11,7 @@ if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {
 
 $ticket_id   		   	= isset($_POST['ticket_id']) ? sanitize_text_field($_POST['ticket_id']) : '' ;
 
-// Begin PATT Code
+//PATT BEGIN
 $get_associated_boxes = $wpdb->get_results("
 SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo 
 WHERE ticket_id = '" . $ticket_id . "'
@@ -66,9 +66,10 @@ $wpdb->update($table_ss , $sso_update, $sso_where);
 		$wpdb->delete($wpdb->prefix.'wpsc_epa_storage_location', array( 'id' => $associated_storage_ids));
 		$wpdb->delete($wpdb->prefix.'wpsc_epa_boxinfo', array( 'id' => $associated_box_ids));
 	}
-// End PATT Code
- 
- $wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
+//PATT END
+
+
+$wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
  
 $args = array(
 	'post_type'      => 'wpsc_ticket_thread',
@@ -88,3 +89,5 @@ if($ticket_threads) {
 		wp_delete_post($ticket_thread->ID,true);
 	}
 }
+
+

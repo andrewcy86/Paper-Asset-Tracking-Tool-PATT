@@ -98,8 +98,12 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
             'filter_title'               => __('Please insert filter title','supportcandy'),
             'popup_wait'                 => __('Please wait...','supportcandy'),
             'unresolve_agent'            => __('Please select at least one status for agent unresolved filter','supportcandy'),
-            'unresolve_customer'         => __('Please select at least one status for customer unresolved filter','supportcandy')
-        ));
+            'unresolve_customer'         => __('Please select at least one status for customer unresolved filter','supportcandy'),
+            'agent_close_statuses'       => __('Please select at least one close status','supportcandy'),
+            'change_ticket_fields'       => __('Change Ticket Fields','supportcandy'),
+            'assign_agent'               => __('Assign Agent','supportcandy'),
+            'delete_ticket'              => __('Delete Ticket','supportcandy')
+          ));
         wp_localize_script( 'wpsc-admin', 'wpsc_admin', $localize_script_data );
       endif;
     }
@@ -124,7 +128,15 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         WPSC_PLUGIN_URL.'asset/images/admin_icon.png',
         25
       );
-      
+// PATT Menu Items
+do_action('wpsc_add_submenu_page');
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+do_action('wpsc_add_admin_page');
+}
+// END PATT Menu Items
+
       add_submenu_page(
         'wpsc-tickets',
         __( 'Ticket List', 'supportcandy' ),
@@ -133,16 +145,6 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-tickets',
         array($this,'tickets')
       );
-      
-      // PATT Menu Items
-      do_action('wpsc_add_submenu_page');
-      $agent_permissions = $wpscfunction->get_current_agent_permissions();
-      if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-      {
-      do_action('wpsc_add_admin_page');
-      }
-      // END PATT Menu Items
-      
       add_submenu_page(
         'wpsc-tickets',
         __( 'Support Agents', 'supportcandy' ),
@@ -183,6 +185,8 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-appearance',
         array($this,'appearance_settings')
       );
+      
+      //PATT do_action('wpsc_add_submenu_page');
       
       add_submenu_page(
         'wpsc-tickets',
@@ -244,25 +248,6 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
       $wpscfunction->display_ad_banner();
       include WPSC_ABSPATH.'includes/admin/ticket_list/ticket_list.php';
     }
-
-    // Boxes settings
-    public function boxes(){
-      global $wpscfunction;
-      $wpscfunction->display_ad_banner();
-      include WPSC_ABSPATH.'includes/admin/boxes/boxes.php';
-
-    }
-    
-    // Start JM Developer - Create Scanning page settings
-    
-    public function scanning(){
-      global $wpscfunction;
-      $wpscfunction->display_ad_banner();
-      include WPSC_ABSPATH.'includes/admin/scanning/scanning.php';
-    }
-    
-    
-    // End JM Developer
     
     // Email Notification Settings
     public function email_notifications(){

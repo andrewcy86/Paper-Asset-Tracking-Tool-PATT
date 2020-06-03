@@ -11,7 +11,7 @@ if( !isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce']) ){
 $username = isset($_POST['username']) ? sanitize_text_field($_POST['username']) : '';
 if (!$username) die();
 
-$password = isset($_POST['password']) ? sanitize_text_field($_POST['password']) : '';
+$password = isset($_POST['password']) ? $_POST['password'] : '';
 if (!$password) die();
 
 $remember = isset($_POST['remember']) ? true : false;

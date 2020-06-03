@@ -77,7 +77,10 @@ if ( ! class_exists( 'WPSC_Frontend' ) ) :
             'validate_email'       => __('Incorrect Email Address','supportcandy'),
             'edit_custom_filter'   => __('Edit Filter','supportcandy'),
             'filter_title'         => __('Please insert filter title','supportcandy'),
-            'popup_wait'           => __('Please wait...','supportcandy') 
+            'popup_wait'           => __('Please wait...','supportcandy'),
+            'change_ticket_fields' => __('Change Ticket Fields','supportcandy'),
+            'assign_agent'         => __('Assign Agent','supportcandy'),
+            'delete_ticket'        => __('Delete Ticket','supportcandy')
         ));
         wp_localize_script( 'wpsc-public', 'wpsc_admin', $localize_script_data );
         

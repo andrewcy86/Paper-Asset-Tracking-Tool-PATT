@@ -1,4 +1,3 @@
-
 function wppatt_init(wppatt_setting_action,attrs){
   
   jQuery('#wppatt_tickets_container').html(wppatt_admin.loading_html);

@@ -24,7 +24,6 @@ if ( ! class_exists( 'WPSC_Ajax' ) ) :
 							'email_notifications'    => false,
 							'support_agents'         => false,
 							'tickets'                => true,
-                            'boxes'                => true,
 							'appearance_settings'    => false,
 							'run_db_v2_upgrade' => false,
 						);
@@ -42,14 +41,6 @@ if ( ! class_exists( 'WPSC_Ajax' ) ) :
          */
         public function tickets(){
             include WPSC_ABSPATH . 'includes/admin/tickets/tickets_ajax.php';
-            die();
-        }
-
-         /**
-         * Boxes ajax
-         */
-        public function boxes(){
-            include WPSC_ABSPATH . 'includes/admin/boxes/boxes_ajax.php';
             die();
         }
         

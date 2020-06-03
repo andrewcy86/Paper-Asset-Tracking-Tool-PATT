@@ -5,6 +5,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $current_user, $wpscfunction, $wpdb;
 
+if (!isset($_SESSION)) {
+    session_start();    
+}
+
+$dc_id = $_POST["dc_id"];
+$_SESSION["dc_id"] = $dc_id;
+
+
 $box_id  = isset($_POST['box_id']) ? sanitize_text_field($_POST['box_id']) : '' ;
         
 ob_start();
@@ -43,7 +51,7 @@ $patt_ticket_id = $box_details->request_id;
 
 <div id="wrapper">
   <div id="content">
-      <strong>Aisle</strong>
+<span id="aisle_tag"><strong>Aisle</strong></span>
 <select id="aisle_selector" name="aisle_selector" class="form-control">    
 <option value="0">--Select Aisle--</option>
 <?php
@@ -82,6 +90,7 @@ $disabled = $remaining_boxes != 0 ? "" : "disabled";
 		<script>
 
 			jQuery(document).ready(function() {
+			    
 			jQuery("#bay_div").hide();
 		  // event called when the aisle select is changed
         jQuery("#aisle_selector").change(function(){

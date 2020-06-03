@@ -83,6 +83,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-functions.php' );
         include_once( WPPATT_ABSPATH . 'includes/class-wppatt-actions.php' );
         include_once( WPPATT_ABSPATH . 'includes/rest_api/class-rest-child.php' );
+        include_once( WPPATT_ABSPATH . 'includes/admin/tickets/ticket_list/filter_get_ticket_list.php' ); 
         $frontend  = new wppatt_Functions();
         // Add PATT Query Shortcode
         add_shortcode('wppattquery', array($frontend, 'get_id_details'));
@@ -105,7 +106,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add Box Details to Request page
           add_action('wpsc_before_request_id', array($backend, 'request_boxes_BeforeRequestID'));
-          
+ 
           // Hide long logs on Request page
           add_action('wpsc_after_individual_ticket', array($backend, 'request_hide_logs'));
           
@@ -115,16 +116,16 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // Add Inventory Modal
           add_action('wp_ajax_wpsc_get_inventory_editor', array($backend, 'get_inventory_editor'));
-          
+
           // Add Digitization Switch Modal
-          add_action('wp_ajax_wpsc_get_digitization_editor', array($backend, 'get_digitization_editor'));
-          
+          add_action('wp_ajax_wpsc_get_digitization_editor_final', array($backend, 'get_digitization_editor'));
+
           // Add Folder/File Editor Modal
           add_action('wp_ajax_wpsc_get_folderfile_editor', array($backend, 'get_folder_file_editor'));
           
           // Add Box Editor Modal
           add_action('wp_ajax_wpsc_get_box_editor', array($backend, 'get_box_editor'));
-          
+
           // Add RFID Reader Modal
           add_action('wp_ajax_wpsc_get_clear_rfid', array($backend, 'get_clear_rfid'));
           add_action('wp_ajax_wpsc_get_rfid_box_editor', array($backend, 'get_rfid_box_editor'));
@@ -162,6 +163,11 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
             
             function folderfile_page(){
             include_once( WPPATT_ABSPATH . 'includes/admin/pages/folderfile.php'
+            );
+            }
+            
+            function rfid_page(){
+            include_once( WPPATT_ABSPATH . 'includes/admin/pages/rfid.php'
             );
             }
             

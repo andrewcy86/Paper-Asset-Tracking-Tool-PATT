@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 	<form id="wpsc_frm_ticket_list_advanced_settings" method="post" action="javascript:set_ticket_list_advanced_settings();">
 
-	<div class="from-group">
+	<div class="from-group" id="wpsc_agent_close_statuses">
 		<label for="wpsc_close_ticket_group"><?php _e('Closed Status group','supportcandy');?></label>
 		<p class="help-block"><?php _e('Select statuses you refer as closed. It will be applicable only to Closed filter on ticket list.','supportcandy');?></p>
 		<div class="row">

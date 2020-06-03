@@ -1,331 +1,108 @@
-=== SAML SP Single Sign On - SSO login ===
+=== miniOrange SAML 2.0 Single Sign On ===
 Contributors: miniOrange
 Donate link: http://miniorange.com
-Tags: SAML, SSO, login, Azure AD, Single sign on
+Tags: saml, single sign on, SSO, single sign on saml, sso saml, sso integration WordPress, sso using SAML, SAML 2.0 Service Provider, Wordpress SAML, SAML Single Sign-On, SSO using SAML, SAML 2.0, SAML 20, Wordpress Single Sign On, ADFS, Okta, Google Apps, Google for Work, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ, Novell Access Manager
 Requires at least: 3.7
-Tested up to: 5.4
-Requires PHP: 5.4
-Stable tag: 4.8.87
-License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tested up to: 5.3
+Stable tag: 16.0.1
+License URI: http://miniorange.com/usecases/miniOrange_User_Agreement.pdf
 
-SAML Single Sign On allows SSO to WordPress with Azure, ADFS, Keycloak, Okta, Shibboleth, OneLogin, Salesforce & many SAML IdPs [ACTIVE SUPPORT]
+miniOrange SAML 2.0 Single Sign-On provides SSO to your Wordpress site with any SAML compliant Identity Provider. (ACTIVE SUPPORT for IdP config)
 
 == Description ==
 
-SAML SP Single Sign On (SSO) provides SAML authentication for WordPress.
+miniOrange SAML 2.0 SSO allows users residing at SAML 2.0 compliant Identity Provider to login to your Wordpress website. We support all known IdPs - Google Apps, ADFS, Okta, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ etc. If you need detailed instructions on setting up these IdPs, we can give you step by step instructions.
 
-This SAML WordPress SSO solution provides SAML SSO capability to your WordPress site, converting it to a SAML compliant Service Provider which can be configured with any SAML compliant Identity Provider.
+miniOrange SAML SSO Plugin acts as a SAML 2.0 Service Provider which can be configured to establish the trust between the plugin and various SAML 2.0 supported Identity Providers to securely authenticate the user to the Wordpress site.
 
-SAML SP Single Sign On (SSO) allows SSO login with Azure AD, Keycloak, ADFS, Okta, Shibboleth, Salesforce, Google Apps, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ and all SAML 2.0 capable Identity Providers.
+If you require any Single Sign On application or need any help with installing this plugin, please feel free to email us at info@xecurify.com or <a href="http://miniorange.com/contact">Contact us</a>.
 
-miniOrange SAML Single Sign on (SSO) Plugin acts as a SAML 2.0 Service Provider which can be configured to establish the trust between the plugin and a SAML 2.0 capable Identity Providers to securely authenticate the user to the Wordpress site. WordPress Multi-Site Environment and ability to configure Multiple SAML IDPs against wordpress as SAML service provider is also supported in premium SAML SP Single Sign On plugin.
+= Features :- =
 
-The SAML SSO plugin is equipped with an ever-increasing list of very detailed SAML SSO guides which can be used to configure the plugin with SAML compliant Identity Providers such as Azure AD, Keycloak, ADFS, Okta, Shibboleth, Salesforce, Google Apps, SimpleSAMLphp, OpenAM, Centrify, Ping, Oracle, OneLogin, and many more SAML Identity Providers.
-
-If you require any Single Sign On (SSO) application or need any help with installing this plugin, please feel free to email us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> or <a href="http://miniorange.com/contact">Contact us</a>.
-
-= List of Supported IdPs =
-*	**Azure AD** (supports SAML SSO)
-*	**Keycloak** (supports SAML SSO)
-*	**ADFS** (supports SAML SSO)
-*	**Okta** (supports SAML SSO)
-*	**Salesforce** (supports SAML SSO)
-*	**Shibboleth** (supports SAML SSO)
-*	**Google Apps** (supports SAML SSO)
-*	**miniOrange** (supports SAML SSO)
-*	**OneLogin** (supports SAML SSO)
-*	**Centrify** (supports SAML SSO)
-*	**SimpleSAMLphp** (supports SAML SSO)
-*	**OpenAM** (supports SAML SSO)
-*	**Ping** (supports SAML SSO)
-*	**RSA** (supports SAML SSO)
-*	**IBM** (supports SAML SSO)
-*	**Oracle** (supports SAML SSO)
-*	**Bitium** (supports SAML SSO)
-*	**WSO2** (supports SAML SSO)
-*	**NetIQ** (supports SAML SSO)
-and practically any SAML compliant Identity Provider.
-
-= Free Version Features =
-*   WordPress SAML Single Sign On supports SSO with any 3rd party SAML supported Identity Providers like ADFS, Azure AD, Okta, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ etc.
-*   **Auto Create Users** - Users will be auto-created in WordPress after SAML SSO
-*   **Login Widgets** - Use SAML Login Widgets to easily integrate the SAML SSO link with your Wordpress site.
-*   **Attribute Mapping** - The NameID value sent by your SAML compliant Identity Provider will be mapped to the Username and Email of your WordPress users.
-*   **Role Mapping** - Select default role to assign to SAML SSO users on auto registration.
-
-= Standard Version Features =
-*   **Unlimited Authentications** - Unlimited authentication with your SAML 2.0 compliant Identity Providers like ADFS, Azure AD, Okta, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ or any SAML compliant Identity Provider.
-*   **Advanced Attribute Mapping** - SAML SP Single Sign On provides the feature to map your SAML IDP attributes to your WordPress site attributes like Username, Email, First Name, Last Name, Group/Role, Display Name.
-*   **Login Widgets and Short Code** - Use Widgets to easily integrate the SAML SSO link with your Wordpress site. Use Short Code (PHP or HTML) generated by SAML SP Single Sign On to place the SAML login link wherever you want on the site.
-*   **Step-by-step Guides** - Use step-by-step guide to configure your SAML compliant Identity Provider like ADFS, Centrify, Google Apps, Okta, OneLogin, Salesforce, SimpleSAMLphp, Shibboleth, WSO2, JBoss Keycloak, Oracle.
-*   **Auto-redirect to IDP** - Users will be redirected to SAML compliant IdP for SSO when trying to access the WordPress login page.
-*   **Protect Site** - Users trying to access Wordpress will be redirected to the SAML compliant Identity Provider for SSO.
-*	**Customize SP Configuration** - Change SAML Service Provider endpoints such as SP base URL and SP Entity ID.
-*   **Select Binding Type** - Select HTTP-Post or HTTP-Redirect binding type to use for sending SAML Requests.
-*   **Integrated Windows Authentication** - Support for Integrated Windows Authentication (IWA) in SAML SP Single Sign On Standard plugin.
-
-= Premium Version Features =
-*   Includes all the SAML STANDARD version features.
-*   **SAML Single Logout** - Support for SAML Single Logout (Works only if your SAML IDP supports SLO).
-*   **Auto-redirect to IDP** - Users will be redirected to SAML compliant IdP for SSO when trying to access the WordPress login page.
-*   **Protect Site** - Users trying to access Wordpress will be redirected to the SAML compliant Identity Provider for SSO.
-*   **Advanced Role Mapping** - SAML SP Single Sign On provides the feature to assign WordPress roles to your users based on the group/role sent by your SAML compliant IDP.
-*   **Reverse-proxy Support** - Support for sites behind a reverse-proxy in SAML SP Single Sign On Premium plugin.
-* 	**Multiple Certificates** - Store Multiple SAML IdP Certificates.
-*	**Custom Certificate** - Add your own custom X.509 Certificate for sending signed SAML Request and verification of encrypted SAML Response.
-*   **WordPress Multi-site Support** - Multi-Site environment is one which allows multiple subdomains / subdirectories to share a single installation. With multisite SAML premium plugin, you can configure the SAML compliant IDP in minutes for all your sites in a network. While, if you have basic SAML premium plugin, you have to do plugin configuration on each site individually as well as multiple SAML service provider configurations in the SAML compliant IDP.
-
-    For Example - If you have 1 main site with 3 subsites. Then, you have to configure the plugin 3 times on each site as well as 3 SAML service provider configurations in your IDP. Instead, with multisite SAML premium plugin. You have to configure the plugin only once on main network site as well as only 1 SAML service provider configuration in the SAML compliant IDP.
-
-= Enterprise Version Features =
-*   Includes all the SAML STANDARD version features.
-*   **SAML Single Logout** - Support for SAML Single Logout (Works only if your SAML IDP supports SLO).
-*   **Auto-redirect to IDP** - Users will be redirected to SAML compliant IdP for SSO when trying to access the WordPress login page.
-*   **Protect Site** - Users trying to access Wordpress will be redirected to the SAML compliant Identity Provider for SSO.
-*   **Advanced Role Mapping** - SAML SP Single Sign On provides the feature to assign WordPress roles to your users based on the group/role sent by your SAML compliant IDP.
-*   **Reverse-proxy Support** - Support for sites behind a reverse-proxy in SAML SP Single Sign On Premium plugin.
-* 	**Multiple Certificates** - Store Multiple SAML IdP Certificates.
-*	**Custom Certificate** - Add your own custom X.509 Certificate for sending signed SAML Request and verification of encrypted SAML Response.
-*   **WordPress Multi-site Support** - Multi-Site environment is one which allows multiple subdomains / subdirectories to share a single installation. With multisite SAML premium plugin, you can configure the SAML compliant IDP in minutes for all your sites in a network. While, if you have basic SAML premium plugin, you have to do plugin configuration on each site individually as well as multiple SAML service provider configurations in the SAML compliant IDP.
-*   **Multiple SAML IDPs Support** - We now support configuration of Multiple SAML compliant IDPs in the plugin to authenticate the different group of users with different SAML IDPs. You can give access to users by users to IDP mapping (which SAML compliant IDP to use to authenticate a user) is done based on the domain name in the user's email. (This is a **PREMIUM** feature with separate licensing. Contact us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> to get licensing plans for this feature.)
-*	All SAML add-ons included.
-
-If you are looking for a SAML compliant Identity Provider, you can try out <a href="https://idp.miniorange.com">miniOrange On-Premise IdP</a>.
-
-= Add-ons =
-We have a variety of add-ons that can be integrated with the SAML SP SSO plugin to improve the SAML SSO functionality of your WordPress site.
-
-*	**Page Restriction** -  	This add-on is basically used to protect the pages/posts of your site with SAML compliant IDP login page and also, restrict the access to pages/posts of the site based on the user roles.
-*	**BuddyPress Integration** - This add-on maps the attributes fetched from the SAML compliant IdP with BuddyPress attributes.
-*	**LearnDash Integration** - This add-on will map the SAML SSO user to LearnDash groups as per the attributes sent by your SAML compliant Identity Provider.
-*	**SSO Login Audit** -  	SSO Login Audit captures all the SAML SSO users and will generate the reports.
-*	**Attribute Based Redirection** - ABR add-on helps you to redirect your users to different pages after they authenticate via SAML SSO into your site, based on the attributes sent by your SAML compliant Identity Provider.
-
-Contact us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> to get SAML add-ons.
+*	Login to your Wordpress site using SAML 2.0 compliant Identity Providers.
+*   Easily Configure the Identity Provider by providing just the SAML login URL, IDP Entity ID and Certificate.
+* 	Supports plethora of SAML 2.0 Identity Providers like Google Apps, ADFS, Okta, Salesforce, Shibboleth, SimpleSAMLphp, OpenAM, Centrify, Ping, RSA, IBM, Oracle, OneLogin, Bitium, WSO2, NetIQ etc.
+*	Valid user registrations verified by the plugin.
+*	Easily integrate the login link with your Wordpress site using widgets/short code. Just drop it in a desirable place in your site.
+*	Automatic user registration after login if the user is not already registered with your site.
+*	Use the Attribute Mapping feature to map wordpress user profile attributes to your IdP attributes.
+*	Use the Role Mapping feature to assign roles in your IdP to your wordpress users during auto registration.
+*	Auto redirect users to your IdP for authentication without showing them your site's login page.
+*	Force authentication with your IdP on each login attempt.
+*   Supports multisite environment.
 
 = Website - =
 Check out our website for other plugins <a href="http://miniorange.com/plugins" >http://miniorange.com/plugins</a> or <a href="https://wordpress.org/plugins/search.php?q=miniorange" >click here</a> to see all our listed WordPress plugins.
-For more support or info email us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> or <a href="http://miniorange.com/contact" >Contact us</a>. You can also submit your query from plugin's configuration page.
+For more support or info email us at info@xecurify.com or <a href="http://miniorange.com/contact" >Contact us</a>. You can also submit your query from plugin's configuration page.
 
 == Installation ==
 
 = From your WordPress dashboard =
 1. Visit `Plugins > Add New`.
-2. Search for `SAML SP Single Sign On`. Find and Install `SAML SP Single Sign On – SSO login`.
+2. Search for `miniOrange SAML 2.0 Single Sign-On`. Find and Install `miniOrange SAML 2.0 Single Sign-On`.
 3. Activate the plugin from your Plugins page.
 
 = From WordPress.org =
-1. Download SAML SP Single Sign On – SSO login plugin.
+1. Download miniOrange SAML 2.0 Single Sign-On plugin.
 2. Unzip and upload the `miniorange-saml-20-single-sign-on` directory to your `/wp-content/plugins/` directory.
-3. Activate miniOrange SSO using SAML 2.0 from your Plugins page.
+3. Activate miniOrange SAML 2.0 Single Sign-On from your Plugins page.
 
 == Frequently Asked Questions ==
 
 = I am not able to configure the Identity Provider with the provided settings =
-Please email us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> or <a href="http://miniorange.com/contact" >Contact us</a>. You can also submit your app request from plugin's configuration page.
+Please email us at info@xecurify.com or <a href="http://miniorange.com/contact" >Contact us</a>. You can also submit your app request from plugin's configuration page.
 
 = For any query/problem/request =
-Visit Help & FAQ section in the plugin OR email us at <a href="mailto:info@xecurify.com">info@xecurify.com</a> or <a href="http://miniorange.com/contact">Contact us</a>. You can also submit your query from plugin's configuration page.
+Visit Help & FAQ section in the plugin OR email us at info@xecurify.com or <a href="http://miniorange.com/contact">Contact us</a>. You can also submit your query from plugin's configuration page.
 
 == Screenshots ==
 
-1. Configure your Wordpress as SAML Service Provider.
-2. Gather Metadata for your SAML Identity Provider.
-3. Configure Attribute/Role Mapping for Users in Wordpress.
-4. Add widget to enable SAML Single Sign-on.
-5. Plugin-tour which guides you through entire plugin setup.
-6. Addons which extend plugin functionality.
+1. General settings like auto redirect user to your IdP.
+2. Guide to configure your Wordpress site as Service Provider to your IdP.
+3. Configure your IdP in your Wordpress site.
 
 == Changelog ==
 
-= 4.8.87 =
-* Bug fixes in SAML SSO widget
-* Compatibility with WordPress 5.4
+= 16.0.1 =
+Compatible with PHP 7.4
+Updated SAML-compliant IdP guides
+Bug fixes
 
-= 4.8.86 =
-* Compatibility fixes with PHP5
+= 16.0.0 =
+Upgrade Framework
+Compatible with PHP 7.2
+Compatible with WordPress 5.3
 
-= 4.8.85 =
-* Visual Tour fixes
-* Fixed Telephone number input
+= 15.9.91 =
+Added nonces and minor security fixes.
+License verification bug fix.
+Minor UI fixes.
 
-= 4.8.84 =
-* Security patches
+= 15.9.9 =
+UI and usability fixes.
+Fixed 500 error code during login.
+Added Encryption algorithm aes-128-gcm
+Updated xmlseclibs library.
+Send plugin configuration with support query.
+Custom Widget and shortcode Text.
+Export Plugin Configurations.
+Added Keep Configuration intact feature.
+Custom Backdoor URL.
+Removed Single Logout.
+Removed Proxy Setup tab.
 
-= 4.8.83 =
-* Nomenclature changes
-* Compatibility with PHP 7.4
+= 15.1.1 =
+new upgrade plans and changes in check license api
 
-= 4.8.82 =
-* Added new SAML-compliant IdP guides
-* Bug fixes
-
-= 4.8.81 =
-* Updated SAML-compliant IdP guides
-
-= 4.8.80 =
-* Bug fixes
-
-= 4.8.79 =
-* Added Plugin-wide tour
-
-= 4.8.78 =
-* Request a demo feature.
-
-= 4.8.77 =
-* Bug Fixes
-
-= 4.8.76 =
-* Security Patches
-
-= 4.8.75 =
-* Visual-tour fixes
-
-= 4.8.74 =
-* Feedback form bug fix
-
-= 4.8.73 =
-* Security patches.
-
-= 4.8.72 =
-* Security patch.
-
-= 4.8.71 =
-* Security fixes.
-
-= 4.8.70 =
-* Bug fixes
-* Option to send plugin configuration with request
-
-= 4.8.69 =
-* Tested upto Wordpress 5.1.0
-* Replaced CURL calls with HTTP API calls.
-
-= 4.8.68 =
-* Tested upto Wordpress 5.0.2.
-* Updated to Latest XMLSeclibs library.
-* Compatibility with PHP 7.3.
-
-= 4.8.67 =
-* Description changes.
-
-= 4.8.66 =
-* Tested upto Wordpress 5.0.0.
-* Added option to disable character encoding.
-
-= 4.8.65 =
-* Bug Fixes
-
-= 4.8.64 =
-* Compatibility with PHP version 5.3+ upto latest version of PHP
-* Activation Issue Fixes
-
-= 4.8.63 =
-* Code enhancements.
-
-= 4.8.62 =
-* Fixed issues on plugin activation.
-
-= 4.8.61 =
-* Bug fixes.
-
-= 4.8.60 =
-* Updated to latest XMLSeclibs SAML library (version 3.0.1).
-* Added the visual tour to get familiar with plugin features and support.
-* Revamped the plugin UI.
-* Added the Add-On and their description.
-* Export plugin configurations.
-* SAML-compliant IdP guides.
-
-= 4.8.52 =
-* Tested upto Wordpress 4.9.8
-
-= 4.8.51 =
-* Added support for guest login
-* Added SAML-compliant IDP guide links
-
-
-= 4.8.50 =
-* Added feedback form.
-
-= 4.8.44 =
-* Tested upto WordPress 4.9.6
-
-= 4.8.43 =
-* Compatibility issue with PHP 7.2(Removed deprecated asserts )
-
-= 4.8.42 =
-* Input validation fixes.
-
-= 4.8.41 =
-* Support for PHP version 5.3 and above.
-
-= 4.8.40 =
-* Added feature for Exporting plugin configuration.
-* Added View SAML Request and Response
-
-= 4.8.35 =
-* Fixed the Entity ID/Issuer issues for AzureAD Idp.
-
-= 4.8.34 =
-* Introducing miniOrange on-premise IDP
-
-= 4.8.33 =
-* Compatibilty with Wordpress 4.9
-
-= 4.8.32 =
-* Introducing Standard version of SAML Plugin for small sized customers.
-* Fixed Registration issue.
-
-= 4.8.31 =
-* Introducing Standard version of SAML Plugin for small sized customers. Check Licensing Plans for more details.
-
-= 4.8.30 =
-* Fix the CSS and JS inclusion only in the plugin pages, removed it from frontend and backend of WordPress.
-
-= 4.8.28 =
-* Bug fix for PHP 5.4.x version.
-
-= 4.8.27 =
-* Support for Multiple Certificate via Metadata
-
-= 4.8.26 =
-* SAML Configuration by Uploading metadata.
-* Descriptive Error Messages.
-* Use miniorange as IdP feature.
-* More verbose instructions.
-* Compatibility with WordPress 4.8
-
-= 4.8.25 =
-Updating Licensing Plans
-
-= 4.8.24 =
-Updating Plugin Title : SAML SP Single Sign On
-
-= 3.8.14 =
-Pattern change on OTP Verification page
-
-= 3.8.12 =
-Major security fixes. It is recommended to update to this version.
-
-= 3.8.7 =
-Fixes for WordPress 4.5
-
-= 3.8.6 =
-Added features: Support for WordPress Multi-site (Network setup), support for Multiple SAML-compliant IDPs and some fixes for WordPress 4.5
-
-= 3.8.4 =
-Introducing Free Trial for the premium version.
-
-= 3.8.2 =
-Security fix for preventing non-admin users from changing the settings.
+= 15.1.0 =
+Removed mcrypt dependencies.
+Support for Wordpress 4.9.1
 
 = 3.8 =
-Security fix for SAML-compliant IDPs that signs only Assertion and not the complete SAML Response XML.
+Descriptive error messages. mcrypt check and auto-redirect bug fixed.
 
 = 3.7 =
-Support for Integrated Windows Authentication - contact <a href="mailto:info@xecurify.com">info@xecurify.com</a> if interested
+Support for Integrated Windows Authentication - contact info@xecurify.com if interested
 
 = 3.5 =
 Decrypt assertion bug fix
@@ -356,7 +133,7 @@ Added guides for configuring common Identity Providers like ADFS, SimpleSAMLphp,
 Removed unwanted JS files.
 
 = 2.0 =
-Added new feature like role mapping and auto redirect user to your SAML-compliant IdP.
+Added new feature like role mapping and auto redirect user to your IdP.
 
 = 1.7.0 =
 Resolved UI issues for some users
@@ -385,193 +162,46 @@ UI Improvements.
 
 == Upgrade Notice ==
 
-= 4.8.87 =
-* Bug fixes in SAML SSO widget
-* Compatibility with WordPress 5.4
+= 16.0.1 =
+Compatible with PHP 7.4
+Updated SAML-compliant IdP guides
+Bug fixes
 
-= 4.8.86 =
-* Compatibility fixes with PHP5
+= 16.0.0 =
+Upgrade Framework
+Compatible with PHP 7.2
+Compatible with WordPress 5.3
 
-= 4.8.85 =
-* Visual Tour fixes
-* Fixed Telephone number input
+= 15.9.91 =
+Added nonces and minor security fixes.
+License verification bug fix.
+Minor UI fixes.
 
-= 4.8.84 =
-* Security patches
+= 15.9.9 =
+UI and usability fixes.
+Fixed 500 error code during login.
+Added Encryption algorithm aes-128-gcm
+Updated xmlseclibs library.
+Send plugin configuration with support query.
+Custom Widget and shortcode Text.
+Export Plugin Configurations.
+Added Keep Configuration intact feature.
+Custom Backdoor URL.
+Removed Single Logout.
+Removed Proxy Setup tab.
 
-= 4.8.83 =
-* Nomenclature changes
-* Compatibility with PHP 7.4
+= 15.1.1 =
+new upgrade plans and changes in check license api
 
-= 4.8.82 =
-* Added new SAML-compliant IdP guides
-* Bug fixes
-
-= 4.8.81 =
-* Updated SAML-compliant IdP guides
-
-= 4.8.80 =
-* Bug fixes
-
-= 4.8.79 =
-* Added Plugin-wide tour
-
-= 4.8.78 =
-* Request a demo feature.
-
-= 4.8.77 =
-* Bug Fixes
-
-= 4.8.76 =
-* Security Patches
-
-= 4.8.75 =
-* Visual-tour fixes
-
-= 4.8.74 =
-* Feedback form bug fix
-
-= 4.8.73 =
-* Security patches.
-
-= 4.8.72 =
-* Security patch.
-
-= 4.8.71 =
-* Security fixes.
-
-= 4.8.70 =
-* Bug fixes
-* Option to send plugin configuration with request
-
-= 4.8.69 =
-* Tested upto Wordpress 5.1.0
-* Replaced CURL calls with HTTP API calls.
-
-= 4.8.68 =
-* Tested upto Wordpress 5.0.2.
-* Updated to Latest XMLSeclibs library.
-* Compatibility with PHP 7.3.
-
-= 4.8.67 =
-* Description changes.
-
-= 4.8.66 =
-* Tested upto Wordpress 5.0.0.
-* Added option to disable character encoding.
-
-= 4.8.65 =
-* Bug Fixes
-
-= 4.8.64 =
-* Compatibility with PHP version 5.3+ upto latest version of PHP
-* Activation Issue Fixes
-
-= 4.8.63 =
-* Code enhancements.
-
-= 4.8.62 =
-* Fixed issues on SAML SP SSO plugin activation.
-
-= 4.8.61 =
-* Bug fixes.
-
-= 4.8.60 =
-* Updated to latest XMLSeclibs SAML library (version 3.0.1).
-* Added the visual tour to get familiar with plugin features and support.
-* Revamped the plugin UI.
-* Added the Add-On and their description.
-* Export plugin configurations.
-* IdP guides.
-
-= 4.8.52 =
-* Tested upto Wordpress 4.9.8
-
-= 4.8.51 =
-* Added support for guest login
-* Added IDP guide links
-
-= 4.8.50 =
-* Added feedback form.
-
-= 4.8.44 =
-* Tested upto WordPress 4.9.6
-
-= 4.8.43 =
-* Compatibility issue with PHP 7.2(Removed deprecated asserts )
-
-= 4.8.42 =
-* Input validation fixes.
-
-= 4.8.41 =
-* Support for PHP version 5.3 and above.
-
-= 4.8.40 =
-* Added feature for Exporting plugin configuration.
-* Added View SAML Request and Response
-
-= 4.8.35 =
-* Fixed the Entity ID/Issuer issues for AzureAD Idp.
-
-= 4.8.34 =
-* Introducing miniOrange on-premise IDP
-
-= 4.8.33 =
-* Compatibilty with Wordpress 4.9
-
-= 4.8.32 =
-* Introducing Standard version of SAML Plugin for small sized customers.
-* Fixed Registration issue.
-
-= 4.8.31 =
-* Introducing Standard version of SAML Plugin for small sized customers.Check Licensing Plans for more details.
-
-= 4.8.30 =
-* Fix the CSS and JS inclusion only in the plugin pages, removed it from frontend and backend of wordpress.
-
-= 4.8.28 =
-* Bug fix for PHP 5.4.x version.
-
-= 4.8.27 =
-* Support for Multiple Certificate via Metadata
-
-= 4.8.26 =
-* SAML Configuration by Uploading metadata.
-* Descriptive Error Messages.
-* Use miniorange as IdP feature.
-* More verbose instructions.
-* Compatibility with WordPress 4.8
-
-= 4.8.25 =
-Updating Licensing Plans
-
-
-= 4.8.24 =
-Updating Plugin Title
-
-= 3.8.14 =
-Pattern change on OTP Verification page
-
-= 3.8.12 =
-Major security fixes. It is recommended to update to this version.
-
-= 3.8.7 =
-Fixes for WordPress 4.5
-
-= 3.8.6 =
-Added features: Support for WordPress Multi-site (Network setup), support for Multiple IDPs and some fixes for WordPress 4.5
-
-= 3.8.4 =
-Introducing Free Trial for the premium version.
-
-= 3.8.2 =
-Security fix for preventing non-admin users from changing the settings.
+= 15.1.0 =
+Removed mcrypt dependencies.
+Support for Wordpress 4.9.1
 
 = 3.8 =
-Security fix for IDPs that signs only Assertion and not the complete SAML Response XML.
+Descriptive error messages. mcrypt check and auto-redirect bug fixed.
 
 = 3.7 =
-Support for Integrated Windows Authentication - contact <a href="mailto:info@xecurify.com">info@xecurify.com</a> if interested
+Support for Integrated Windows Authentication - contact info@xecurify.com if interested
 
 = 3.5 =
 Decrypt assertion bug fix

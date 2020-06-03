@@ -54,11 +54,6 @@ if(is_user_logged_in() && !$current_user->has_cap('wpsc_agent') ){
 	$args['customer_email'] = $customer_email;
 }
 
-//BoxInfo
-$boxinfodata = $_POST["boxinfo"];
-$args['box_info'] = $boxinfodata;
-
-
 // Subject
 $ticket_subject = isset($_POST['ticket_subject']) ? sanitize_text_field($_POST['ticket_subject']) : '';
 if($ticket_subject) $args['ticket_subject'] = $ticket_subject;
@@ -150,10 +145,7 @@ $thankyou_html = apply_filters('wpsc_after_thankyou_page_button',$thankyou_html,
 ob_start();
 ?>
 <div class="col-sm-12" style="margin-top:20px;">
-    
-	<?php
-	
-	echo html_entity_decode(stripslashes($thankyou_html))?>
+	<?php echo html_entity_decode(stripslashes($thankyou_html))?>
 </div>
 <?php
 $thankyou_html = ob_get_clean();

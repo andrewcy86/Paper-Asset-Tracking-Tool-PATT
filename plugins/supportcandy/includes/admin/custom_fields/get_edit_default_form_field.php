@@ -63,7 +63,7 @@ if ( !($custom_field->slug == 'customer_name' || $custom_field->slug == 'custome
   <?php
 }
 
-/if($custom_field->slug == 'ticket_description'){
+if($custom_field->slug == 'ticket_description'){
 	$wpsc_default_desc = get_term_meta( $custom_field->term_id,'wpsc_tf_default_description',true);
 	?>
 		<div class="form-group default_text" id = "default_text_description" style = "<?php echo $wpsc_tf_status == '0'? 'display:block':'display:none';?>">

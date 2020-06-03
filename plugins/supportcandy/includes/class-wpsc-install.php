@@ -125,7 +125,7 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						ticket_status integer,
 						customer_name TINYTEXT NULL DEFAULT NULL,
 						customer_email TINYTEXT NULL DEFAULT NULL,
-						ticket_subject varchar(200) NULL DEFAULT NULL,
+						ticket_subject LONGTEXT NULL DEFAULT NULL,
 						user_type varchar(30) NULL DEFAULT NULL,
 						ticket_category integer,
 						ticket_priority integer,
@@ -575,7 +575,13 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						add_term_meta ($term['term_id'], 'body', __('<p>Dear {customer_name},</p><p>Your ticket #{ticket_id} has been closed. We hope you are satisfied with our support.</p><p>If you have some further queries on this ticket, please feel free to reply same ticket. For queries not related to this ticket, please create new ticket.</p><p>{ticket_url}</p>','supportcandy'));
 						add_term_meta ($term['term_id'], 'recipients', array('customer'));
 						add_term_meta ($term['term_id'], 'extra_recipients', array());
-						add_term_meta ($term['term_id'], 'conditions', array(11=>array(6)) );
+						
+						$close_status = get_option('wpsc_close_ticket_status');
+						$status = get_term_by('name', 'ticket_status', 'wpsc_ticket_custom_fields');
+						$close_condition = array(
+							$status->term_id => array($close_status)
+						);
+						add_term_meta ($term['term_id'], 'conditions', $close_condition );
 					}
 
 					update_option('wpsc_ticket_count','1');
@@ -874,10 +880,11 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						'wpsc_close_filter_btn_text_color'      => '#000000',
 						'wpsc_close_filter_btn_border_color'    => '#C3C3C3',
 					);
-
-					$ticket_filter_app = array_merge($ticket_filter_app, $ticket_list_app);
-					update_option('wpsc_appearance_ticket_list',$ticket_filter_app);
-
+					if($ticket_list_app){
+						$ticket_filter_app = array_merge($ticket_filter_app, $ticket_list_app);
+						update_option('wpsc_appearance_ticket_list',$ticket_filter_app);
+					}
+					
 					//Bug fix of ticket widget. Remove and add wigets again.
 					$wpsc_ticket_widgets = get_terms([
 						'taxonomy'    => 'wpsc_ticket_widget',
@@ -893,9 +900,12 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 
 					$agent_role_ids = array();
 					$agent_role = get_option('wpsc_agent_role');
-					foreach ($agent_role as $key => $agent) {
-						$agent_role_ids[] = $key;
+					if($agent_role){
+						foreach ($agent_role as $key => $agent) {
+							$agent_role_ids[] = $key;
+						}
 					}
+					
 					$customer_access= array();
 					$customer_access = $agent_role_ids;
 					$customer_access[] = 'customer';
@@ -976,9 +986,10 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						'wpsc_sign_out_bg_color'                       => '#FF5733',
 						'wpsc_sign_out_text_color'                     => '#FFFFFF',
 					);
-
-					$wpsc_appearance_general_settings = array_merge($wpsc_appearance_general_settings,$wpsc_sign_out_general_settings);
-					update_option('wpsc_appearance_general_settings',$wpsc_appearance_general_settings);
+					if($wpsc_appearance_general_settings ){
+						$wpsc_appearance_general_settings = array_merge($wpsc_appearance_general_settings,$wpsc_sign_out_general_settings);
+						update_option('wpsc_appearance_general_settings',$wpsc_appearance_general_settings);	
+					}
 
 				}
 
@@ -1042,8 +1053,10 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						'wpsc_reply_thread_customer_text_color'		       => $appearance_settings['wpsc_reply_thread_text_color'],
 						'wpsc_reply_thread_customer_border_color'	       => $appearance_settings['wpsc_reply_thread_border_color'],
 					);
-					$wpsc_appearance_general_settings = array_merge($appearance_settings,$appearance);
-					update_option('wpsc_individual_ticket_page',$wpsc_appearance_general_settings);
+					if($appearance_settings){
+						$wpsc_appearance_general_settings = array_merge($appearance_settings,$appearance);
+						update_option('wpsc_individual_ticket_page',$wpsc_appearance_general_settings);
+					}
 					update_option('wpsc_reg_guest_user_after_create_ticket',0);
 				}
 
@@ -1123,7 +1136,9 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 							'order'      => 'ASC',
 						]);
 
-						foreach ( $email_templates as $email_template ) {
+						if($email_templates){	
+
+							foreach ( $email_templates as $email_template ) {
 
 								$conditions     = get_term_meta( $email_template->term_id, 'conditions', true );
 								$new_conditions = array();
@@ -1148,6 +1163,7 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 								update_term_meta( $email_template->term_id ,'conditions' , $new_conditions);
 
 						}
+					}
 
 				}
 
@@ -1188,9 +1204,12 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						global $wpdb;
 						$agent_role_ids = array();
 						$agent_role = get_option('wpsc_agent_role');
-						foreach ($agent_role as $key => $agent) {
-							$agent_role_ids[] = $key;
+						if($agent_role ){
+							foreach ($agent_role as $key => $agent) {
+								$agent_role_ids[] = $key;
+							}
 						}
+
 						$customer_access= array();
 						$customer_access = $agent_role_ids;
 						$customer_access[] = 'customer';
@@ -1206,14 +1225,16 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 						update_option('wpsc_redirect_to_ticket_list', '0');
 
 						$agent_role = get_option('wpsc_agent_role');
-
-						foreach ($agent_role as $key => $capabilities){
-						 	$capabilities['view_unassigned_private_note'] = 1;
-						 	$capabilities['view_assigned_me_private_note'] = 1;
-						 	$capabilities['view_assigned_others_private_note'] = 1;
-						 	$agent_role[$key] = $capabilities;
-					 		update_option('wpsc_agent_role',$agent_role);
-					 	}
+						if($agent_role){
+							foreach ($agent_role as $key => $capabilities){
+								$capabilities['view_unassigned_private_note'] = 1;
+								$capabilities['view_assigned_me_private_note'] = 1;
+								$capabilities['view_assigned_others_private_note'] = 1;
+								$agent_role[$key] = $capabilities;
+								update_option('wpsc_agent_role',$agent_role);
+							}
+						}
+						
 
 						/**
 						* Update translation option for custom fields label in order to support WPML
@@ -1395,79 +1416,84 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 					}
 				}
 
-				if ($installed_version < '2.0.6' ) {
+                if ($installed_version < '2.0.6') {
 
-					// Auto delete ticket
-					update_option('wpsc_auto_delete_ticket','0');
-					update_option('wpsc_auto_delete_ticket_time','1');
-					update_option('wpsc_auto_delete_ticket_time_period_unit','days');
+                    // Auto delete ticket
+                    update_option('wpsc_auto_delete_ticket', '0');
+                    update_option('wpsc_auto_delete_ticket_time', '1');
+                    update_option('wpsc_auto_delete_ticket_time_period_unit', 'days');
 
-					$wpsc_allow_attachment_type = "jpg, jpeg, png, gif, pdf, doc, docx, ppt, pptx, pps, ppsx, odt, xls, xlsx, mp3, m4a, ogg, wav, mp4, m4v, mov, wmv, avi, mpg, ogv, 3gp, 3g2, zip, eml";
-					update_option('wpsc_allow_attachment_type',$wpsc_allow_attachment_type);
+                    $wpsc_allow_attachment_type = "jpg, jpeg, png, gif, pdf, doc, docx, ppt, pptx, pps, ppsx, odt, xls, xlsx, mp3, m4a, ogg, wav, mp4, m4v, mov, wmv, avi, mpg, ogv, 3gp, 3g2, zip, eml";
+                    update_option('wpsc_allow_attachment_type', $wpsc_allow_attachment_type);
 
-					//input limit
-					$fields1 = get_terms([
-						'taxonomy'   => 'wpsc_ticket_custom_fields',
-						'hide_empty' => false,
-						'orderby'    => 'meta_value_num',
-						'meta_key'	 => 'wpsc_tf_load_order',
-						'order'    	 => 'ASC'
-					]);
-					foreach ($fields1 as $key => $term) {
-						update_term_meta ($term->term_id, 'wpsc_tf_limit', '0');
+                    //input limit
+                    $fields1 = get_terms([
+                        'taxonomy'   => 'wpsc_ticket_custom_fields',
+                        'hide_empty' => false,
+                        'orderby'    => 'meta_value_num',
+                        'meta_key'	 => 'wpsc_tf_load_order',
+                        'order'    	 => 'ASC'
+                    ]);
+                    foreach ($fields1 as $key => $term) {
+                        update_term_meta($term->term_id, 'wpsc_tf_limit', '0');
+                    }
+
+                    $term = wp_insert_term('user_type', 'wpsc_ticket_custom_fields');
+                    if (!is_wp_error($term) && isset($term['term_id'])) {
+                        add_term_meta($term['term_id'], 'wpsc_tf_label', __('User Type', 'supportcandy'));
+                        add_term_meta($term['term_id'], 'agentonly', '2');
+                        add_term_meta($term['term_id'], 'wpsc_tf_type', '0');
+                        add_term_meta($term['term_id'], 'wpsc_allow_ticket_list', '1');
+                        add_term_meta($term['term_id'], 'wpsc_customer_ticket_list_status', '0');
+                        add_term_meta($term['term_id'], 'wpsc_agent_ticket_list_status', '0');
+                        add_term_meta($term['term_id'], 'wpsc_allow_ticket_filter', '1');
+                        add_term_meta($term['term_id'], 'wpsc_ticket_filter_type', 'string');
+                        add_term_meta($term['term_id'], 'wpsc_customer_ticket_filter_status', '0');
+                        add_term_meta($term['term_id'], 'wpsc_agent_ticket_filter_status', '0');
+                    }
+
+                    $agent_role_ids = array();
+                    $term = wp_insert_term('biographical-info', 'wpsc_ticket_widget');
+                    if (!is_wp_error($term) && isset($term['term_id'])) {
+                        add_term_meta($term['term_id'], 'wpsc_label', __('Bio', 'supportcandy'));
+                        add_term_meta($term['term_id'], 'wpsc_ticket_widget_load_order', '11');
+                        add_term_meta($term['term_id'], 'wpsc_ticket_widget_type', '1');
+                        add_term_meta($term['term_id'], 'wpsc_ticket_widget_role', $agent_role_ids);
+                        $wpsc_custom_widget_localize = get_option('wpsc_custom_widget_localize');
+                        $wpsc_custom_widget_localize['custom_widget_'.$term['term_id']] = get_term_meta($term['term_id'], 'wpsc_label', true);
+                        ;
+                        update_option('wpsc_custom_widget_localize', $wpsc_custom_widget_localize);
+                    }
+
+                    $agent_role = get_option('wpsc_agent_role');
+                    if ($agent_role) {
+                    	foreach ($agent_role as $key => $capabilities) {
+                        	if ($key == 1) {
+                            	$capabilities['edit_delete_unassigned'] = 1;
+                            	$capabilities['edit_delete_assigned_me'] = 1;
+                            	$capabilities['edit_delete_assigned_others'] = 1;
+							} else {
+                            	$capabilities['edit_delete_unassigned'] = 0;
+                            	$capabilities['edit_delete_assigned_me'] = 0;
+                            	$capabilities['edit_delete_assigned_others'] = 0;
+                        	}
+
+                        	$agent_role[$key] = $capabilities;
+                        	update_option('wpsc_agent_role', $agent_role);
+                    	}
 					}
-
-					$term = wp_insert_term( 'user_type', 'wpsc_ticket_custom_fields' );
-					if (!is_wp_error($term) && isset($term['term_id'])) {
-						add_term_meta ($term['term_id'], 'wpsc_tf_label', __('User Type','supportcandy'));
-						add_term_meta ($term['term_id'], 'agentonly', '2');
-						add_term_meta ($term['term_id'], 'wpsc_tf_type', '0');
-						add_term_meta ($term['term_id'], 'wpsc_allow_ticket_list', '1');
-						add_term_meta ($term['term_id'], 'wpsc_customer_ticket_list_status', '0');
-						add_term_meta ($term['term_id'], 'wpsc_agent_ticket_list_status', '0');
-						add_term_meta ($term['term_id'], 'wpsc_allow_ticket_filter', '1');
-						add_term_meta ($term['term_id'], 'wpsc_ticket_filter_type', 'string');
-						add_term_meta ($term['term_id'], 'wpsc_customer_ticket_filter_status', '0');
-						add_term_meta ($term['term_id'], 'wpsc_agent_ticket_filter_status', '0');
-					}
-
-					$agent_role_ids = array();
-					$term = wp_insert_term('biographical-info', 'wpsc_ticket_widget' );
-					if (!is_wp_error($term) && isset($term['term_id'])) {
-						add_term_meta ($term['term_id'], 'wpsc_label', __('Bio','supportcandy'));
-						add_term_meta ($term['term_id'], 'wpsc_ticket_widget_load_order', '11');
-						add_term_meta($term['term_id'], 'wpsc_ticket_widget_type', '1');
-						add_term_meta($term['term_id'],'wpsc_ticket_widget_role', $agent_role_ids);
-						$wpsc_custom_widget_localize = get_option('wpsc_custom_widget_localize');
-						$wpsc_custom_widget_localize['custom_widget_'.$term['term_id']] = get_term_meta($term['term_id'], 'wpsc_label', true);;
-						update_option('wpsc_custom_widget_localize', $wpsc_custom_widget_localize);
-					}
-
+					
 					$agent_role = get_option('wpsc_agent_role');
-					foreach ($agent_role as $key => $capabilities){
-						if($key == 1){
-							$capabilities['edit_delete_unassigned'] = 1;
-							$capabilities['edit_delete_assigned_me'] = 1;
-							$capabilities['edit_delete_assigned_others'] = 1;
-						}else{
-							$capabilities['edit_delete_unassigned'] = 0;
-							$capabilities['edit_delete_assigned_me'] = 0;
-							$capabilities['edit_delete_assigned_others'] = 0;
+					if($agent_role){
+						foreach ($agent_role as $key => $capabilities){
+
+							$capabilities['view_unassigned_log'] = 1;
+							$capabilities['view_assigned_me_log'] = 1;
+							$capabilities['view_assigned_others_log'] = 1;
+
+							$agent_role[$key] = $capabilities;
+							update_option('wpsc_agent_role',$agent_role);
 						}
-
-						$agent_role[$key] = $capabilities;
-						update_option('wpsc_agent_role',$agent_role);
-					}
-
-					$agent_role = get_option('wpsc_agent_role');
-					foreach ($agent_role as $key => $capabilities){
-
-						$capabilities['view_unassigned_log'] = 1;
-						$capabilities['view_assigned_me_log'] = 1;
-						$capabilities['view_assigned_others_log'] = 1;
-
-						$agent_role[$key] = $capabilities;
-						update_option('wpsc_agent_role',$agent_role);
 					}
 				}
 				
@@ -1592,6 +1618,12 @@ if ( ! class_exists( 'WPSC_Install' ) ) :
 					update_option('wpsc_attachment_notice', $attach_notice);
 
 					update_option('wpsc_allow_datepickerjs_files','0');
+
+				}
+
+				if($installed_version < '2.1.2'){
+
+					update_option('wpsc_allow_html_pasting','0');
 				}
 
 				update_option( 'wpsc_current_version', WPSC_VERSION );

@@ -9,8 +9,8 @@ $ticket_id_data  = isset($_POST['ticket_id']) ? (sanitize_text_field($_POST['tic
 $ticket_ids = explode(',', $ticket_id_data);
 
 foreach ($ticket_ids as $ticket_id ) {
-
-// Begin PATT Code
+	
+//PATT BEGIN
 $get_associated_boxes = $wpdb->get_results("
 SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo 
 WHERE ticket_id = '" . $ticket_id . "'
@@ -65,9 +65,9 @@ $wpdb->update($table_ss , $sso_update, $sso_where);
 		$wpdb->delete($wpdb->prefix.'wpsc_epa_storage_location', array( 'id' => $associated_storage_ids));
 		$wpdb->delete($wpdb->prefix.'wpsc_epa_boxinfo', array( 'id' => $associated_box_ids));
 	}
-// End PATT Code
+//PATT END
 
-        $wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
+	$wpdb->delete($wpdb->prefix.'wpsc_ticket', array( 'id' => $ticket_id));
 	
 	$args = array(
 		'post_type'      => 'wpsc_ticket_thread',
@@ -88,3 +88,4 @@ $wpdb->update($table_ss , $sso_update, $sso_where);
 		}
 	}
 }
+

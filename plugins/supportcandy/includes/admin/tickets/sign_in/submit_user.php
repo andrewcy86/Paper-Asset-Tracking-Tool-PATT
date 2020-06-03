@@ -4,6 +4,11 @@ if ( ! defined( 'ABSPATH' ) )
 	exit; // Exit if accessed directly
 }
 
+$user_registration = get_option('wpsc_user_registration_method');
+if($user_registration != '1'){
+	exit;
+}
+
 $username = isset($_POST) && isset($_POST['username']) ? sanitize_text_field($_POST['username']) : '';
 if (!$username) {exit;}
  
@@ -50,14 +55,15 @@ if ( email_exists($email) ) {
 	$response['error'] = '1';
 } else if( username_exists($username) ){
 	$response['error'] = '2';
-}else {
- 	$user_id = wp_create_user($username,$password,$email);
-  $response['error'] = '0';	
-	$creds = array(
-	  'user_login'    => $username,
-	  'user_password' => $password,
-	);
-  wp_signon( $creds, false );
+} else {
+	 $user_id = wp_create_user( $username, $password, $email );
+	 $creds = array(
+		'user_login'    => $username,
+		'user_password' => $password,
+	  );
+	 wp_new_user_notification($user_id,null,'both');
+	 wp_signon( $creds, false );
+	
 	
 	if($firstname){
 		update_user_meta($user_id,'first_name', $firstname);	
@@ -66,8 +72,6 @@ if ( email_exists($email) ) {
 		update_user_meta($user_id,'last_name', $lastname);
 	}
 }
-
-
 
 echo json_encode($response);
   

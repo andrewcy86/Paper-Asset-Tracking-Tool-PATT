@@ -157,8 +157,10 @@ $offset = ($filter['page']-1)*$post_per_page;
 						$wpsc_tf_type = get_term_meta( $field->term_id,'wpsc_tf_type', true);
 						   if ($filter_type=='string' || $filter_type=='number') {
 							if($field->slug == 'ticket_id'){
-							    //advanced filter now searches for request_id instead of ticket_id
-								$field->slug = 'request_id';
+//PATT BEGIN
+$field->slug = 'request_id';
+//PATT END
+
 							}
 							?>
 							<div id="tf_<?php echo $field->slug?>" class="form-group col-sm-12">
@@ -458,11 +460,14 @@ $meta_query[] = array(
 	'compare' => '='
 );
 
+$meta_query = apply_filters('get_ticket_list_meta_query', $meta_query); // PATT BEGIN - Location Filtering - PATT END
+
 $orderby      = sanitize_text_field($filter['orderby']=='ticket_id'?'id':$filter['orderby']);
 $order        = sanitize_text_field($filter['order']);
 $current_page = sanitize_text_field($filter['page']);
 $select_str   = 'SQL_CALC_FOUND_ROWS DISTINCT t.*';
 $sql          = $wpscfunction->get_sql_query( $select_str, $meta_query, $search, $orderby, $order, $post_per_page, $current_page );
+$sql		  = apply_filters('get_ticket_list_sql', $sql, $meta_query); // PATT BEGIN - Location Filtering - PATT END
 $tickets      = $wpdb->get_results($sql);
 $total_items  = $wpdb->get_var("SELECT FOUND_ROWS()");
 $ticket_list  = json_decode(json_encode($tickets), true);
@@ -564,6 +569,7 @@ var link = true;
 	
 	include_once WPSC_ABSPATH . 'includes/admin/tickets/ticket_list/class-ticket-list-field-format.php';
 	$format = new WPSC_Ticket_List_Field();
+	//PATT
 	$subfolder_path = site_url( '', 'relative'); 
 		if($ticket_list){
 			foreach($ticket_list as $ticket){
@@ -605,14 +611,17 @@ var link = true;
 		</style>
 		<?php
 		if($ticket_list) : ?>	
-		<div class="row" style="margin-bottom:20px;">
+		<div class="row wpsc_pagination_prev_next_btn" style="margin-bottom:20px;">
 	  	  <div class="col-md-4 col-md-offset-4 wpsc_ticket_list_nxt_pre_page" style="text-align: center;">
-           <button class="btn btn-default btn-sm" <?php echo $filter['page']==1? 'disabled' : ''?> onclick="wpsc_ticket_first_page();"><i class="fas fa-fast-backward" aria-hidden="true"></i></button>  
-		   <button class="btn btn-default btn-sm" <?php echo $filter['page']==1? 'disabled' : ''?> onclick="wpsc_ticket_prev_page();"><i class="fas fa-step-backward" aria-hidden="true"></i></button>
-		   <strong><?php echo $current_page ?></strong> <?php _e('of','supportcandy')?> <strong><?php echo $total_pages?></strong> <?php _e('Pages','supportcandy') ?>
-		   <button class="btn btn-default btn-sm" <?php echo $filter['page']==$total_pages? 'disabled' : ''?> onclick="wpsc_ticket_next_page();"><i class="fas fa-step-forward" aria-hidden="true"></i></button>
-		   <button class="btn btn-default btn-sm" onclick="wpsc_last_ticket_page();" <?php echo $filter['page']==$total_pages? 'disabled' : ''?>><i class="fas fa-fast-forward" aria-hidden="true"></i></button>
-		
+		   <?php 
+		   if($total_pages != 1){ ?>
+           		<button class="btn btn-default btn-sm" <?php echo $filter['page']==1? 'disabled' : ''?> onclick="wpsc_ticket_first_page();"><i class="fas fa-fast-backward" aria-hidden="true"></i></button>  
+		   		<button class="btn btn-default btn-sm" <?php echo $filter['page']==1? 'disabled' : ''?> onclick="wpsc_ticket_prev_page();"><i class="fas fa-step-backward" aria-hidden="true"></i></button>
+		   		<strong><?php echo $current_page ?></strong> <?php _e('of','supportcandy')?> <strong><?php echo $total_pages?></strong> <?php _e('Pages','supportcandy') ?>
+		   		<button class="btn btn-default btn-sm" <?php echo $filter['page']==$total_pages? 'disabled' : ''?> onclick="wpsc_ticket_next_page();"><i class="fas fa-step-forward" aria-hidden="true"></i></button>
+		   		<button class="btn btn-default btn-sm" onclick="wpsc_last_ticket_page();" <?php echo $filter['page']==$total_pages? 'disabled' : ''?>><i class="fas fa-fast-forward" aria-hidden="true"></i></button>
+		   	<?php 
+			} ?>
 		  </div>
 		</div>
 		<?php endif; ?>

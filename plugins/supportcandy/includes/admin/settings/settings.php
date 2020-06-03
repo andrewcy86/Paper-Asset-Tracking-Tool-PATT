@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
         <li id="wpsc_settings_thank_you" role="presentation"><a href="javascript:wpsc_get_thank_you_settings();"><?php _e('Thank you page','supportcandy');?></a></li>
         <li id="wpsc_settings_cron_setup" role="presentation"><a href="javascript:wpsc_get_cron_setup_settings();"><?php _e('Cron Setting','supportcandy');?></a></li>
         <li id="wpsc_settings_attachment" role="presentation"><a href="javascript:wpsc_get_attachment_settings();"><?php _e('Attachments','supportcandy');?></a></li>
-        <li id="wpsc_settings_term_and_conditions" role="presentation"><a href="javascript:wpsc_get_terms_and_condition_settings();"><?php _e('Term & Conditions & GDPR','supportcandy');?></a></li>
+        <li id="wpsc_settings_term_and_conditions" role="presentation"><a href="javascript:wpsc_get_terms_and_condition_settings();"><?php _e('Terms & Conditions & GDPR','supportcandy');?></a></li>
         <li id="wpsc_advanced_settings" role="presentation"><a href="javascript:wpsc_get_advanced_settings();"><?php _e('Advanced Settings','supportcandy');?></a></li>
         <li id="wpsc_captcha_settings" role="presentation"><a href="javascript:wpsc_get_captcha_settings();"><?php _e('Captcha','supportcandy');?></a></li>
         <li id="wpsc_rest_settings" role="presentation"><a href="javascript:wpsc_get_rest_api_settings();"><?php _e('REST API','supportcandy');?></a></li>

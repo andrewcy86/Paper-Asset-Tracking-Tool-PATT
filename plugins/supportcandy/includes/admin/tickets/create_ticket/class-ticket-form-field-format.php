@@ -72,7 +72,7 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 						
 					case 'ticket_subject':
 						if ($this->status == '1') {
-							//$this->print_ticket_subject($field);
+							//PATT $this->print_ticket_subject($field);
 						}
 						break;
 						
@@ -84,7 +84,7 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 						
 					case 'ticket_category':
 						if ($this->status == '1') {
-							//$this->print_ticket_category($field);
+							//PATT $this->print_ticket_category($field);
 						}
 						break;
 										
@@ -164,14 +164,14 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 			}
 			
 		}
-	    
-	    	function print_ticket_desc($field){
+//PATT BEGIN
+function print_ticket_desc($field){
 			?>
-			<input type="hidden" id="<?php echo $this->slug;?>" name="<?php echo $this->slug;?>" value="Request Created: <?php date_default_timezone_set('US/Eastern'); echo date("m/d/Y"); ?>" />
-			<?php
-		}
-	    
-        
+          	<input type="hidden" id="<?php echo $this->slug;?>" name="<?php echo $this->slug;?>" value="Request Created: <?php date_default_timezone_set('US/Eastern'); echo date("m/d/Y"); ?>" />
+          <?php
+        }
+//PATT END
+
 		function print_text_field($field){
 			$extra_info_css = 'color:'.$this->wpsc_appearance_create_ticket['wpsc_extra_info_text_color'].' !important;';
 			$value = apply_filters('wpsc_custom_text_default_value', '', $field);
@@ -234,6 +234,7 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 				}
 				
 				function print_radio_btn($field){
+					$selected_value = apply_filters('wpsc_custom_radio_default_value', '', $field);
 					$extra_info_css = 'color:'.$this->wpsc_appearance_create_ticket['wpsc_extra_info_text_color'].' !important;';
 					?>
           <div  data-fieldtype="radio" data-visibility="<?php echo $this->visibility_conditions?>" class="<?php echo $this->col_class?> <?php echo $this->visibility? 'hidden':'visible'?> <?php echo $this->required? 'wpsc_required':''?> form-group wpsc_form_field <?php echo 'field_'.$field->term_id?>">
@@ -243,10 +244,11 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
             <?php if($this->extra_info['custom_fields_extra_info_'.$field->term_id]){?><p class="help-block" style="<?php echo $extra_info_css?>"><?php echo $this->extra_info['custom_fields_extra_info_'.$field->term_id];?></p><?php }?>
 						<?php
 						foreach ( $this->options as $key => $value ) :
+							$selected = $selected_value == $value ? 'checked="checked"' : '' ;
 							?>
 							<div class="row">
 				        <div class="col-sm-12" style="margin-bottom:10px; display:flex;">
-				          <div style="width:25px;"><input type="radio" class="wpsc_radio_btn" name="<?php echo $this->slug?>" value="<?php echo str_replace('"','&quot;',$value)?>"></div>
+				          <div style="width:25px;"><input type="radio" <?php echo $selected ?> class="wpsc_radio_btn" name="<?php echo $this->slug?>" value="<?php echo str_replace('"','&quot;',$value)?>"></div>
 				          <div style="padding-top:3px;"><?php echo $value?></div>
 				        </div>
               </div>
@@ -587,7 +589,14 @@ if ( ! class_exists( 'WPSC_Ticket_Form_Field' ) ) :
 						directionality : '<?php echo $directionality; ?>',
 									statusbar: false,
 									autoresize_min_height: 150,
-									paste_as_text: true,
+									<?php
+									  $wpsc_allow_html_pasting = get_option('wpsc_allow_html_pasting');
+                                      if(!$wpsc_allow_html_pasting){ ?>
+									    paste_as_text: true,
+									    <?php
+									  } 
+									?>
+
 							    wp_autoresize_on: true,
 							    plugins: [
 										'wpautoresize lists link image directionality paste'

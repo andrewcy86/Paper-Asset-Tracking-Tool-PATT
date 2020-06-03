@@ -1,6 +1,5 @@
 jQuery(document).ready(function () {	
 	//show and hide attribute mapping instructions
-
     jQuery("#toggle_am_content").click(function () {
         jQuery("#show_am_content").toggle();
     });
@@ -15,6 +14,23 @@ jQuery(document).ready(function () {
 			jQuery("#saml_am_default_user_role").attr('disabled', true);
 		} else if(!jQuery("#dont_allow_unlisted_user_role").is(":disabled")){
 			jQuery("#saml_am_default_user_role").attr('disabled', false);
+		}
+		
+	jQuery("#dont_create_user_if_role_not_mapped").change(function() {
+		if(jQuery(this).is(":checked")) {
+			jQuery("#dont_allow_unlisted_user_role").attr('disabled', true);
+			jQuery("#saml_am_default_user_role").attr('disabled', true);
+		} else {
+			jQuery("#dont_allow_unlisted_user_role").attr('disabled', false);
+			jQuery("#saml_am_default_user_role").attr('disabled', false);
+		}
+	});
+    if(jQuery("#dont_create_user_if_role_not_mapped").is(":checked")) {
+			jQuery("#dont_allow_unlisted_user_role").attr('disabled', true);
+			jQuery("#saml_am_default_user_role").attr('disabled', true);
+		} else if(!jQuery("#dont_allow_unlisted_user_role").is(":disabled")){
+			//jQuery("#dont_allow_unlisted_user_role").attr('disabled', false);
+			//jQuery("#saml_am_default_user_role").attr('disabled', false);
 		}
 	/*
 	 * Identity Provider help
@@ -97,15 +113,15 @@ jQuery(document).ready(function () {
     });
 	
 	//redirect to idp
-	jQuery("#registered_only_access").click(function (e) {
-		e.preventDefault;
-        jQuery("#registered_only_access_desc").slideToggle(400);
-    });
-	
-	//redirect to idp
 	jQuery("#force_authentication_with_idp").click(function (e) {
 		e.preventDefault;
         jQuery("#force_authentication_with_idp_desc").slideToggle(400);
+    });
+	
+	//redirect to idp
+	jQuery("#registered_only_access").click(function (e) {
+		e.preventDefault;
+        jQuery("#registered_only_access_desc").slideToggle(400);
     });
 	 
 	 //Instructions
@@ -116,20 +132,12 @@ jQuery(document).ready(function () {
 	//Working of plugin
 	 jQuery("#help_working_title1").click(function () {
 		 jQuery("#help_working_desc2").hide();
-		 jQuery("#help_working_desc3").hide();
         jQuery("#help_working_desc1").slideToggle(400);
     });
 	 
 	 jQuery("#help_working_title2").click(function () {
 		   jQuery("#help_working_desc1").hide();
-		    jQuery("#help_working_desc3").hide();
 	        jQuery("#help_working_desc2").slideToggle(400);
-	    });
-		
-	  jQuery("#help_working_title3").click(function () {
-		   jQuery("#help_working_desc1").hide();
-		   jQuery("#help_working_desc2").hide();
-	        jQuery("#help_working_desc3").slideToggle(400);
 	    });
 	
 	//What is SAML
@@ -161,4 +169,15 @@ jQuery(document).ready(function () {
 	 jQuery("#help_faq_idp_redirect_title").click(function () {
         jQuery("#help_faq_idp_redirect_desc").slideToggle(400);
     });
+
+	//SYNC Metdata
+	jQuery("#sync_metadata").click(function () {
+        jQuery("#select_time_sync_metadata").slideToggle(400);
+    });
+	
+	
 });
+
+function getlicensekeysform(){
+				jQuery("#loginform").submit();
+}

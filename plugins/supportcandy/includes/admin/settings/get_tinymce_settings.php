@@ -46,6 +46,20 @@ if (!($current_user->ID && $current_user->has_cap('manage_options'))) {
 			<?php } ?>
 		</div>
 	</div>
+
+	<div class="form-group">
+		<label for="wpsc_html_pasting"><?php _e('Allow direct HTML pasting','supportcandy');?></label>
+		<p class="help-block"><?php _e("Enable/Disable HTML pasting","supportcandy");?></p>
+		<select class="form-control" name="wpsc_html_pasting" id="wpsc_html_pasting">
+			<?php
+			$wpsc_allow_html_pasting = get_option('wpsc_allow_html_pasting');
+			$selected = $wpsc_allow_html_pasting == '1' ? 'selected="selected"' : '';
+			echo '<option '.$selected.' value="1">'.__('Enable','supportcandy').'</option>';
+			$selected = $wpsc_allow_html_pasting == '0' ? 'selected="selected"' : '';
+			echo '<option '.$selected.' value="0">'.__('Disable','supportcandy').'</option>';
+			?>
+		</select>
+	</div>
     
     <button type="submit" class="btn btn-success"><?php _e('Save Changes','supportcandy');?></button>
     <img class="wpsc_submit_wait" style="display:none;" src="<?php echo WPSC_PLUGIN_URL.'asset/images/ajax-loader@2x.gif';?>">

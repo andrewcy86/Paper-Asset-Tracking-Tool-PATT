@@ -51,12 +51,20 @@ Enter one or more Document IDs:<br />
          <input type='text' id='searchByDocID' class="form-control" data-role="tagsinput">
 <br />
          <?php
-  $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+  /*$po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
 <select id='searchByProgramOffice'>
      <option value=''>-- Select Program Office --</option>
      <?php foreach($po_array as $key => $value) { ?>
-      <option value='<?php echo $value; ?>'><?php echo $value; ?></option>
-     <?php } ?></select>
+      <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?></select>*/
+     
+    $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+    <input type="text" list="searchByProgramOffice" name="program_office" placeholder='Enter program office...'/>
+    <datalist id = 'searchByProgramOffice'>
+     <?php foreach($po_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?>
+     </datalist>
      
 <br /><br />
         <select id='searchByDigitizationCenter'>

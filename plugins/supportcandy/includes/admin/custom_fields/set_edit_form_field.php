@@ -53,9 +53,10 @@ $wpsc_limit = isset($_POST) && isset($_POST['limit']) && $_POST['limit'] ? sanit
 $old_tf_type = get_term_meta( $field_id, 'wpsc_tf_type', true);
 
 $field_label = stripslashes($field_label);
+$extra_info = stripslashes($extra_info);
 
 update_term_meta ($field_id, 'wpsc_tf_label', $field_label);
-update_term_meta ($field_id, 'wpsc_tf_extra_info', $extra_info);
+update_term_meta ($field_id, 'wpsc_tf_extra_info',$extra_info );
 update_term_meta ($field_id, 'wpsc_tf_type', $field_type);
 update_term_meta ($field_id, 'wpsc_tf_placeholder_text',$wpsc_tf_placeholder_text);
 update_term_meta ($field_id, 'wpsc_tf_options', $field_options);

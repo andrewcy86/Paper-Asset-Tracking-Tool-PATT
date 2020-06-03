@@ -36,7 +36,6 @@ ob_start();
 		<?php //setting to add agent's default filter ?>	 
 		<div class="form-group">	
 			<select id="wpsc_agent_default_filter" class="form-control wpsc_drop_down" name="wpsc_agent_default_filter">
-				<option value="all">All</option>
 				<?php
 				$blog_id = get_current_blog_id();
 				$default_filter = get_user_meta($current_user->ID,$blog_id.'_wpsc_user_default_filter',true);
@@ -44,7 +43,7 @@ ob_start();
 				$saved_filters = get_user_meta($current_user->ID, $blog_id.'_wpsc_filter',true);
 				$saved_filters = $saved_filters ? $saved_filters : array();
 				foreach ($labels as $key => $val) :
-					if($current_user->has_cap('wpsc_agent') && $val['visibility']=='agent'):
+					if($current_user->has_cap('wpsc_agent') && ($val['visibility']=='agent' || $val['visibility']=='both')):
 						$selected = $key == $default_filter ? 'selected="selected"' : '';
 						?>
 						  <option <?php echo $selected?> value="<?php echo $key?>"><?php echo $val['label']?></option>

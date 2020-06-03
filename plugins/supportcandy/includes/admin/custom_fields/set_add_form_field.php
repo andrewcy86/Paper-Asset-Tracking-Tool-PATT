@@ -45,6 +45,7 @@ foreach ($visibility as $key => $value) {
 	$visibility[$key] = sanitize_text_field($value);
 }
 $field_label = stripslashes($field_label);
+$extra_info = stripslashes($extra_info);
 
 $term = wp_insert_term( $field_label, 'wpsc_ticket_custom_fields' );
 if (!is_wp_error($term) && isset($term['term_id'])) {

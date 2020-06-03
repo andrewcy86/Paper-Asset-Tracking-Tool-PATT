@@ -34,6 +34,12 @@
     <key name="wpsc_custom_widget_localize" >
       <key name="custom_widget_*"/>
     </key>
+
+    <key name="wpsc_terms_and_conditions_html" >
+    </key>
+    
+    <key name="wpsc_gdpr_html" >
+    </key>
     
   </admin-texts>
 </wpml-config>

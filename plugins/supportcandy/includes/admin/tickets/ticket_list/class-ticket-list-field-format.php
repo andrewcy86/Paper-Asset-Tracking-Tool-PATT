@@ -19,16 +19,17 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
 					$this->list_item = $list_item;
 					$this->ticket    = $ticket;
 					$get_all_meta_keys = $wpscfunction->get_all_meta_keys();
-					
-					        $assigned_agent = $wpscfunction->get_ticket_meta( $ticket['id'], assigned_agent, true);
-                 			$request_data = $wpscfunction->get_ticket($ticket['id']);
-                            $request_status = $request_data['ticket_status'];
+//PATT BEGIN
+$assigned_agent = $wpscfunction->get_ticket_meta( $ticket['id'], assigned_agent, true);
+$request_data = $wpscfunction->get_ticket($ticket['id']);
+$request_status = $request_data['ticket_status'];
 
-                  			if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
-                  			{
-                  			  $wpscfunction->change_status($ticket['id'], 64);
-                  			}
-                  			
+                          if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
+                          {
+                            $wpscfunction->change_status($ticket['id'], 64);
+                          }
+//PATT END
+
 					if ($list_item->slug == 'ticket_id') {
 							$list_item->slug ='id';
 					}
@@ -44,11 +45,14 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
             switch ($list_item->slug) {
               
               case 'id':
-                                $num = $ticket['id'];
-                                $str_length = 7;
-                                $padded_request_id = substr("000000{$num}", -$str_length);
-                                echo $padded_request_id;
-                                break;
+//PATT BEGIN
+$num = $ticket['id'];
+$str_length = 7;
+$padded_request_id = substr("000000{$num}", -$str_length);
+echo $padded_request_id;
+break;
+//PATT END
+
               case 'customer_name':
               case 'customer_email':
               case 'ticket_subject':
@@ -95,7 +99,6 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
 						switch ($this->type) {
 							
 							case '1':
-							    $this->print_meta_value();
               case '2':
               case '4':
               case '7':
@@ -143,35 +146,16 @@ if ( ! class_exists( 'WPSC_Ticket_List_Field' ) ) :
           <?php
         }
         
+//PATT BEGIN
         function print_ticket_category(){
           $category = get_term_by('id',$this->val,'wpsc_categories');
-					$wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
+		  $wpsc_custom_category_localize = get_option('wpsc_custom_category_localize');
           //echo $wpsc_custom_category_localize['custom_category_'.$this->val];
-
-global $wpdb;
-
-$ticket_id = $this->ticket['id'];
           
-$box_details = $wpdb->get_results(
-"SELECT wpqa_terms.name as digitization_center
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
-			);
-			$array = [];
-			foreach ($box_details as $info) {
-			    array_push($array, $info->digitization_center);
-			}
-			$unique = array_unique($array);
-			$unique_string = implode(",",$unique);
-			
-			if(empty($unique) || $unique_string == '') {
-			echo 'Unassigned';
-			} else {
-			echo $unique_string;
-			}
+          do_action('pattracking_print_ticket_category', $this); // PATT BEGIN - Location Filtering - PATT END
+
         }
+//PATT END
         
         function print_ticket_priority(){
           $priority         = get_term_by('id',$this->val,'wpsc_priorities');

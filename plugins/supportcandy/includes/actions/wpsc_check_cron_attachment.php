@@ -46,7 +46,7 @@ if($attachments){
         $time  = strtotime($updated_time);
         $month = date("m",$time);
         $year  = date("Y",$time);
-        $filepath = $upload_dir['basedir'] . '/wpsc/'.'/'.$year.'/'.$month.'/'. $file_name;
+        $filepath = $upload_dir['basedir'] . '/wpsc/'.$year.'/'.$month.'/'. $file_name;
       }else{
         $filepath = $upload_dir['basedir'] . '/wpsc/'. $file_name;
       }

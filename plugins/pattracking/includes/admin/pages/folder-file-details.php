@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
+$subfolder_path = site_url( '', 'relative');
+
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
 
@@ -80,7 +82,7 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 
 <?php
 			$box_il_val = '';
-			if ($box_il == 1) {
+			if ($box_il == '1') {
 ?>
   <h3>Folder Details</h3>
 <?php
@@ -134,7 +136,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 
 <?php
 			$box_il_val = '';
-			if ($box_il == 1) {
+			if ($box_il == '1') {
 ?>
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
@@ -283,7 +285,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 		function wpsc_get_folderfile_editor(doc_id){
 <?php
 			$box_il_val = '';
-			if ($box_il == 1) {
+			if ($box_il == '1') {
 ?>
 		  wpsc_modal_open('Edit Folder Metadata');
 <?php

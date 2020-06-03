@@ -86,8 +86,8 @@ $fields = get_terms([
 		'relation' => 'AND',
 		array(
       'key'       => 'agentonly',
-      'value'     => '0',
-      'compare'   => '='
+      'value'     => array(0,1),
+      'compare'   => 'IN'
     ),
 		array(
       'key'       => 'wpsc_tf_type',

@@ -6,7 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'wppatt_Frontend' ) ) :
   
   final class wppatt_Frontend {
-    
+
   }
   
 endif;

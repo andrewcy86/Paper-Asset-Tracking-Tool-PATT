@@ -39,13 +39,13 @@ $custom_fields = get_terms([
 	'taxonomy'   => 'wpsc_ticket_custom_fields',
 	'hide_empty' => false,
 	'orderby'    => 'meta_value_num',
-	'meta_key'	 => 'wpsc_tf_visibility',
+	'meta_key'	 => 'wpsc_tf_load_order',
 	'order'    	 => 'ASC',
 	'meta_query' => array(
 		 array(
       'key'       => 'agentonly',
-      'value'     => '0',
-      'compare'   => '='
+      'value'     => array(0,1),
+      'compare'   => 'IN'
 	     )
 		 ),
 	 ]);

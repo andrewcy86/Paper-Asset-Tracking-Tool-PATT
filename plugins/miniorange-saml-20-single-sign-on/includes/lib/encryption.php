@@ -1,44 +1,25 @@
 <?php
-/**
- * @package    miniOrange
- * @author	   miniOrange Security Software Pvt. Ltd.
- * @license    GNU/GPLv3
- * @copyright  Copyright 2015 miniOrange. All Rights Reserved.
- *
- *
- * This file is part of miniOrange SAML plugin.
- */
 
-class AESEncryption {
-    /**
-     * @param string $data - the key=value pairs separated with &
-     * @return string
-     */
-    public static function encrypt_data($data, $key) {
-        $key    = openssl_digest($key, 'sha256');
-        $method = 'AES-128-ECB';
-        $ivSize = openssl_cipher_iv_length($method);
-        $iv     = openssl_random_pseudo_bytes($ivSize);
-        $strCrypt = openssl_encrypt ($data, $method, $key,OPENSSL_RAW_DATA||OPENSSL_ZERO_PADDING, $iv);
-        return base64_encode($iv.$strCrypt);
+
+class AESEncryption
+{
+    public static function encrypt_data($rL, $ld)
+    {
+        $ld = openssl_digest($ld, "\x73\150\x61\x32\x35\x36");
+        $R2 = "\x41\105\x53\x2d\61\x32\70\x2d\105\103\102";
+        $ou = openssl_encrypt($rL, $R2, $ld, OPENSSL_RAW_DATA || OPENSSL_ZERO_PADDING);
+        return base64_encode($ou);
     }
-
-
-    /**
-     * @param string $data - crypt response from Sagepay
-     * @return string
-     */
-    public static function decrypt_data($data, $key) {
-        $strIn = base64_decode($data);
-        $key    = openssl_digest($key, 'sha256');
-        $method = 'AES-128-ECB';
-        $ivSize = openssl_cipher_iv_length($method);
-        $iv     = substr($strIn,0,$ivSize);
-        $data   = substr($strIn,$ivSize);
-        $clear  = openssl_decrypt ($data, $method, $key, OPENSSL_RAW_DATA||OPENSSL_ZERO_PADDING, $iv);
-
-        return $clear;
+    public static function decrypt_data($rL, $ld)
+    {
+        $G6 = base64_decode($rL);
+        $ld = openssl_digest($ld, "\x73\x68\x61\x32\65\66");
+        $R2 = "\101\105\123\55\61\x32\70\55\105\103\102";
+        $IC = openssl_cipher_iv_length($R2);
+        $Xn = substr($G6, 0, $IC);
+        $rL = substr($G6, $IC);
+        $jW = openssl_decrypt($rL, $R2, $ld, OPENSSL_RAW_DATA || OPENSSL_ZERO_PADDING, $Xn);
+        return $jW;
     }
-
 }
 ?>

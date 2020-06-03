@@ -80,7 +80,7 @@ if(!function_exists('wpsc_page_inline_script')) {
       <?php
          $url_attrs = array();
          foreach ($_GET as $key => $value) {
-           $url_attrs[] = '"'.$key.'":"'.$value.'"';
+           $url_attrs[] = '"'.sanitize_text_field($key).'":"'.sanitize_text_field($value).'"';
          }
          $url_attrs = '{'.implode(',',$url_attrs).'}'
       ?>

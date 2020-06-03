@@ -97,20 +97,26 @@ if (!class_exists('Patt_HooksFilters'))
             $boxinfo_array = json_decode($boxinfodata, true);
 
             $box = '';
+            $rowCounter = 1;
+            
             foreach ($boxinfo_array as $boxinfo)
             {
                 $box_id = $request_id . '-' . $boxinfo["Box"];
                 if ($box !== $boxinfo["Box"])
                 {
+                    // die(print_r($boxinfo));
+                    $record_schedule_number_break = explode(',', $boxinfo["Record Schedule & Item Number"]);
+                    $record_schedule_number = $record_schedule_number_break[1];
                     $boxarray = array(
                         'box_id' => $box_id,
                         'ticket_id' => $ticket_id,
-                        'location' => $boxinfo["Location"],
-                        'bay' => '1',
-                        'shelf' => 'Top',
+                        // 'location' => $boxinfo["Location"],
+                        // 'bay' => '1',
+                        'storage_location_id' => $this->get_new_storage_location_rowID(),
+                        'location_status_id' => 1,
                         'user_id' => 1,
                         'program_office_id' => $this->get_programe_office_id($boxinfo["Program Office"]),
-                        'record_schedule_id' => $boxinfo["Record Schedule ID"],
+                        'record_schedule_id' => $this->get_record_schedule_id($record_schedule_number ),
                         'date_created' => date("Y-m-d H:i:s"),
                         'date_updated' => date("Y-m-d H:i:s"),
                     );
@@ -118,41 +124,60 @@ if (!class_exists('Patt_HooksFilters'))
                     $this->add_boxinfo_meta($boxinfo_id, 'assigned_agent', '0');
                     $this->add_boxinfo_meta($boxinfo_id, 'prev_assigned_agent', '0');
                     $box = $boxinfo["Box"];
-
-                    $docinfo_id = $request_id . '-' . $boxinfo["Box"] . '-' . $boxinfo_id ;
+                }
+                    $index_level = $boxinfo['Record Type'] == 'File' ? '01' : '02';
+                    $docinfo_id = $request_id . '-' . $boxinfo["Box"] . '-' . $index_level . "-" . $rowCounter;
                     $folderdocarray = array(
                         'folderdocinfo_id' => $docinfo_id,
                         'title' => $boxinfo["Title"],
-                        'date' => date("Y-m-d H:i:s", $boxinfo["Date"]) ,
-                        'author' => "{$boxinfo['Author']}",
+                        'date' => date("Y-m-d H:i:s"),
+                        'author' => "{$boxinfo['Author/Addressee']}",
                         'record_type' => "{$boxinfo['Record Type']}",
                         'site_name' => "{$boxinfo['Site Name']}",
-                        'site_id' => "{$boxinfo['Site ID ']}",
-                        'epa_contact_email' => "{$boxinfo['EPA Contact Email']}",
+                        'site_id' => "{$boxinfo['Site ID #']}",
+                        'epa_contact_email' => "{$boxinfo['EPA Contact']}",
                         'access_type' => "{$boxinfo['Access Type']}",
                         'source_format' => "{$boxinfo['Source Format']}",
                         'rights' => "{$boxinfo['Rights']}",
-                        'contract_number' => "{$boxinfo['Contract Number']}",
-                        'grant_number' => "{$boxinfo['Grant Number']}",
-                        'file_name' => '',
-                        'file_location' => '',
-                        'index_level' => $boxinfo["Index Level"],
-                        'box_id' => $box_id,
-                        'essential_record' => $boxinfo['Essential Records'],
-                        'date_created' => date("Y-m-d H:i:s") ,
+                        'contract_number' => "{$boxinfo['Contract #']}",
+                        'grant_number' => "{$boxinfo['Grant #']}",
+                        // 'file_name' => '',
+                        // 'file_location' => '',
+                        'index_level' => $index_level,
+                        'box_id' => $boxinfo_id,
+                        'essential_record' => 1,// $boxinfo['Essential Records'],
+                        'date_created' => date("Y-m-d H:i:s"),
                         'date_updated' => date("Y-m-d H:i:s")
                     );
                     $folderdocinfo_id = $this->create_new_folderdocinfo($folderdocarray);
-                }
-
+                
+            $rowCounter++;
             }
             //End of New BoxInfo Code
             
         }
 
+        public function get_new_storage_location_rowID(){
+            global $wpdb;
+            $table = $wpdb->prefix.'wpsc_epa_storage_location';
+            $data = array('digitization_center' => 666, 'aisle' => 0, 'bay' => 0, 'shelf' => 0, 'position' => 0);
+            $format = array('%s','%d','%d','%d','%d');
+            $wpdb->insert($table,$data,$format);
+            return $wpdb->insert_id;
+        }
+
+        public function get_record_schedule_id($Record_Schedule_Number){
+            global $wpdb;
+            $query = "SELECT id FROM {$wpdb->prefix}epa_record_schedule WHERE Record_Schedule_Number = '{$Record_Schedule_Number}'";
+            // die($query);
+            $programe_office_id = $wpdb->get_var($query );
+            return $programe_office_id;
+        }
+
         public function get_programe_office_id($office_id_key){
             global $wpdb;
-            $query = "SELECT id FROM {$wpdb->prefix}wpsc_epa_program_office WHERE acronym = '{$office_id_key}'";
+            $query = "SELECT office_code FROM {$wpdb->prefix}wpsc_epa_program_office WHERE organization_acronym = '{$office_id_key}'";
+            // die($query);
             $programe_office_id = $wpdb->get_var($query );
             return $programe_office_id;
         }
@@ -178,6 +203,7 @@ if (!class_exists('Patt_HooksFilters'))
             global $wpdb;
             $wpdb->insert($wpdb->prefix . 'wpsc_epa_folderdocinfo', $folderdocarray);
             $folderdocinfo_id = $wpdb->insert_id;
+            // die(($wpdb->last_error));
             return $folderdocinfo_id;
         }
 
@@ -189,6 +215,7 @@ if (!class_exists('Patt_HooksFilters'))
             global $wpdb;
             $wpdb->insert($wpdb->prefix . 'wpsc_epa_boxinfo', $boxarray);
             $boxinfo_id = $wpdb->insert_id;
+            // die(($wpdb->last_error));
             return $boxinfo_id;
         }
 
@@ -312,9 +339,11 @@ if (!class_exists('Patt_HooksFilters'))
 
                                 if (parsedData[2] !== undefined) {
                                     console.log(parsedData);
-                                    if (parsedData[1][0] !== undefined && parsedData[1][17] !== undefined) {
+                                    // console.log(parsedData[1][12]);
+                                    if (parsedData[1][0] !== undefined && parsedData[1][15] !== undefined) {
                                         for (var count = 1; count < arrayLength; count++) {
-                                            if (parsedData[count] !== undefined && parsedData[count][0].toString().trim() != "Box") {
+                                            console.log(parsedData[count]);
+                                            if (parsedData[count] !== undefined && parsedData[count].length > 0 && parsedData[count][0].toString().trim() != "Box") {
                                                 datatable.row.add([
                                                         parsedData[count][0],
                                                         parsedData[count][1],
@@ -331,9 +360,7 @@ if (!class_exists('Patt_HooksFilters'))
                                                         parsedData[count][12],
                                                         parsedData[count][13],
                                                         parsedData[count][14],
-                                                        parsedData[count][15],
-                                                        parsedData[count][16],
-                                                        parsedData[count][17]
+                                                        parsedData[count][15]
                                                     ]).draw().node();
                                             }
                                         }
@@ -482,7 +509,7 @@ if (!class_exists('Patt_HooksFilters'))
                                 var arrayLength = Object.keys(parsedData).length;
 
                                 if (parsedData[2] !== undefined) {
-                                    if (parsedData[1][0] !== undefined && parsedData[1][15] !==
+                                    if (parsedData[1][0] !== undefined && parsedData[1][13] !==
                                         undefined) {
                                         for (var count = 1; count < arrayLength; count++) {
 
@@ -503,9 +530,7 @@ if (!class_exists('Patt_HooksFilters'))
                                                         parsedData[count][10],
                                                         parsedData[count][11],
                                                         parsedData[count][12],
-                                                        parsedData[count][13],
-                                                        parsedData[count][14],
-                                                        parsedData[count][15]
+                                                        parsedData[count][13]
 
                                                     ]).draw()
                                                     .node();
@@ -625,20 +650,18 @@ alert(ex);
                 <th>Box</th>
                 <th>Title</th>
                 <th>Date</th>
-                <th>Location</th>
-                <th>Author</th>
+                <th>Author/Addressee</th>
                 <th>Record Type</th>
-                <th>Record Schedule ID</th>
+                <th>Record Schedule & Item Number</th>
                 <th>Site Name</th>
-                <th>Site ID </th>
-                <th>Index Level</th>
-                <th>EPA Contact Email</th>
+                <th>Site ID #</th>
+                <th>Close Date</th>
+                <th>EPA Contact</th>
                 <th>Access Type</th>
                 <th>Source Format</th>
                 <th>Rights</th>
-                <th>Contract Number</th>
-                <th>Essential Records</th>
-                <th>Grant Number</th>
+                <th>Contract #</th>
+                <th>Grant #</th>
                 <th>Program Office</th>
             </tr>
         </thead>

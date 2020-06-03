@@ -51,7 +51,9 @@ ob_start();
 				'meta_query' => array('order_clause' => array('key' => 'wpsc_category_load_order')),
 			]);
 			foreach ( $categories as $category ) :
+				//PATT
 				$selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
+
 				echo '<option '.$selected.' value="'.$category->term_id.'">'.$wpsc_custom_category_localize['custom_category_'.$category->term_id].'</option>';
 			endforeach;
 			?>
@@ -91,6 +93,7 @@ ob_start();
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"    onclick="wpsc_modal_close();"><?php _e('Close','supportcandy');?></button>
 <button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_set_change_ticket_status(<?php echo htmlentities($ticket_id)?>);"><?php _e('Save','supportcandy');?></button>
 <script>
+// PATT BEGIN
 jQuery(document).ready(function() {
 jQuery(".wpsc_popup_action").click(function () {
 jQuery.post(
@@ -104,9 +107,8 @@ alert(response);
 }
 });
 });
-
 });
-
+// PATT END
 </script>
 <?php
 $footer = ob_get_clean();

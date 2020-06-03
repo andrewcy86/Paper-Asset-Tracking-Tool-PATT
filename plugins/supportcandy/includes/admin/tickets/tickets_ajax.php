@@ -22,7 +22,14 @@ switch ($setting_action) {
 	case 'create_ticket': include WPSC_ABSPATH . 'includes/admin/tickets/create_ticket/create_ticket.php';
     break;
 		
-	case 'sign_up_user':include WPSC_ABSPATH . 'includes/admin/tickets/sign_in/sign_up_user.php';
+	case 'sign_up_user':
+		$user_registration = get_option('wpsc_user_registration_method');
+		
+		if($user_registration == '1'){
+			include WPSC_ABSPATH . 'includes/admin/tickets/sign_in/sign_up_user.php';
+		}
+		
+
     break;
 		
 	case 'submit_user':include WPSC_ABSPATH . 'includes/admin/tickets/sign_in/submit_user.php';

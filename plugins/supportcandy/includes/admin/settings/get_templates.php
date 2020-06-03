@@ -31,7 +31,7 @@ ob_start();
 	foreach ($fields as $field) {
 		$label = get_term_meta($field->term_id,'wpsc_tf_label',true);
 		$wpsc_tf_type = get_term_meta($field->term_id,'wpsc_tf_type',true);
-		if($wpsc_tf_type == '22'){
+		if( $wpsc_tf_type == '22'  || $field->slug == 'conditional_agent_assign' || $field->slug == 'schedule_tickets'){
 			continue;
 		}
 		?>

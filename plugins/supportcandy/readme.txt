@@ -3,8 +3,8 @@ Contributors: supportcandy,pradeepmakone07,nsgawli,ashwiniw,nehap,sabalemanoj
 License: GPL v3
 Tags: helpdesk,ticket system,support,tickets,support ticket,support desk,help,knowledgebase,faq,contact form
 Requires at least: 4.0
-Tested up to: 5.3
-Stable tag: 2.1.1
+Tested up to: 5.4
+Stable tag: 2.1.3
 
 == Description ==
 
@@ -113,6 +113,20 @@ This plugin is almost plug and play! [Click Here](https://supportcandy.net/knowl
 9. Report - Rating (premium)
 
 == Changelog ==
+
+= V 2.1.3 (May 14, 2020) =
+* Fix: Default filter not working after login
+* Fix: Sign-in not working in some cases
+* Fix: Vulnerability fixes
+* Fix: GDRP compatibility added for registration form
+
+= V 2.1.2 (April 03, 2020) =
+* New feature: Setting to allow HTML/Text pasting in create, reply description field
+* Fix: Vulnerability fixes for attachments
+* Fix: Performance improvements. Working slow on some servers
+* Fix: Some administrators can't save thank you page setting
+* Fix: The agent only fields do not get imported in clone ticket
+* Fix: Email notification not send for user registration when registered via supportcandy
 
 = V 2.1.1 (February 17, 2020) =
 * New feature: You can now edit saved filters

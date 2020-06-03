@@ -1,4 +1,4 @@
-<?php
+ <?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -31,11 +31,54 @@ WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'");
 
 ?>
 
-<form>
+<!--converted program office dropdown to a datalist-->
+<form autocomplete='off'>
 <strong>Program Office:</strong><br />
-<input type='text' id='po' placeholder= '<?php echo $program_office; ?>'><br /><br />
+<?php
+if(!empty($program_office)) 
+{
+  $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+    <input type="search" list="po" name="program_office" placeholder='$program_office'/>
+    <datalist id = 'po'>
+     <?php foreach($po_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?>
+     </datalist>
+<?php }
+else {
+    $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+    <input type="search" list="po" name="program_office" placeholder='Enter program office'/>
+    <datalist id = 'po'>
+     <?php foreach($po_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?>
+     </datalist>
+<?php } ?>
+
+<br></br>
+
 <strong>Record Schedule:</strong><br />
-<input type='text' id='rs' placeholder= '<?php echo $record_schedule; ?>'><br /><br />
+<?php
+if(!empty($record_schedule)) 
+{
+  $rs_array = Patt_Custom_Func::fetch_record_schedule_array(); ?>
+    <input type="search" list="rs" name="record_schedule" placeholder='$record_schedule'/>
+    <datalist id = 'rs'>
+     <?php foreach($rs_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'></option>
+     <?php } ?>
+     </datalist>;
+<?php }
+else {
+    $rs_array = Patt_Custom_Func::fetch_record_schedule_array(); ?>
+    <input type="search" list="rs" name="record_schedule" placeholder='Enter record schedule'/>
+    <datalist id = 'rs'>
+     <?php foreach($rs_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'?></option>
+     <?php } ?>
+     </datalist>
+<?php } ?>
+
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
 <input type="hidden" id="pattboxid" name="pattboxid" value="<?php echo $patt_box_id; ?>">
 </form>

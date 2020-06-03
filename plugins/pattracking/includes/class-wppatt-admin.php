@@ -6,7 +6,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 if ( ! class_exists( 'wppatt_Admin' ) ) :
   
   final class wppatt_Admin {
-// constructor
+      
+ // constructor
     public function __construct() {
       add_action( 'admin_enqueue_scripts', array( $this, 'loadScripts') );
     }
@@ -47,6 +48,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
         wp_localize_script( 'wpsc-admin', 'wpsc_admin', $localize_script_data );
       endif;
     }
+    
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    
@@ -59,7 +61,7 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
     public function request_hide_logs(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_request_hide_logs.php';    
     }
-	  
+    
     public function get_pdf_label_field(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_pdf_label_field.php';
     die();
@@ -176,27 +178,27 @@ switch ($company_name) {
     include WPPATT_ABSPATH . 'includes/ajax/get_inventory_editor.php';
     die();
     }
-	  
+    
     public function get_digitization_editor(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_digitization_editor.php';
     die();
     }
-
+    
     public function get_folder_file_editor(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_folder_file_editor.php';
     die();
     }
-	  
+    
     public function get_box_editor(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_box_editor.php';
     die();
     }
-	  
+    
     public function get_clear_rfid(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_clear_rfid.php';
     die();
     }
-	  
+    
     public function get_rfid_box_editor(){    
     include WPPATT_ABSPATH . 'includes/ajax/get_rfid_box_editor.php';
     die();

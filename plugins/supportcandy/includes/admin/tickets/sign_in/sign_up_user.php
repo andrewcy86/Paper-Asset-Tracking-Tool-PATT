@@ -8,7 +8,10 @@ global $current_user;
 $wpsc_appearance_signup = get_option('wpsc_appearance_signup');
 $general_appearance     = get_option('wpsc_appearance_general_settings');
 $wpsc_appearance_create_ticket = get_option('wpsc_create_ticket');
-
+$wpsc_set_in_gdpr               = get_option('wpsc_set_in_gdpr');
+$wpsc_terms_and_conditions      = get_option('wpsc_terms_and_conditions');
+$wpsc_gdpr_html                 = get_option('wpsc_gdpr_html');
+$wpsc_terms_and_conditions_html = get_option('wpsc_terms_and_conditions_html');
 $wpsc_registration_captcha = get_option('wpsc_registration_captcha');
 $wpsc_recaptcha_type       = get_option('wpsc_recaptcha_type');
 $wpsc_get_site_key         = get_option('wpsc_get_site_key');
@@ -20,35 +23,41 @@ $wpsc_get_secret_key       = get_option('wpsc_get_secret_key');
 		  <form id="wpsc_frm_signup_user" method="post">
 						<div class="form-group reg_required">
 						 <label for="wpsc_register_user_first_name" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('First Name','supportcandy');?></label>
+						 <span class="wpsc_reg_required_sym">*</span>
 						 <input type="text" id="firstname"  class="form-control" name="firstname"   />
 						 <div id="wpsc_register_username_error"></div>
 					 	</div>
 					 
 						<div class="form-group reg_required">
 							<label for="wpsc_register_user_last_name" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Last Name','supportcandy');?></label>
+							<span class="wpsc_reg_required_sym">*</span>
 							<input type="text" id="lastname"  class="form-control" name="lastname"   />
 							<div id="wpsc_register_username_error"></div>
 						</div>
 					 
 				   <div class="form-group reg_required">
-				     <label for="wpsc_register_user_name" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Username','supportcandy');?></label>
+					 <label for="wpsc_register_user_name" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Username','supportcandy');?></label>
+					 <span class="wpsc_reg_required_sym">*</span>
 			       <input type="text" id="username"  class="form-control" name="username"   />
 						 <div id="wpsc_register_username_error"></div>
 				   </div>
 					
 		       <div class="form-group reg_required">
-		         <label for="wpsc_register_email" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Email','supportcandy');?></label>
+				 <label for="wpsc_register_email" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Email','supportcandy');?></label>
+				 <span class="wpsc_reg_required_sym">*</span>
 		         <input id="email" class="form-control" name="email" />      
 				     <div id="wpsc_register_email_error"></div>
 		       </div>
 		    
 			     <div class="form-group reg_required">
-			         <label for="wpsc_register_pass" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Password','supportcandy');?></label>
+					 <label for="wpsc_register_pass" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;"><?php _e('Password','supportcandy');?></label>
+					 <span class="wpsc_reg_required_sym">*</span>
 			         <input type="password" id="password" class="form-control" name="password" />      
 			     </div>
 
 			     <div class="form-group reg_required">
-			         <label for="wpsc_register_confirmpass" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;" ><?php _e('Confirm Password','supportcandy');?></label>
+					 <label for="wpsc_register_confirmpass" style="color:<?php echo $general_appearance['wpsc_text_color']?> !important;" ><?php _e('Confirm Password','supportcandy');?></label>
+					 <span class="wpsc_reg_required_sym">*</span>
 			         <input type="password" id="confirmpassword" class="form-control" name="confirmpassword"  />      
 			     </div>
 		    	
@@ -73,6 +82,42 @@ $wpsc_get_secret_key       = get_option('wpsc_get_secret_key');
 							<?php
 						}
 					?>
+
+			<?php if($wpsc_set_in_gdpr) {?>
+				<div class="row create_ticket_fields_container">
+					<div class="col-sm-12" style="margin-bottom:10px;display:flex; right:35px;">
+						<div style="width:50px;">
+							<input type="checkbox" name="wpsc_gdpr" id="wpsc_gdpr"value="1">
+						</div>			   
+						<div style="">
+							<?php echo stripcslashes(html_entity_decode($wpsc_gdpr_html))?>	
+						</div>			
+					</div>										
+				</div>
+				<?php  
+		   }
+			?>
+
+			
+			<?php 
+			if($wpsc_terms_and_conditions) {?>
+				
+				<div class="row create_ticket_fields_container">
+					<div class="col-sm-12" style="margin-bottom:30px;display:flex;right:35px;">
+						<div style="width:25px;">
+							<input type="checkbox" name="wpsc_terms" id="wpsc_terms" value="1">
+						</div>
+						<div style="">
+							<?php 
+							echo stripcslashes(html_entity_decode($wpsc_terms_and_conditions_html));						
+							?>
+						</div>
+					</div>						
+				</div>
+				<?php  
+			}
+			?>
+
 
 			     <div class="form-group">
 			         <button type="submit" class="btn btn-sm" name='btnsubmit' onclick="javascript:wpsc_register_user(event);" style="background-color:<?php echo $wpsc_appearance_signup['wpsc_appearance_signup_button_bg_color']?> !important; color:<?php echo $wpsc_appearance_signup['wpsc_appearance_signup_button_text_color']?> !important; border-color:<?php echo $wpsc_appearance_signup['wpsc_appearance_signup_button_border_color']?> !important;"><?php _e('Register Now','supportcandy')?></button>
@@ -142,6 +187,26 @@ function wpsc_register_user(event) {
 		?>
 	}
 	
+	<?php
+		if($wpsc_set_in_gdpr) { ?>
+				if (!jQuery('#wpsc_gdpr').is(':checked')){
+	 	     alert("<?php _e('Please accept privacy policy.','supportcandy')?>");
+	 	     return false;
+	 	   }
+		<?php
+		}
+		?>
+			
+		<?php
+		if($wpsc_terms_and_conditions) { ?>
+				if (!jQuery('#wpsc_terms').is(':checked')){
+	 	     alert("<?php _e('Please agree to terms & coditions.', 'supportcandy')?>");
+	 	     return false;
+	 	   }
+		<?php
+		}
+		?>
+
 	if(validation){
 		var dataform = new FormData(jQuery('#wpsc_frm_signup_user')[0]);
 		jQuery.ajax({

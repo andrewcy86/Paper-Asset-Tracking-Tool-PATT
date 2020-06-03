@@ -25,4 +25,6 @@ if (is_numeric($label_key) || $label_key == 0 && !is_string($label_key) ) {
     $filter['query'] = $wpscfunction->get_default_filter_query($label_key);
 }
 
+$filter = apply_filters('ticket_filter_the_filter',$filter, $order_key, $order); // PATT BEGIN - Location Filtering, allows sidebar filters - PATT END
+
 setcookie('wpsc_ticket_filter',json_encode($filter));

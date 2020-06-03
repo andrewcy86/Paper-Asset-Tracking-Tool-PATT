@@ -47,6 +47,7 @@ $agent_role = get_option('wpsc_agent_role');
         <div class="wpsc_flex">
           <div onclick="wpsc_get_edit_support_agent(<?php echo $agent->term_id;?>);" style="cursor:pointer;"><i class="fa fa-edit"></i></div>
           <div onclick="wpsc_delete_support_agent(<?php echo $agent->term_id;?>);" style="cursor:pointer; padding-left: 10px;"><i class="fa fa-trash"></i></div>
+		  <?php do_action('wpsc_support_agent_add_action', $agent); ?>
         </div>
       </td>
     </tr>
@@ -162,5 +163,6 @@ $agent_role = get_option('wpsc_agent_role');
 			});
 		}
 	}
-	
+
+	<?php do_action( "wpsc_add_extra_script_support_agent" ); ?>
 </script>

@@ -103,6 +103,9 @@ foreach ($email_templates as $email) :
       continue; // no email address found to send. So go to next foreach iteration.
     }
 
+    $from_email = apply_filters('wpsc_change_cat_from_email_headers',$from_email,$ticket_id);
+    $reply_to   = apply_filters('wpsc_change_cat_replyto_headers',$reply_to,$ticket_id);
+
     $bcc = implode(',',$email_addresses);
  
     $args = array(

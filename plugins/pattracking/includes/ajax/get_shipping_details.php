@@ -27,10 +27,13 @@ ob_start();
   .jsgrid-alt-row>.jsgrid-cell {
     text-align: center;
   }
+  
+    #grid_table {
+  width: auto !IMPORTANT
+}
   </style>
-    </head>  
-    <body>  
-        <div class="container">  
+
+        <div class="container>  
    <br />
    <div class="table-responsive">
     <div id="grid_table"></div>
@@ -41,8 +44,8 @@ ob_start();
            
     $('#grid_table').jsGrid({
 
-     width: "90%",
-     height: "250px",
+     width: "auto",
+     height: "auto",
 
      filtering: true,
      inserting:true,

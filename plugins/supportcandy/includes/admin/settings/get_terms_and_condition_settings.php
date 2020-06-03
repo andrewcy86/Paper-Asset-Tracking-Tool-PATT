@@ -18,7 +18,7 @@ $directionality = $wpscfunction->check_rtl();
   
   
   <div class="form-group">
-    <label for="wpsc_terms_and_conditions"><?php _e('Terms & Canditions','supportcandy');?></label>
+    <label for="wpsc_terms_and_conditions"><?php _e('Terms & Conditions','supportcandy');?></label>
     <p class="help-block"><?php _e("Enable or disable Terms and Condition ticket form.","supportcandy");?></p>
     <select class="form-control" name="wpsc_terms_and_conditions" id="wpsc_terms_and_conditions">
       <?php
@@ -34,7 +34,11 @@ $directionality = $wpscfunction->check_rtl();
 	<div class="form-group">
 		<label for="wpsc_terms_and_conditions_html"><?php _e('Terms and Conditions Text','supportcandy');?></label>
 		<p class="help-block"><?php _e("Text to show on create ticket page.","supportcandy");?></p>
-		<textarea class="form-control" name="wpsc_terms_and_conditions_html" id="wpsc_terms_and_conditions_html"><?php echo htmlentities(stripcslashes($wpsc_terms_and_conditions_html))?></textarea>		
+      <div class="text-right">
+				 <button id="visual" class="wpsc-switch-editor wpsc-switch-editor-active visual term" type="button" onclick="wpsc_get_tinymce_term('wpsc_terms_and_conditions_html','term_body');"><?php _e('Visual', 'supportcandy');?></button>
+				 <button id="text" class="wpsc-switch-editor text term" type="button" onclick="wpsc_get_textarea_term('wpsc_terms_and_conditions_html')"><?php _e('Text', 'supportcandy');?></button>
+      </div>
+		  <textarea class="form-control" style="height:100px !important;"  name="wpsc_terms_and_conditions_html" id="wpsc_terms_and_conditions_html"><?php echo html_entity_decode(stripcslashes(get_option('wpsc_terms_and_conditions_html')));?></textarea>		
 	</div>
 	
 	<div class="form-group">
@@ -54,7 +58,11 @@ $directionality = $wpscfunction->check_rtl();
 	<div class="form-group">
 		<label for="wpsc_gdpr_html"><?php _e('GDPR Text','supportcandy');?></label>
 		<p class="help-block"><?php _e("Text to show on create ticket page.","supportcandy");?></p>
-		<textarea class="form-control" name="wpsc_gdpr_html" id="wpsc_gdpr_html"><?php echo htmlentities(stripcslashes($wpsc_gdpr_html))?></textarea>		
+      <div class="text-right">
+			  	<button id="visual1" class="wpsc-switch-editor wpsc-switch-editor-active visual gdpr" type="button" onclick="wpsc_get_tinymce_gdpr('wpsc_gdpr_html','gdpr_body');"><?php _e('Visual', 'supportcandy');?></button>
+				  <button id="text2" class="wpsc-switch-editor text gdpr" type="button" onclick="wpsc_get_textarea_gdpr('wpsc_gdpr_html')"><?php _e('Text', 'supportcandy');?></button>
+      </div>
+		  <textarea style="height:100px !important;" class="form-control" name="wpsc_gdpr_html" id="wpsc_gdpr_html"><?php echo html_entity_decode(stripcslashes(get_option('wpsc_gdpr_html')));?></textarea>		
 	</div>
 	
 	<div class="form-group">
@@ -120,47 +128,88 @@ jQuery(document).ready(function(){
  });
 });
 
-tinymce.remove();
-tinymce.init({ 
-  selector:'#wpsc_gdpr_html',
-  body_id: 'gdpr_body',
-  directionality : '<?php echo $directionality; ?>',
-  menubar: false,
-	statusbar: false,
-  height : '100',
-  plugins: [
-      'lists link image directionality'
-  ],
-  image_advtab: true,
-  toolbar: 'bold italic underline blockquote | alignleft aligncenter alignright | bullist numlist | rtl | link image',
-  branding: false,
-  autoresize_bottom_margin: 20,
-  browser_spellcheck : true,
-  relative_urls : false,
-  remove_script_host : false,
-  convert_urls : true,
-	setup: function (editor) {
-  }
+jQuery( document ).ready(function() {
+  tinymce.remove();
+  wpsc_get_tinymce_term('wpsc_terms_and_conditions_html','term_body');
+  wpsc_get_tinymce_gdpr('wpsc_gdpr_html','gdpr_body');
 });
-tinymce.init({ 
-  selector:'#wpsc_terms_and_conditions_html',
-  body_id: 'gdpr_body',
-  directionality : '<?php echo $directionality; ?>',
-  menubar: false,
-	statusbar: false,
-  height : '100',
-  plugins: [
+
+function wpsc_get_tinymce_term(selector,body_id){
+  
+  jQuery('#visual_header').removeClass('btn btn-primary visual_header');
+  jQuery('#text_header').addClass('btn btn-primary text_header');
+  jQuery('#text_header').removeClass('btn btn-default text_header');
+  jQuery('#text').removeClass('wpsc-switch-editor-active');
+  jQuery('#visual').addClass('wpsc-switch-editor-active');
+  tinymce.init({ 
+    selector:'#'+selector,
+    body_id: body_id,
+    directionality : '<?php echo $directionality; ?>',
+    menubar: false,
+    statusbar: false,
+    height : '100',
+    plugins: [
       'lists link image directionality'
-  ],
-  image_advtab: true,
-  toolbar: 'bold italic underline blockquote | alignleft aligncenter alignright | bullist numlist | rtl | link image',
-  branding: false,
-  autoresize_bottom_margin: 20,
-  browser_spellcheck : true,
-  relative_urls : false,
-  remove_script_host : false,
-  convert_urls : true,
-	setup: function (editor) {
-  }
-});
+    ],
+    image_advtab: true,
+    toolbar: 'bold italic underline blockquote | alignleft aligncenter alignright | bullist numlist | rtl | link image',
+    branding: false,
+    autoresize_bottom_margin: 20,
+    browser_spellcheck : true,
+    relative_urls : false,
+    remove_script_host : false,
+    convert_urls : true,
+    setup: function (editor) {
+    }
+  });
+}
+
+function wpsc_get_textarea_term(selector){
+  jQuery('#visual_body').addClass('btn btn-primary visual_body');
+  jQuery('#visual_body').removeClass('btn btn-default visual_body');
+  jQuery('#text_body').removeClass('btn btn-primary text_body');
+  tinymce.remove('#'+selector);
+  jQuery('#text').addClass('wpsc-switch-editor-active');
+  jQuery('#visual').removeClass('wpsc-switch-editor-active');
+}
+
+function wpsc_get_tinymce_gdpr(selector,body_id){
+  
+  jQuery('#visual_header').removeClass('btn btn-primary visual_header');
+  jQuery('#text_header').addClass('btn btn-primary text_header');
+  jQuery('#text_header').removeClass('btn btn-default text_header');
+  jQuery('#text2').removeClass('wpsc-switch-editor-active');
+  jQuery('#visual1').addClass('wpsc-switch-editor-active');
+  tinymce.init({ 
+    selector:'#'+selector,
+    body_id: body_id,
+    directionality : '<?php echo $directionality; ?>',
+    menubar: false,
+    statusbar: false,
+    height : '100',
+    plugins: [
+      'lists link image directionality'
+    ],
+    image_advtab: true,
+    toolbar: 'bold italic underline blockquote | alignleft aligncenter alignright | bullist numlist | rtl | link image',
+    branding: false,
+    autoresize_bottom_margin: 20,
+    browser_spellcheck : true,
+    relative_urls : false,
+    remove_script_host : false,
+    convert_urls : true,
+    setup: function (editor) {
+    }
+  });
+}
+
+function wpsc_get_textarea_gdpr(selector){
+  jQuery('#visual_body').addClass('btn btn-primary visual_body');
+  jQuery('#visual_body').removeClass('btn btn-default visual_body');
+  jQuery('#text_body').removeClass('btn btn-primary text_body');
+  tinymce.remove('#'+selector);
+  jQuery('#text2').addClass('wpsc-switch-editor-active');
+  jQuery('#visual1').removeClass('wpsc-switch-editor-active');
+}
+
 </script>

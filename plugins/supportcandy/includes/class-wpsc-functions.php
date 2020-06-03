@@ -253,15 +253,15 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
       // check current user has default filter is set or not 
       $blog_id        = get_current_blog_id();
       $default_filter = get_user_meta($current_user->ID,$blog_id.'_wpsc_user_default_filter',true);
-      $default_filter = ($default_filter || $default_filter == 0  && $default_filter !='' && $current_user->has_cap('wpsc_agent'))  ? $default_filter : 'all';
-      if(is_numeric($default_filter) && !is_string($default_filter)){ 
+      $default_filter = ( $current_user->has_cap('wpsc_agent') && strlen($default_filter) )? $default_filter: 'all';
+      if(is_numeric($default_filter) && ((int)$default_filter) >= 0  ){ 
         $saved_filters  = get_user_meta($current_user->ID, $blog_id.'_wpsc_filter',true);
         $saved_filters  = $saved_filters ? $saved_filters : array();
         $filter         = $saved_filters[$default_filter]; 
       }else {
         $filter = array(
           'label'   => $default_filter,
-          'query'   => array(),
+          'query'   => $this->get_default_filter_query($default_filter),
           'orderby' => $order_key,
           'order'   => $order,
           'page'    => 1,
@@ -319,11 +319,22 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
       	  break;
           
         case 'unassigned':
+          $close_status = get_option( 'wpsc_close_ticket_group');
+          
           $query[] = array(
-            'key'            => 'assigned_agent',
-      			'value'          => 0,
-      			'compare'        => '='
+            'relation' => 'AND',
+            array(
+              'key'       => 'ticket_status',
+              'value'     => $close_status,
+              'compare'   => 'NOT IN',
+            ),
+            array(
+              'key'       => 'assigned_agent',
+              'value'     => 0,
+              'compare'   => '='
+             )
           );
+
       		$query = apply_filters('wpsc_filter_label_unassigned', $query, $label_key);
           break;
           
@@ -1090,12 +1101,6 @@ if ( ! class_exists( 'WPSC_Functions' ) ) :
         case 'reply_ticket':
           $response = $customer_email == $current_user->user_email || $this->agent_has_permission( 'reply_unassigned', $ticket_id ) || $this->agent_has_permission( 'reply_assigned_me', $ticket_id ) || $this->agent_has_permission( 'reply_assigned_others', $ticket_id ) || (!$current_user->has_cap('wpsc_agent') && $wpsc_ticket_public_mode) ? true : false;
           break;
-          
-          $term = wp_insert_term( __('Status','supportcandy'), 'wpsc_ticket_widget' );
-					if ($term && isset($term['term_id'])) {
-						add_term_meta ($term['term_id'], 'wpsc_ticket_widget_load_order', '1');
-						update_option('wpsc_ticket_widget_updated',$term['term_id']);
-					}
 					
         case 'add_note':
           $response = $this->agent_has_permission( 'view_unassigned_private_note', $ticket_id ) || $this->agent_has_permission( 'view_assigned_me_private_note', $ticket_id ) || $this->agent_has_permission( 'view_assigned_others_private_note', $ticket_id ) ? true : false;

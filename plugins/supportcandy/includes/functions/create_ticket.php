@@ -29,7 +29,7 @@ if($wpsc_tf_limit){
 }
 
 // Category
-$default_category = get_option('wpsc_default_ticket_category');
+$default_category = get_option('');
 $ticket_category = isset($args['ticket_category']) ? intval($args['ticket_category']) : $default_category;
 $ticket_category = apply_filters('wpsc_create_ticket_category', $ticket_category, $args);
 
@@ -80,13 +80,11 @@ $values = array(
 	'user_type' => $user_type,
 	'ticket_category' => $ticket_category,
 	'ticket_priority' => $ticket_priority,
-	// 'program_office_id' => 20, CAR - RETURN TO THIS ASAP
 	'date_created' => date("Y-m-d H:i:s"),
 	'date_updated' => date("Y-m-d H:i:s"),
 	'ip_address' => $ip_address,
 	'agent_created' => $agent_created,
 	'ticket_auth_code' => $this->getRandomString(10),
-	'historyId' => 502,
 	'active' => '1'
 );
 
@@ -100,19 +98,7 @@ if(!$wpsc_ticket_id_type){
 		$values['id'] = $id;
 }
 
-// Update database to include PATT specific Record Schedule ID
-
 $ticket_id = $wpscfunction->create_new_ticket($values);
-
-/*
-BEGIN CAR - Added Custom PATT Action
-*/
-$data['ticket_id'] = $ticket_id;
-$data['box_info']  = $args["box_info"];
-do_action('patt_process_boxinfo_records', $data);
-/*
-END CAR - Added Custom PATT Action
-*/
 
 $wpscfunction->add_ticket_meta($ticket_id,'assigned_agent','0');
 
@@ -229,7 +215,7 @@ $thread_id = $this->submit_ticket_thread($thread_args);
 
 $wpsc_reg_guest_user_after_create_ticket = get_option('wpsc_reg_guest_user_after_create_ticket');
 
-if($wpsc_reg_guest_user_after_create_ticket && email_exists($customer_email) == false ) {
+if($wpsc_reg_guest_user_after_create_ticket && !email_exists($customer_email) ) {
 	$random_password = wp_generate_password( $length=12, $include_standard_special_chars=false );
 	$user_id = wp_create_user( $customer_name, $random_password, $customer_email );
 	$creds = array(
@@ -237,7 +223,10 @@ if($wpsc_reg_guest_user_after_create_ticket && email_exists($customer_email) == 
 		'user_password' => $random_password,
 	);
 	wp_new_user_notification($user_id,null,'both');
-	wp_signon( $creds, false );
+
+    if (!$agent_created) {
+        wp_signon($creds, false);
+    }
 }
 
 do_action( 'wpsc_ticket_created', $ticket_id );

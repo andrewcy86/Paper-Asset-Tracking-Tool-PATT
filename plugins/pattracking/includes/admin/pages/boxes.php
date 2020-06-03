@@ -52,12 +52,20 @@ Enter one or more Box IDs:<br />
 <br />
 
          <?php
-  $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+  /*$po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
 <select id='searchByProgramOffice'>
      <option value=''>-- Select Program Office --</option>
      <?php foreach($po_array as $key => $value) { ?>
-      <option value='<?php echo $value; ?>'><?php echo $value; ?></option>
-     <?php } ?></select>
+      <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?></select>*/
+     
+   $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+    <input type="search" list="searchByProgramOffice" placeholder='Enter program office' autocomplete='off'/>
+    <datalist id = 'searchByProgramOffice'>
+     <?php foreach($po_array as $key => $value) { ?>
+        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+     <?php } ?>
+     </datalist>
      
 <br /><br />
         <select id='searchByDigitizationCenter'>
@@ -148,7 +156,7 @@ jQuery(document).ready(function(){
     }
 });
 
-  jQuery("#searchByProgramOffice").change(function(){
+  jQuery("#searchByProgramOffice").on('input', function () {
     dataTable.draw();
 });
 

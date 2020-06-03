@@ -48,7 +48,7 @@ include WPSC_ABSPATH.'includes/admin/tickets/ticket_list/filters/get_label_count
 			<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_load_list_auto_refresh_btn" onclick="wpsc_set_toggle_auto_refresh();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-sync-alt"></i> <span id="wpsc_autorefresh_btn_lbl"><?php _e('Auto Refresh : Off','supportcandy')?></span></button>
 		<?php endif;?>
 		<?php do_action('wpsc_add_btn_after_default_filter');?>
-		<?php if ($wpscfunction->has_permission('assign_agent') && $wpscfunction->has_permission('change_agentonly_fields',$ticket_id)):?>
+		<?php if ($wpscfunction->has_permission('assign_agent')&& $wpscfunction->has_permission('change_agentonly_fields',$ticket_id)):?>
     	<button type="button" class="btn btn-sm wpsc_btn_bulk_action wpsc_action_btn checkbox_depend hidden" id="btn_assign_agents" onclick="wpsc_get_bulk_assign_agent();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-users"></i> <?php _e('Assign Agent','supportcandy')?></button>
 		<?php endif;?>
 		<?php if ($wpscfunction->has_permission('change_status') && $wpscfunction->has_permission('change_agentonly_fields',$ticket_id)):?>

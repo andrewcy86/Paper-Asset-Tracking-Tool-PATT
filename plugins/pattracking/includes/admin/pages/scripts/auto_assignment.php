@@ -8,17 +8,8 @@ include ($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-fu
 if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
-	$dc = $_POST['postvardcname'];
+	$dc_final = $_POST['postvardcname'];
 
-//Convert $dc Place in where clause of each select statement
-	$dc_final = '';
-
-	if ($dc == 62) {
-		$dc_final = 'East';
-	} else if ($dc == 2) {
-		$dc_final = 'West';
-	}
-    
 // Finds Shelf ID of next available sequence
 	$find_sequence = $wpdb->get_row("
 WITH 

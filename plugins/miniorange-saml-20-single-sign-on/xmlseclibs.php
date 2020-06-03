@@ -41,7 +41,7 @@
  */
 
 $xmlseclibs_srcdir = dirname(__FILE__) . '/includes/lib/SAML2Core';
-require $xmlseclibs_srcdir . '/MoXMLSecurityKey.php';
-require $xmlseclibs_srcdir . '/MoXMLSecurityDSig.php';
-require $xmlseclibs_srcdir . '/MoXMLSecEnc.php';
-require $xmlseclibs_srcdir . '/Utils/MoXPath.php';
+require $xmlseclibs_srcdir . '/XMLSecurityKey.php';
+require $xmlseclibs_srcdir . '/XMLSecurityDSig.php';
+require $xmlseclibs_srcdir . '/XMLSecEnc.php';
+require $xmlseclibs_srcdir . '/Utils/XPath.php';

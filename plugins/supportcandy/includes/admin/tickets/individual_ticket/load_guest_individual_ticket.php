@@ -382,8 +382,14 @@ if($flag){
 		  menubar: false,
 		  statusbar: false,	
 		  autoresize_min_height: 150,
-		  paste_as_text: true,
-		  wp_autoresize_on: true,
+		  <?php 
+		    $wpsc_allow_html_pasting = get_option('wpsc_allow_html_pasting');
+            if(!$wpsc_allow_html_pasting){ ?>
+		          paste_as_text: true,
+		    <?php
+			} 
+			?>
+          wp_autoresize_on: true,
 		  plugins: [
 			'wpautoresize lists link image directionality paste'
 		  ],

@@ -145,7 +145,7 @@ ob_start();
 
 <div class="form-group" id="wpsc_required_field_container" style="<?php echo $wpsc_html_content_option?'display:none;':'';?>" >
   <label for="wpsc_tf_required"><?php _e('Required','supportcandy');?></label>
-  <p class="help-block"><?php _e('Whether this field is medatory or optional. Yes indicates mendatory whereas no indicates optional.','supportcandy');?></p>
+  <p class="help-block"><?php _e('Whether this field is mandatory or optional. Yes indicates mandatory whereas no indicates optional.','supportcandy');?></p>
   <select id="wpsc_tf_required" class="form-control" name="wpsc_tf_required">
 		<option <?php echo $wpsc_tf_required == '1' ? 'selected="selected"' : ''?> value="1"><?php _e('Yes','supportcandy');?></option>
 		<option <?php echo $wpsc_tf_required == '0' ? 'selected="selected"' : ''?> value="0"><?php _e('No','supportcandy');?></option>

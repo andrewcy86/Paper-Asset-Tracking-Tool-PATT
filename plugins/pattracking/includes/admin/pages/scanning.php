@@ -32,21 +32,21 @@
     echo '<link rel="stylesheet" type="text/css" href="' . WPPATT_PLUGIN_URL . 'includes/admin/css/scan-table.css"/>';
     
     // JM - 4/28/2020 - Add functions to fetch location, bay from the PATT Custom Class
-    $box_location = Patt_Custom_Func::fetch_location(1);
+   // $box_location = Patt_Custom_Func::fetch_location(1);
     
-    $box_bay = Patt_Custom_Func::fetch_bay(1);
+   // $box_bay = Patt_Custom_Func::fetch_bay(1);
 		
     // JM - 5/1/2020 - Function to obtain location value from database <br/>";
-        $box_location = Patt_Custom_Func::fetch_location(1);
+   //     $box_location = Patt_Custom_Func::fetch_location(1);
 
 
-        $box_program_office = Patt_Custom_Func::fetch_program_office(1);
-
-        
-        $box_shelf = Patt_Custom_Func::fetch_shelf(1);
+    //    $box_program_office = Patt_Custom_Func::fetch_program_office(1);
 
         
-		$box_bay = Patt_Custom_Func::fetch_bay(1);
+    //    $box_shelf = Patt_Custom_Func::fetch_shelf(1);
+
+        
+	//	$box_bay = Patt_Custom_Func::fetch_bay(1);
 
 ?> 
 
@@ -69,34 +69,35 @@ TODO:  Add input mask for validating if the miltiline textarea
     
     // Use regex for each case
     // JM - 5/13/20 - New location code for regex
-    // 2A_3B_3S_2P_E
+    // 2A_3B_3S_2P
+    const reg_physicalLocation = /^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P$/gi;
     
     // Aisle
-    const reg_aisle = /(\d{1,3}a\z)/i;
+    const reg_aisle = /^(\d{1,3}a\z)$/i;
     
     // Bay
-    const reg_bay = /(\d{1,3}b\z)/i;  
+    const reg_bay = /^(\d{1,3}b\z)$/i;  
     
     // Shelf
-    const reg_shelf = /(\d{1,3}s\z)/i;  
+    const reg_shelfid = /^(\d{1,3}s\z)$/i;  
     
     // Position
-    const reg_position = /(\d{1,3}p\z)/i;  
+    const reg_position = /^(\d{1,3}p\z)$/i;  
     
     // Record Center
-    const reg_recordCenter = /(e|w\z)/i;
+    const reg_recordCenter = /^(e|w\z)$/i;
     
     // BoxID
-    const reg_boxid = /^\d{7}-\d{1,}$/;
+    const reg_boxid = /^\d{7}-\d{1,}$/i;
                    
     // Cart Barcode
-    const reg_cartid = /CID-\d\d-e|CID-\d\d-w/i;   
+    const reg_cartid = /(\bcid-\d\d-e\b|\bcid-\d\d-w\b)|(\bcid-\d\d-east\scui\b|\bcid-\d\d-west\scui\b)|(\bcid-\d\d-east\b|\bcid-\d\d-west\b)|(\bcid-\d\d-eastcui\b|\bcid-\d\d-westcui\b)/gim;   
 
     // Staging barcode
-    const reg_stagingarea = /\b(sa-e|sa-w)\b/i;  
+    const reg_stagingarea = /^\b(sa-e|sa-w)\b$/i;  
 
     // Scanning barcode
-    const reg_scanning = /\b(SCN-\d\d-e|SCN-\d\d-w)\b/i;
+    const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i;
               
     // Combined bay and shelf barcode
     // const reg_bay_and_shelf = "/\b(\d\d\d-[a-zA-Z]{3})\b/i";  
@@ -110,8 +111,8 @@ TODO:  Add input mask for validating if the miltiline textarea
         
           jQuery("textarea#boxid-textarea").focus();
           
-            /* JM - 5/22/2020 - Clear border css properties to mimic unselect */
-            jQuery(this).next().find('#submitbtn').focus();
+            /* JM - 5/22/2020 - Clear border css properties to mimic unselect 
+            jQuery(this).next().find('#submitbtn').focus();*/
             jQuery('#submit-scan-border').css('border', '');
             jQuery('#submit-scan-border').css('box-shadow', '');
           
@@ -218,66 +219,79 @@ TODO:  Add input mask for validating if the miltiline textarea
                 jQuery.each(text_vals.split(/[\s,]+/).filter(Boolean), function(index, last_scan_val) {
                     
                 /* If the last textarea entry does not match the appropriate id form */
-                    if (reg_cartid.test(last_scan_val) === "true"){
+                    if (reg_cartid.test(last_scan_val)){
 
                         /* remove the last entry */
-                        boxid_values.push(last_scan_val);
+                        scanid_values.push(last_scan_val);
                         /* Add a new line to the textarea*/
                         jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
                         
-                    }else if(reg_stagingarea.test(last_scan_val) === "true"){
+                    }else if(reg_stagingarea.test(last_scan_val)){
                         
-                         boxid_values.pop(last_scan_val);
+                         scanid_values.push(last_scan_val);
                         /* Add a new line to the textarea*/
                         jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
                         
-                    }else if(reg_scanning.test(last_scan_val) === "true"){
+                    }else if(reg_scanning.test(last_scan_val)){
                         
-                         boxid_values.pop(last_scan_val);
-                        /* Add a new line to the textarea*/
+                         scanid_values.push(last_scan_val);
                         jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
                         
-                    }else if(reg_position.test(last_scan_val) === "true"){
+                    }else if(reg_aisle.test(last_scan_val)){
                         
-                        boxid_values.pop(last_scan_val);
-                        /* Add a new line to the textarea*/
-                        jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
-                        
-                    }else if(reg_bay.test(last_scan_val) === "true"){
-                        
-                         boxid_values.pop(last_scan_val);
-                        /* Add a new line to the textarea*/
-                        jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
-                        
-                    }else if(reg_recordCenter.test(last_scan_val) === "true"){
-                        
-                         boxid_values.pop(last_scan_val);
-                        /* Add a new line to the textarea*/
-                        jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+                            scanid_values.push(last_scan_val);
+                            jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
                             
-                    }else if(reg_aisle.test(last_scan_val) === "true"){
+                    }else if(reg_bay.test(last_scan_val)){
                         
-                         boxid_values.pop(last_scan_val);
+                            scanid_values.push(last_scan_val);
+                            jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+                            
+                    }else if(reg_shelfid.test(last_scan_val)){
+                        
+                            scanid_values.push(last_scan_val);
+                            jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+                            
+                    }else if(reg_position.test(last_scan_val)){
+                        
+                            scanid_values.push(last_scan_val);
+                            jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+
+                    /* JM - 6/1/20 - Detect the location string (1A_1B_1S_1P) */
+                    }else if(reg_physicalLocation.test(last_scan_val)){
+                        
+                        /* Break the string into each position value holder */
+                        var arrphysical_location = last_scan_val.split('_');
+                        
+                        jQuery.each(arrphysical_location, function(key, val){
+                            
+                            if(reg_aisle.test(val)){
+                                scanid_values.push(val);
+                            }
+                            if(reg_bay.test(val)){
+                                scanid_values.push(val);
+                            }
+                            if(reg_shelfid.test(val)){
+                                scanid_values.push(val);
+                            }
+                            if(reg_position.test(val)){
+                                scanid_values.push(val);
+                            }
+                        });
+                        
+                        jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+                        
+                    }else if(reg_recordCenter.test(last_scan_val)){
+                        
+                         scanid_values.push(last_scan_val);
                         /* Add a new line to the textarea*/
                         jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
-                                
-                    }else if(reg_shelf.test(last_scan_val) === "true"){
-                        
-                         boxid_values.pop(last_scan_val);
-                        
-                        /* Add a new line to the textarea*/
-                        jQuery('textarea#scan-input').val(jQuery('textarea#scan-input').val() + '\n');
+
                     }else{                 
                         /* Add the boxid to the boxid array */
-                        scanid_values.push(last_scan_val);
+                        scanid_values.pop(last_scan_val);
                         
                         alert(last_scan_val + " is invalid.")
-                        
-                        var response = last_scan_val + " is invalid.";
-                        var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Updated</strong>' + response + '</small></i></div>';
-                        response_messages_list = response_messages_list + confmessage;
-                                    
-                        jQuery('.confirmation').append(response_messages_list);
                                     
                         /* jQuery('#dvconfirmation').removeClass('hidden'); */
                         jQuery('.confirmation').css('display', 'inline');  
@@ -344,14 +358,16 @@ TODO:  Add input mask for validating if the miltiline textarea
                 jQuery(this).next().find('#submitbtn').focus();
                 jQuery('#submit-scan-border').css('border', '');
                 jQuery('#submit-scan-border').css('box-shadow', '');
+                
+                var arr_validated_scans = [];
 
                    //  JM - 5/13/20 - Update the database 
-                    if(boxid_values.length !== 0 || scanid_values.length !== 0 ){
+                    if(boxid_values.length > 0 && scanid_values.length > 0 ){
                         
                         // Insert the scan_Locations values for each BoxID value in the scan_BoxIDs
                         jQuery.each(boxid_values, function(index, boxid_value) {
                             
-                            var arr_validated_scans = [];
+                            
                     
                             // For each scan value in the scan_Locations array
                             jQuery.each(scanid_values, function(index, scan) {
@@ -394,7 +410,7 @@ TODO:  Add input mask for validating if the miltiline textarea
                                         arr_validated_scans.push(scan);
                                         break;
                                        
-                                    case (reg_shelfID.test(scan)? true : false):
+                                    case (reg_shelfid.test(scan)? true : false):
                                     
                                         arr_validated_scans.push(scan);
                                         break;
@@ -415,16 +431,19 @@ TODO:  Add input mask for validating if the miltiline textarea
                                         break;
                                 }
                            });      
-                        });
+     
         
                             try{
                             
+                                    // Debug
+                                    alert("Box ID values: " + boxid_values + "\n" + "Location Scans: " + arr_validated_scans );
+                                    
 
                                     // Andrews Code
                                     jQuery.post(
                                                     '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_scan_location.php',{
-                                                    postvarsboxid: boxid_values,
-                                                    postvarslocation: scanid_values
+                                                    postvarsboxid: boxid_value,
+                                                    postvarslocation: arr_validated_scans
                                                     }, 
                                                     function (response) {
                                                           if(!alert(response)){window.location.reload();
@@ -435,25 +454,27 @@ TODO:  Add input mask for validating if the miltiline textarea
                              
                                     var response = updateLocations(boxid_values, scanid_values);
                                     var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Updated</strong>' + response + '</small></i></div>';
-                                    response_messages_list = response_messages_list + confmessage;
+                                    window.response_messages_list = window.response_messages_list + confmessage;
                                     
-                                    jQuery('.confirmation').append(response_messages_list);
+                                    jQuery('.confirmation').append(window.response_messages_list);
                                     
                                     /* jQuery('#dvconfirmation').removeClass('hidden'); */
                                     jQuery('.confirmation').css('display', 'inline');  
                                     
                             }catch (err){
                             
-                                    var response = "Either the <strong>BoxID(s)</strong> are missing or there are no <strong>Location Scan(s)</strong> to submit.  Please try again.";
-                                    var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Updated</strong>' + response + '</small></i></div>';
-                                    response_messages_list = response_messages_list + confmessage;
+                                    var response = "Either the <strong>BoxID(s)</strong> are missing or there are no <strong>Location Scan(s)</strong> to submit.";
+                                    var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
+                                    window.response_messages_list = window.response_messages_list + confmessage;
                                     
-                                    jQuery('.confirmation').append(response_messages_list);
+                                    jQuery('.confirmation').append(window.response_messages_list);
                                     
                                     /* jQuery('#dvconfirmation').removeClass('hidden'); */
                                     jQuery('.confirmation').css('display', 'inline');  
                                             
                             }
+                            
+                        });
                     }
                     return false;
             });

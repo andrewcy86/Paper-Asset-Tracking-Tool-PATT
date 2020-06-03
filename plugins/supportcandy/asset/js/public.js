@@ -1,37 +1,18 @@
 
 function wpsc_init(wpsc_setting_action,attrs){
-
-  if(jQuery('#wpsc_boxes_container').length){
-        //alert("wpsc_boxes_container exists");
-    jQuery('#wpsc_boxes_container').html(wpsc_admin.loading_html);
-        var data = {
-        action: 'wpsc_boxes',
-        setting_action : wpsc_setting_action
-        };
-
-       jQuery.each( attrs, function( key, value ) {
-         data[key] = value;
-       });
-      jQuery.post(wpsc_admin.ajax_url, data, function(response) {
-        jQuery('#wpsc_boxes_container').html(response);
-      });
-
-  }else{
-    //alert("wpsc_boxes_container does not exists");
-    jQuery('#wpsc_tickets_container').html(wpsc_admin.loading_html);
-      var data = {
-        action: 'wpsc_tickets',
-        setting_action : wpsc_setting_action
-        };
-
-        jQuery.each( attrs, function( key, value ) {
-         data[key] = value;
-         });
-
-      jQuery.post(wpsc_admin.ajax_url, data, function(response) {
-        jQuery('#wpsc_tickets_container').html(response);
-      });
-  }
+  
+  jQuery('#wpsc_tickets_container').html(wpsc_admin.loading_html);
+  var data = {
+    action: 'wpsc_tickets',
+    setting_action : wpsc_setting_action
+  };
+  
+   jQuery.each( attrs, function( key, value ) {
+     data[key] = value;
+   });
+  jQuery.post(wpsc_admin.ajax_url, data, function(response) {
+    jQuery('#wpsc_tickets_container').html(response);
+  });
   
 }
 
@@ -525,7 +506,7 @@ function wpsc_get_change_ticket_status(ticket_id){
 }
     
 function wpsc_get_change_ticket_fields(ticket_id){
-  wpsc_modal_open('Change Request Fields');
+  wpsc_modal_open(wpsc_admin.change_ticket_fields);
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_change_ticket_fields',
@@ -563,7 +544,7 @@ function wpsc_set_change_ticket_status(ticket_id){
 }
 
 function wpsc_get_change_assign_agent(ticket_id){
-  wpsc_modal_open('Assign Staff'); 
+  wpsc_modal_open(wpsc_admin.assign_agent); 
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_change_assign_agent',
@@ -577,7 +558,7 @@ function wpsc_get_change_assign_agent(ticket_id){
 }
 
 function wpsc_get_delete_ticket(ticket_id){
-  wpsc_modal_open('Delete Request'); 
+  wpsc_modal_open(wpsc_admin.delete_ticket); 
   var data = {
     action: 'wpsc_tickets',
     setting_action : 'get_delete_ticket',

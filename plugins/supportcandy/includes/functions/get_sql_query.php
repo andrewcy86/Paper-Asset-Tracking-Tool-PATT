@@ -114,15 +114,9 @@ foreach ($meta_query as $outer_key => $inner_query) {
 }
 
 if($search){
-if (strpos($search, "id")!==false){
-parse_str(parse_url($search)['query'], $params);
-$search = $params['id'];
-} 
-    
   $term           = '%'.$search.'%';
   $layer1_where[] = "( " 
-                        //searching by request_id with leading zeros
-                        ."t.request_id  LIKE '$term' OR "
+                        ."t.id  LIKE '$term' OR "
                         ."t.customer_name  LIKE '$term' OR "
                         ."t.customer_email  LIKE '$term' OR "
                         ."t.ticket_subject  LIKE '$term' OR "

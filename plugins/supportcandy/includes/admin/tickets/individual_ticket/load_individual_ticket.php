@@ -55,15 +55,6 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
 	$flag = true;
 }
 
-$assigned_agent = $wpscfunction->get_ticket_meta( $ticket_id, assigned_agent, true);
-$request_data = $wpscfunction->get_ticket($ticket_id);
-$request_status = $request_data['ticket_status'];
-
-if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
-        {
-            $wpscfunction->change_status($ticket_id, 64);
-        }
-
 ?>
 
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
@@ -95,8 +86,6 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
     	<button type="button" id="wpsc_individual_delete_btn" onclick="wpsc_get_delete_ticket(<?php echo $ticket_id ?>);" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-trash"></i> <?php _e('Delete','supportcandy')?></button>
 		<?php endif;?>
 		
-
-		
 		<?php do_action('wpsc_after_indidual_ticket_action_btn',$ticket_id);?>
 		
   </div>
@@ -110,17 +99,21 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
     <div class="row wpsc_it_subject_widget">
       <h4>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[Request # <?php  
-        	$num = $ticket_id;
-            $str_length = 7;
-            $padded_request_id = substr("000000{$num}", -$str_length);
-            echo $padded_request_id; ?>]
+        	[Request # <?php
+//PATT BEGIN
+$num = $ticket_id;
+$str_length = 7;
+$padded_request_id = substr("000000{$num}", -$str_length);
+echo $padded_request_id;
+//PATT END ?>]
+
 		  <?php } ?>		
       </h4>
     </div>
-<?php do_action('wpsc_before_request_id',$ticket_id);?>
+<?php /*PATT BEGIN*/ do_action('wpsc_before_request_id',$ticket_id); /*PATT END*/ ?>
 <br />
 <br />
+
 		<?php
 		if($reply_form_position && $ticket_status){
 			include WPSC_ABSPATH . 'includes/admin/tickets/individual_ticket/reply_form.php';
@@ -426,7 +419,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 					</div>
 					<?php
 				endif;
-/*
+/* PATT BEGIN
 				if ( $thread_type == 'log' && apply_filters('wpsc_thread_log_visibility',$current_user->has_cap('wpsc_agent')) && $wpscfunction->has_permission('view_log',$ticket_id)):
 					?>
 					<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_logs_border_color']?> !important;">
@@ -440,7 +433,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 		      </div>
 					<?php
 				endif;
-*/				
+PATT END */
 				do_action( 'wpsc_print_thread_type', $thread_type, $thread );
 			  endforeach;
 			?>
@@ -493,7 +486,7 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 								?>
 								<div class="wpsp_sidebar_labels"><strong><?php _e('Status','supportcandy')?>:</strong> <span class="wpsp_admin_label" style="background-color:<?php echo $status_background_color?>;color:<?php echo $status_color?>;"><?php echo $wpsc_custom_status_localize['custom_status_'.$status_id]?></span></div>
 					      <?php $category = get_term_by('id', $category_id, 'wpsc_categories');?>
-								<div class="wpsp_sidebar_labels"><strong><?php _e('Category','supportcandy')?>:</strong>  <?php echo $wpsc_custom_category_localize['custom_category_'.$category_id] ?> </div>
+								<!-- PATT BEGIN <div class="wpsp_sidebar_labels"><strong><?php _e('Category','supportcandy')?>:</strong>  <?php echo $wpsc_custom_category_localize['custom_category_'.$category_id] ?> </div> PATT END -->
 								<?php
 								$wpsc_hide_show_priority = get_option('wpsc_hide_show_priority');
 								if(	$current_user->has_cap('wpsc_agent') || (!$current_user->has_cap('wpsc_agent') && $wpsc_hide_show_priority)):
@@ -776,8 +769,6 @@ if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '
 	<?php do_action( 'wpsc_after_ticket_widget', $ticket_id)?>		
 	</div>
 	
-
-	
 </div>
 <?php do_action('wpsc_load_individual_ticket'); ?>
 <?php
@@ -787,6 +778,16 @@ if((in_array('register_user',$wpsc_allow_rich_text_editor) && !$current_user->ha
 } elseif($current_user->has_cap('wpsc_agent') && $rich_editing){
 	$flag = true;
 }
+//PATT BEGIN
+$assigned_agent = $wpscfunction->get_ticket_meta( $ticket_id, assigned_agent, true);
+$request_data = $wpscfunction->get_ticket($ticket_id);
+$request_status = $request_data['ticket_status'];
+
+if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '')
+{
+$wpscfunction->change_status($ticket_id, 64);
+}
+//PATT END
 
 if ($flag) {
 	$wpsc_tinymce_toolbar = get_option('wpsc_tinymce_toolbar');
@@ -812,7 +813,13 @@ $directionality = $wpscfunction->check_rtl();
 	  menubar: false,
 	  statusbar: false,
       autoresize_min_height: 150,
-	  paste_as_text: true,
+	  <?php 
+	    $wpsc_allow_html_pasting = get_option('wpsc_allow_html_pasting');
+		if(!$wpsc_allow_html_pasting){ ?>
+		   paste_as_text: true,
+	     <?php 
+		} 
+		?>
 	  wp_autoresize_on: true,
       plugins: [
 		'wpautoresize lists link image directionality paste'	  

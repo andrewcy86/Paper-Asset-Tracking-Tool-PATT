@@ -1313,6 +1313,16 @@ function wpsc_get_ticket_list_advanced_settings(){
 }
 
 function set_ticket_list_advanced_settings(){
+  var check = false;
+  
+  jQuery('#wpsc_agent_close_statuses').find('input:checked').each(function () {
+    check = true;
+  });  
+
+ if(!check){
+   alert(wpsc_admin.agent_close_statuses); 
+   return;   
+  }
   
   jQuery('.wpsc_submit_wait').show();
   var dataform = new FormData(jQuery('#wpsc_frm_ticket_list_advanced_settings')[0]);

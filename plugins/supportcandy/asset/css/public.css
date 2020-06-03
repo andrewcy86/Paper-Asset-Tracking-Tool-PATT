@@ -441,3 +441,7 @@
   border: 1px solid #ddd;
   padding: 8px;
 }
+
+.wpsc_reg_required_sym{
+  color:red;
+}

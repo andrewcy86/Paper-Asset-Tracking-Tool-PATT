@@ -476,13 +476,38 @@ if ( ! class_exists( 'WPSC_Actions' ) ) :
       
       if( isset($_REQUEST['wpsc_attachment']) && isset($_REQUEST['tid']) && isset($_REQUEST['tac'])){
         $attach_id = intval(sanitize_text_field($_REQUEST['wpsc_attachment']));
-        $auth_code = intval(sanitize_text_field($_REQUEST['tac']));
+        $auth_code = sanitize_text_field($_REQUEST['tac']);
         $ticket_id = intval(sanitize_text_field($_REQUEST['tid']));
         $ticket_auth_code = $wpscfunction->get_ticket_fields($ticket_id,'ticket_auth_code');
+        $ticket_id_refer = 0;
 
-        if($ticket_auth_code == $auth_code){
+        $ticket_meta_id = $wpdb->get_var("SELECT id FROM {$wpdb->prefix}wpsc_ticketmeta WHERE ticket_id=$ticket_id AND meta_value=$attach_id");
+        
+        if($ticket_meta_id){
+          $ticket_id_refer = $ticket_id;
+        }else{
+          $args = array(
+            'post_type'      => 'wpsc_ticket_thread',
+            'post_status'    => 'publish',
+            'posts_per_page' => -1,
+            'meta_query'     => array(
+              'relation' => 'AND',
+              array(
+              'key'     => 'attachments',
+              'value'   => $attach_id,
+              'compare' => 'LIKE'
+              )
+            )
+          );
+          $threads = get_posts($args);
+          if( !empty($threads) ){
+            $ticket_id_refer = get_post_meta( $threads[0]->ID, 'ticket_id', true);
+          }
+        }        
+        
+        if( ($ticket_auth_code == $auth_code) && ($ticket_id == $ticket_id_refer) ){
           $this->file_download($attach_id);
-    		} 
+        } 
       }
 
       if( isset($_REQUEST['wpsc_img_attachment']) && is_numeric($_REQUEST['wpsc_img_attachment']) ) {

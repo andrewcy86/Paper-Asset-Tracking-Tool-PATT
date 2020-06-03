@@ -504,3 +504,43 @@ REPLACE
 //PATT
 $selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
 ```
+### Box List Ingestion Changes
+###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
+FIND
+```
+$form_field->print_field($field);
+```
+ADD ABOVE
+```
+do_action('print_listing_form_block', $field);
+```
+###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
+FIND
+```
+<script type="text/javascript">
+jQuery(document).ready(function(){
+```
+ADD ABOVE
+```
+<?php do_action('patt_custom_imports_tickets', WPSC_PLUGIN_URL); ?>
+```
+###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
+FIND
+```
+function wpsc_submit_ticket() {
+```
+ADD ABOVE
+```
+<?php do_action('patt_print_js_functions_create'); ?>
+```
+###### /supportcandy/includes/functions/create_ticket.php
+FIND
+```
+$ticket_id = $wpscfunction->create_new_ticket($values);
+```
+ADD BELOW
+```
+$data['ticket_id'] = $ticket_id;
+$data['box_info'] = $args["box_info"];
+do_action('patt_process_boxinfo_records', $data);
+```

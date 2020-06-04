@@ -19,7 +19,8 @@ if(
 !empty($_POST['postvarssf']) ||
 !empty($_POST['postvarsrights']) ||
 !empty($_POST['postvarscn']) ||
-!empty($_POST['postvarsgn'])
+!empty($_POST['postvarsgn']) ||
+!empty($_POST['postvarser'])
 ){
    $folderfileid = $_POST['postvarsffid'];
    $pattdocid = $_POST['postvarspdid'];
@@ -36,7 +37,8 @@ if(
    $source_format = $_POST['postvarssf'];
    $rights = $_POST['postvarsrights']; 
    $contract_number = $_POST['postvarscn']; 
-   $grant_number = $_POST['postvarsgn']; 
+   $grant_number = $_POST['postvarsgn'];
+   $essential_record = $_POST['postvarser'];
 
 $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 
@@ -62,6 +64,12 @@ if (isset($il)) {
         $wpdb->update($table_name, $data_update_il, $data_where);
         //update folderdocinfo_id
         $wpdb->update($table_name, $data_update_folderdocinfo_id, $data_where);
+}
+
+if(isset($essential_record)) {
+$data_update = array('essential_record' => $essential_record);
+$data_where = array('id' => $folderfileid);
+$wpdb->update($table_name, $data_update, $data_where);
 }
 
 //updates fields in folder-file-details modal window

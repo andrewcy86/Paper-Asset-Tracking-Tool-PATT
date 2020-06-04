@@ -50,15 +50,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
 			$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
-			/*$box_details = $wpdb->get_row(
-				"SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_boxinfo.index_level as index_level, wpqa_wpsc_epa_boxinfo.location as location, wpqa_wpsc_epa_boxinfo.bay as bay, wpqa_wpsc_epa_boxinfo.shelf as shelf, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.acronym as program_office
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-INNER JOIN wpqa_wpsc_ticket ON wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id
-WHERE wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'"
-			);*/
-			
+			$folderfile_essential_record = $folderfile_details->essential_record;
+
 			$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
 
 FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_storage_location, wpqa_wpsc_ticket, wpqa_terms
@@ -221,9 +214,14 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 				echo "<strong>Grant #:</strong> " . $folderfile_grant_number . "<br />";
 			}
 			
+			if($folderfile_essential_record == 1) {
+			    echo "<strong>Essential Record:</strong> Yes <br />";
+			}
+			
 			if (!empty($folderfile_file_location) || !empty($folderfile_file_name)) {
 				echo '<strong>Link to File:</strong> <a href="' . $folderfile_file_location . '" target="_blank">' . $folderfile_file_name . '</a><br />';
 			}
+			
 ?>
 
 <!-- Pop-up snippet start -->

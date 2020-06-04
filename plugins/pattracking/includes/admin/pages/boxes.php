@@ -60,8 +60,8 @@ Enter one or more Box IDs:<br />
      <?php } ?></select>*/
      
    $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-    <input type="search" list="searchByProgramOffice" placeholder='Enter program office' autocomplete='off'/>
-    <datalist id = 'searchByProgramOffice'>
+    <input type="search" list="searchByProgramOfficeList" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
+    <datalist id='searchByProgramOfficeList'>
      <?php foreach($po_array as $key => $value) { ?>
         <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
      <?php } ?>
@@ -71,7 +71,9 @@ Enter one or more Box IDs:<br />
         <select id='searchByDigitizationCenter'>
            <option value=''>-- Select Digitization Center --</option>
            <option value='East'>East</option>
+           <option value='East CUI'>East CUI</option>
            <option value='West'>West</option>
+           <option value='West CUI'>West CUI</option>
          </select>
 
 	                            </div>
@@ -156,7 +158,7 @@ jQuery(document).ready(function(){
     }
 });
 
-  jQuery("#searchByProgramOffice").on('input', function () {
+  jQuery("#searchByProgramOffice").change(function(){
     dataTable.draw();
 });
 

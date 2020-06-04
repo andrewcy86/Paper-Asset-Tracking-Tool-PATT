@@ -62,7 +62,7 @@ $assigned_agent = $wpscfunction->get_ticket_meta( $ticket_id, assigned_agent, tr
 $request_data = $wpscfunction->get_ticket($ticket_id);
 $request_status = $request_data['ticket_status'];
 
-if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '')
+if(in_array($request_status, array('3', '4', '5', '670', '63')) && $assigned_agent != '')
 {
 $wpscfunction->change_status($ticket_id, 64);
 }
@@ -202,7 +202,7 @@ $assigned_agent = $wpscfunction->get_ticket_meta( $ticket['id'], assigned_agent,
 $request_data = $wpscfunction->get_ticket($ticket['id']);
 $request_status = $request_data['ticket_status'];
 
-                          if(in_array($request_status, array('3', '4', '5', '63')) && $assigned_agent != '') 
+                          if(in_array($request_status, array('3', '4', '5', '670', '63')) && $assigned_agent != '') 
                           {
                             $wpscfunction->change_status($ticket['id'], 64);
                           }

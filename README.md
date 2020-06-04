@@ -290,11 +290,16 @@ wpsc_init(wpsc_setting_action,attrs);
 ```
 ### Modify menu to allow the addition of items to be displayed to digitization staff/administrators only.
 ###### /supportcandy/includes/class-wpsc-admin.php
-ABOVE
+BELOW
 ```
-add_submenu_page(
-'wpsc-tickets',
-__( 'Ticket List', 'supportcandy' ),
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Ticket List', 'supportcandy' ),
+        __( 'Tickets', 'supportcandy' ),
+        'wpsc_agent',
+        'wpsc-tickets',
+        array($this,'tickets')
+      );
 ```
 ADD
 ```

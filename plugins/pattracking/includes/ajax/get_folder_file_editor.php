@@ -39,6 +39,7 @@ ob_start();
 			$folderfile_grant_number = $folderfile_details->grant_number;
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
+			$folderfile_essential_record = $folderfile_details->essential_record;
 
 ?>
 
@@ -143,6 +144,13 @@ else {
     echo "<strong>Grant Number:</strong><br /><input type='text' id='grant_number' placeholder= 'Enter grant number...'>";
 }
 ?>
+<br></br>
+<strong>Essential Record:</strong><br />
+<select id="er" name="er">
+  <option value="1">Yes</option>
+  <option value="0">No</option>
+</select></br></br>
+
 <input type="hidden" id="folderfileid" name="folderfileid" value="<?php echo $folderfile_id; ?>">
 <input type="hidden" id="pattdocid" name="pattdocid" value="<?php echo $folderfile_folderdocinfoid; ?>">
 </form>
@@ -177,7 +185,8 @@ postvarsat: jQuery("#access_type").val(),
 postvarssf: jQuery("#source_format").val(),
 postvarsrights: jQuery("#rights").val(),
 postvarscn: jQuery("#contract_number").val(),
-postvarsgn: jQuery("#grant_number").val()
+postvarsgn: jQuery("#grant_number").val(),
+postvarser: jQuery("#er").val()
 }, 
 
    function (response) {

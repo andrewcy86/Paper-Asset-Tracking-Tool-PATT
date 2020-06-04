@@ -59,8 +59,8 @@ Enter one or more Document IDs:<br />
      <?php } ?></select>*/
      
     $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-    <input type="text" list="searchByProgramOffice" name="program_office" placeholder='Enter program office...'/>
-    <datalist id = 'searchByProgramOffice'>
+    <input type="text" list="searchByProgramOfficelist" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
+    <datalist id='searchByProgramOfficelist'>
      <?php foreach($po_array as $key => $value) { ?>
         <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
      <?php } ?>
@@ -70,7 +70,9 @@ Enter one or more Document IDs:<br />
         <select id='searchByDigitizationCenter'>
            <option value=''>-- Select Digitization Center --</option>
            <option value='East'>East</option>
+           <option value='East CUI'>East CUI</option>
            <option value='West'>West</option>
+           <option value='West CUI'>West CUI</option>
          </select>
 
 	                            </div>

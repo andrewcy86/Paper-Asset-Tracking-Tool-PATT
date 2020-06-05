@@ -492,6 +492,16 @@ REPLACE
 ."t.request_id  LIKE '$term' OR "
 //PATT END
 ```
+### Ensure Request Page refreshes when an agent is assigned so that the status auto updates
+###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_assign_agent.php
+FIND INSIDE ONCLICK
+```
+wpsc_modal_close();
+```
+ADD IN FRONT
+```
+wpsc_open_ticket(<?php echo htmlentities($ticket_id)?>);
+```
 ### Box List Ingestion Changes
 ###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
 FIND

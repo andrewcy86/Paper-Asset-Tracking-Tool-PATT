@@ -484,10 +484,9 @@ $search = substr("000000{$num}", -$str_length);
 ```
 FIND
 ```
- $term           = '%'.$search.'%';
-  $layer1_where[] = "( " 
+."t.id  LIKE '$term' OR "
 ```
-ADD BELOW
+REPLACE
 ```
 //PATT BEGIN
 ."t.request_id  LIKE '$term' OR "

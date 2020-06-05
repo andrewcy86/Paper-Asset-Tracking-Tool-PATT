@@ -194,7 +194,7 @@ ob_start();
 
 ?>
 <button type="button" class="btn wpsc_popup_close"  style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_close_button_text_color']?> !important;"    onclick="wpsc_modal_close();"><?php _e('Close','supportcandy');?></button>
-<button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_open_ticket(<?php echo htmlentities($ticket_id)?>);wpsc_set_change_assign_agent(<?php echo htmlentities($ticket_id) ?>);"><?php _e('Save','supportcandy');?></button>
+<button type="button" class="btn wpsc_popup_action" style="background-color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_bg_color']?> !important;color:<?php echo $wpsc_appearance_modal_window['wpsc_action_button_text_color']?> !important;" onclick="wpsc_set_change_assign_agent(<?php echo htmlentities($ticket_id) ?>);wpsc_open_ticket(<?php echo htmlentities($ticket_id)?>);"><?php _e('Save','supportcandy');?></button>
 
 <?php
 $footer = ob_get_clean();

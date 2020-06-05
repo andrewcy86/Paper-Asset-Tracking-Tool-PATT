@@ -522,9 +522,9 @@ if($search){
 ADD BELOW
 ```
 //PATT BEGIN
-if (strpos($search, "ticket_id")!==false){
+if (strpos($search, "id")!==false){
 parse_str(parse_url($search)['query'], $params);
-$num = $params['ticket_id'];
+$num = $params['id'];
 $str_length = 7;
 $search = substr("000000{$num}", -$str_length);
 }

@@ -465,6 +465,54 @@ REPLACE
 //PATT
 $selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
 ```
+### Only display digitization center selector when nothing has been initial assigned.
+###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_ticket_status.php
+ADD $wpdb to global
+```
+global $current_user,$wpscfunction,$wpdb;
+```
+FIND
+```
+	<div class="form-group">
+		<label for="wpsc_default_ticket_category"><?php _e('Ticket Category','supportcandy');?></label>
+```
+ADD ABOVE
+```
+<?php
+//PATT BEGIN
+$box_details = $wpdb->get_results(
+"SELECT wpqa_terms.term_id as digitization_center
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+			);
+$dc_array = array();
+foreach ($box_details as $info) {
+$dc_details = $info->digitization_center;
+array_push($dc_array, $dc_details);
+}
+
+if (count(array_keys($dc_array, '666')) == count($dc_array)) {
+//PATT END
+?>
+```
+FIND
+```
+		echo '<option '.$selected.' value="'.$category->term_id.'">'.$wpsc_custom_category_localize['custom_category_'.$category->term_id].'</option>';
+			endforeach;
+			?>
+		</select>
+	</div>
+```
+ADD BELOW
+```
+<?php
+//PATT BEGIN
+}
+//PATT END
+?>
+```
 ### Fix Search to accept QR Code and Request ID
 ###### /supportcandy/includes/functions/get_sql_query.php
 FIND

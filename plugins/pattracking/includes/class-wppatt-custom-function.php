@@ -311,7 +311,7 @@ return $set_center;
                 $parent->source_format = $box->source_format;
                 $parent->validation = $box->validation;
                 $parent->validation_user = $box->validation_user_id;
-                $parent->destruction = $box->destruction;
+                $parent->destruction = $box->unauthorized_destruction;
                 $array[] = $parent;
 
             }

@@ -465,6 +465,34 @@ REPLACE
 //PATT
 $selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
 ```
+### Fix Search to accept QR Code and Request ID
+###### /supportcandy/includes/functions/get_sql_query.php
+FIND
+```
+if($search){
+```
+ADD BELOW
+```
+//PATT BEGIN
+if (strpos($search, "ticket_id")!==false){
+parse_str(parse_url($search)['query'], $params);
+$num = $params['ticket_id'];
+$str_length = 7;
+$search = substr("000000{$num}", -$str_length);
+}
+//PATT END
+```
+FIND
+```
+ $term           = '%'.$search.'%';
+  $layer1_where[] = "( " 
+```
+ADD BELOW
+```
+//PATT BEGIN
+."t.request_id  LIKE '$term' OR "
+//PATT END
+```
 ### Box List Ingestion Changes
 ###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
 FIND

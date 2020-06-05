@@ -309,6 +309,9 @@ return $set_center;
                 $parent->date = $box->date;
                 $parent->contact = $box->epa_contact_email;
                 $parent->source_format = $box->source_format;
+                $parent->validation = $box->validation;
+                $parent->validation_user = $box->validation_user_id;
+                $parent->destruction = $box->destruction;
                 $array[] = $parent;
 
             }

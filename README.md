@@ -509,9 +509,23 @@ ADD BELOW
 ```
 <?php
 //PATT BEGIN
+} else {
+//PATT END
+
+echo '<input type="hidden" name="category" value="'.Patt_Custom_Func::get_default_digitization_center($ticket_id).'">';
+
+//PATT BEGIN
 }
 //PATT END
 ?>
+```
+FIND
+```
+onclick="wpsc_set_change_ticket_status(<?php echo htmlentities($ticket_id)?>);
+```
+ADD AFTER
+```
+wpsc_open_ticket(<?php echo htmlentities($ticket_id)?>);
 ```
 ### Fix Search to accept QR Code and Request ID
 ###### /supportcandy/includes/functions/get_sql_query.php
@@ -544,9 +558,9 @@ REPLACE
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_assign_agent.php
 FIND INSIDE ONCLICK
 ```
-wpsc_modal_close();
+wpsc_set_change_assign_agent(<?php echo htmlentities($ticket_id) ?>);
 ```
-ADD IN FRONT
+ADD AFTER
 ```
 wpsc_open_ticket(<?php echo htmlentities($ticket_id)?>);
 ```

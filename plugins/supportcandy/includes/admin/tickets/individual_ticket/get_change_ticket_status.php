@@ -3,7 +3,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
 
-global $current_user,$wpscfunction;
+global $current_user,$wpscfunction,$wpdb;
 
 if (!($current_user->ID && $current_user->has_cap('wpsc_agent'))) {exit;}
 
@@ -39,6 +39,24 @@ ob_start();
 		</select>
 	</div>
 
+<?php
+//PATT BEGIN
+$box_details = $wpdb->get_results(
+"SELECT wpqa_terms.term_id as digitization_center
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
+INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+			);
+$dc_array = array();
+foreach ($box_details as $info) {
+$dc_details = $info->digitization_center;
+array_push($dc_array, $dc_details);
+}
+
+if (count(array_keys($dc_array, '666')) == count($dc_array)) {
+//PATT END
+?>
 	<div class="form-group">
 		<label for="wpsc_default_ticket_category"><?php _e('Ticket Category','supportcandy');?></label>
 		<select class="form-control" name="category" >
@@ -59,7 +77,11 @@ ob_start();
 			?>
 		</select>
 	</div>
-
+<?php
+//PATT BEGIN
+}
+//PATT END
+?>
 	<div class="form-group">
 		<label for="wpsc_default_ticket_priority"><?php _e('Ticket priority','supportcandy');?></label>
 		<select class="form-control" name="priority">

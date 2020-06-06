@@ -93,21 +93,51 @@ background-color: rgb(66, 73, 73) !important;
 color: rgb(255, 255, 255) !important; 
 width: 204px;
 }
+.bootstrap-iso .alert {
+    padding: 8px;
+}
 </style>
+<?php
+$box_details = $wpdb->get_row(
+"SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
+			);
+
+$unauthorized_destruction_count = $box_details->count;
+
+if($unauthorized_destruction_count > 0){
+?>
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
+</div>
+<?php
+}
+?>
 <h4>Boxes Related to Request</h4>
 
 <?php
 	//$box_details = Patt_Custom_Func::fetch_box_details($ticket_id);
 
 $box_details = $wpdb->get_results(
-"SELECT wpqa_wpsc_epa_boxinfo.id as id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_terms.name as digitization_center, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_wpsc_epa_location_status.locations as physical_location
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
-INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id
-INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
+"SELECT 
+wpqa_wpsc_epa_boxinfo.id as id, 
+(SELECT sum(unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as ud,
+wpqa_wpsc_epa_boxinfo.box_id as box_id, 
+wpqa_terms.name as digitization_center, 
+wpqa_wpsc_epa_storage_location.aisle as aisle, 
+wpqa_wpsc_epa_storage_location.bay as bay, 
+wpqa_wpsc_epa_storage_location.shelf as shelf, 
+wpqa_wpsc_epa_storage_location.position as position, 
+wpqa_wpsc_epa_location_status.locations as physical_location 
+FROM wpqa_wpsc_epa_boxinfo 
+INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
+INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id 
+INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center 
 WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
-			
+
 			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
 	<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
@@ -147,11 +177,19 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 				} else {
                 $boxlist_dc_location = $info->digitization_center;
 				}
+				$boxlist_unathorized_destruction = $info->ud;
 				
-				
+			if($boxlist_unathorized_destruction > 0) {
+			$tbl .= '<tr class="wpsc_tl_row_item" style="background-color: #e7c3c3;">';
+			} else {
+			$tbl .= '<tr class="wpsc_tl_row_item">';
+			}
             $tbl .= '
-    <tr class="wpsc_tl_row_item">
-            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a></td>';
+            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
+            if($boxlist_unathorized_destruction > 0) {
+            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span>';
+            }
+            $tbl .= '</td>';
            
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
 			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))

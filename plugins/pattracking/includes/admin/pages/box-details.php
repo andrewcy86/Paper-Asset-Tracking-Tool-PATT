@@ -81,7 +81,28 @@ background-color: rgb(66, 73, 73) !important;
 color: rgb(255, 255, 255) !important; 
 width: 204px;
 }
+.bootstrap-iso .alert {
+    padding: 8px;
+}
 </style>
+<?php
+$box_details = $wpdb->get_row(
+"SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
+			);
+
+$unauthorized_destruction_count = $box_details->count;
+
+if($unauthorized_destruction_count > 0){
+?>
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
+</div>
+<?php
+}
+?>
 
 <?php
 $box_id = Patt_Custom_Func::convert_box_id($GLOBALS['id']);

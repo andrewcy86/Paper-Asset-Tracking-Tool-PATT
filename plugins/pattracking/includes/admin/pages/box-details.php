@@ -96,6 +96,7 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
     	  			<th class="datatable_header">Title</th>
     	  			<th class="datatable_header">Date</th>
     	  			<th class="datatable_header">Contact</th>
+    	  			<th class="datatable_header">Validation</th>
   </tr>
  </thead><tbody>
 ';
@@ -108,34 +109,47 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 				$boxcontent_site = $info->site;
 				$boxcontent_contact = $info->contact;
 				$boxcontent_sf = $info->source_format;
-				
-
+				$boxcontent_validation = $info->validation;
+				$boxcontent_validation_user = $info->validation_user;				
+				$boxcontent_destruction = $info->destruction;
+if($boxcontent_destruction == 1) {
+$tbl .='<tr style="background-color: #e7c3c3;">';
+} else {
+$tbl .='<tr>';   
+}
+				$tbl .= '<td>';
+if($boxcontent_destruction == 1) {
+            $tbl .='<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> ';
+}
 if ($GLOBALS['pid'] == 'requestdetails') {
-				$tbl .= '
-            <tr>
-            <td><a href="admin.php?pid=requestdetails&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
-            ';
+$tbl .= '<a href="admin.php?pid=requestdetails&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
 }
 
 if ($GLOBALS['pid'] == 'boxsearch') {
-				$tbl .= '
-            <tr>
-            <td><a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
-            ';
+$tbl .= '<a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
 }
 if ($GLOBALS['pid'] == 'docsearch') {
-				$tbl .= '
-            <tr>
-            <td><a href="admin.php?pid=docsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a></td>
-            ';
+$tbl .= '<a href="admin.php?pid=docsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
 }
-            
-                $tbl .='
+            $tbl .= '</td>';
+            $tbl .='
             <td>' . $boxcontent_title_truncated . '</td>
             <td>' . $boxcontent_date . '</td>
             <td>' . $boxcontent_contact . '</td>
-            </tr>
             ';
+if($boxcontent_validation == 0) {
+            $tbl .='
+            <td><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span></td>
+            ';
+}
+if($boxcontent_validation == 1) {
+$user = get_user_by( 'id', $boxcontent_validation_user);
+            $tbl .='
+            <td><span style="font-size: 1.3em; color: green;"><i class="fas fa-check-circle" title="Validated"></i></span> ('.$user->user_login.')</td>
+            ';
+}
+$tbl .= '</tr>';
+
 			}
 			$tbl .= '</tbody></table></div>';
 

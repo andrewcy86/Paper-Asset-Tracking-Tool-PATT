@@ -124,6 +124,8 @@ $box_details = $wpdb->get_results(
 "SELECT 
 wpqa_wpsc_epa_boxinfo.id as id, 
 (SELECT sum(unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as ud,
+(SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as val_sum,
+(SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as doc_total,
 wpqa_wpsc_epa_boxinfo.box_id as box_id, 
 wpqa_terms.name as digitization_center, 
 wpqa_wpsc_epa_storage_location.aisle as aisle, 
@@ -147,6 +149,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
     	  			<th class="datatable_header">Physical Location</th>
     	  			<th class="datatable_header">Assigned Location</th>
     	  			<th class="datatable_header">Digitization Center</th>
+    	  		    <th class="datatable_header">Validation</th>
   </tr>
  </thead><tbody>
 ';
@@ -165,6 +168,8 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 				$boxlist_shelf = $info->shelf;
 				$boxlist_position = $info->position;
 			    $boxlist_physical_location = $info->physical_location;
+			    $boxlist_val_sum = $info->val_sum;
+			    $boxlist_doc_total = $info->doc_total;
 			    
 				if (($info->aisle == '0') || ($info->bay == '0') || ($info->shelf == '0') || ($info->position == '0')) {
 				$boxlist_location = 'Currently Unassigned';
@@ -205,6 +210,17 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             $tbl .= '<td>' . $boxlist_location . '</td>';   
             $tbl .= '<td>' . $boxlist_dc_location . '</td>';
             }
+            
+            if($boxlist_doc_total == 0){
+            $tbl .= '<td data-sort="4">-</td>';
+            } else if($boxlist_val_sum != 0 && $boxlist_val_sum < $boxlist_doc_total){
+            $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            } else if($boxlist_val_sum == 0 && $boxlist_val_sum < $boxlist_doc_total){
+            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            } else if($boxlist_val_sum == $boxlist_doc_total){
+            $tbl .= '<td data-sort="3"><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            }
+
             
             $tbl .= '</tr>';
 

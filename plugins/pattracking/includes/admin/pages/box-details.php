@@ -98,7 +98,7 @@ $unauthorized_destruction_count = $box_details->count;
 if($unauthorized_destruction_count > 0){
 ?>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents within this box contains a unauthorized destruction flag.
 </div>
 <?php
 }
@@ -166,7 +166,7 @@ if($boxcontent_validation == 0) {
 if($boxcontent_validation == 1) {
 $user = get_user_by( 'id', $boxcontent_validation_user);
             $tbl .='
-            <td><span style="font-size: 1.3em; color: green;"><i class="fas fa-check-circle" title="Validated"></i></span> ('.$user->user_login.')</td>
+            <td><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ('.$user->user_login.')</td>
             ';
 }
 $tbl .= '</tr>';

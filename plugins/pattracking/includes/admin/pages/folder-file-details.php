@@ -33,6 +33,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			);
 
             $folderfile_id = $folderfile_details->id;
+            $folderfile_index_level = $folderfile_details->index_level;
 			$folderfile_boxid = $folderfile_details->box_id;
 			$folderfile_title = $folderfile_details->title;
 			$folderfile_date = $folderfile_details->date;
@@ -51,8 +52,11 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			$folderfile_file_name = $folderfile_details->file_name;
 			$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
 			$folderfile_essential_record = $folderfile_details->essential_record;
+			$folderfile_validation = $folderfile_details->validation;
+			$folderfile_validation_user = $folderfile_details->validation_user;				
+		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
 
-			$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_wpsc_epa_folderdocinfo.index_level as index_level, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
+			$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
 
 FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_storage_location, wpqa_wpsc_ticket, wpqa_terms
 
@@ -65,17 +69,19 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 			$box_rs = $box_details->rsnum;
 			$box_po = $box_details->program_office;
 			$request_id = substr($box_boxid, 0, 7);
-			$box_il = $box_details->index_level;
 			$box_location = $box_details->location;
 			$box_aisle = $box_details->aisle;
 			$box_bay = $box_details->bay;
 			$box_shelf = $box_details->shelf;
 			$box_position = $box_details->position;
 ?>
-
+<style>
+.bootstrap-iso .alert {
+    padding: 8px;
+}
+</style>
 <?php
-			$box_il_val = '';
-			if ($box_il == '1') {
+			if ($folderfile_index_level == '1') {
 ?>
   <h3>Folder Details</h3>
 <?php
@@ -126,15 +132,30 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
   <div class="col-sm-8 col-md-9 wpsc_it_body">
     <div class="row wpsc_it_subject_widget">
 
-
 <?php
-			$box_il_val = '';
-			if ($box_il == '1') {
+if($folderfile_validation > 0){
+echo '
+<div class="alert alert-success" role="alert">
+<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
+if ($folderfile_index_level == '1') { echo' Folder Validated.'; }else{ echo' File Validated.'; }
+echo '</div>';
+} else {
+echo '
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
+if ($folderfile_index_level == '1') { echo' Folder Not Validated.'; }else{ echo' File Not Validated.'; }
+echo '</div>';
+}
 ?>
+        
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[Folder ID # <?php
-            echo $GLOBALS['id']; ?>]
+        	<?php if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
+            echo $GLOBALS['id']; 
+            if($folderfile_destruction > 0) {
+            echo ' <span style="font-size: .7em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span>';
+            }
+            ?>]
 		  <?php } ?>		
 		  
 		  <?php 
@@ -146,27 +167,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 			    }
 		  ?>
       </h3>
-<?php
-			} else {
-?>
-      <h3>
-	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[File ID # <?php
-            echo $GLOBALS['id']; ?>]
-		  <?php } ?>
-		  
-		  <?php
-		  $agent_permissions = $wpscfunction->get_current_agent_permissions();
-          $agent_permissions['label'];
-		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderfile_id . ')"><i class="fas fa-edit fa-xs"></i></a>';
-			    }
-		  ?>
-      </h3>
-<?php
-			}
-?>
+
     </div>
 
 <?php

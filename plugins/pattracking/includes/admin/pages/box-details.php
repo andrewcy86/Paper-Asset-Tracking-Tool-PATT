@@ -31,6 +31,13 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
+
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
+		
+	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
+
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
 ?>
@@ -52,7 +59,6 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <?php
 }
 ?>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
 		
 		
   </div>
@@ -110,9 +116,11 @@ $box_id = Patt_Custom_Func::convert_box_id($GLOBALS['id']);
 $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
+<form id="frm-example" method="POST">
 	<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
 <thead>
   <tr>
+                    <th class="datatable_header"></th>
     	  			<th class="datatable_header">ID</th>
     	  			<th class="datatable_header">Title</th>
     	  			<th class="datatable_header">Date</th>
@@ -138,6 +146,8 @@ $tbl .='<tr style="background-color: #e7c3c3;">';
 } else {
 $tbl .='<tr>';   
 }
+
+$tbl.='<td>' . $boxcontent_id . '</td>';
 				$tbl .= '<td>';
 if($boxcontent_destruction == 1) {
             $tbl .='<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> ';
@@ -177,13 +187,81 @@ $tbl .= '</tr>';
 			echo $tbl;
 ?>			
 <br /><br />
+
+<p><button>Submit</button></p>
+
+<p><b>Selected rows data:</b></p>
+<pre id="example-console-rows"></pre>
+
+<p><b>Form data as submitted to the server:</b></p>
+<pre id="example-console-form"></pre>
+
+</form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
+
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
+
 <script>
  jQuery(document).ready(function() {
-	 jQuery('#tbl_templates_boxes').DataTable({
+	 var dataTable = jQuery('#tbl_templates_boxes').DataTable({
+	   autoWidth: false,
+	     'columnDefs': [
+         {
+             width: '5px',
+            'targets': 0,
+            'checkboxes': {
+               'selectRow': true
+            }
+         },
+         
+      { width: '300px', targets: 1 },
+      { width: '300px', targets: 2 },
+      { width: '300px', targets: 3 },
+      { width: '50px', targets: 4 },
+      { width: '5px', targets: 5 }
+      ],
+
+      'select': {
+         'style': 'multi'
+      },
+      'order': [[1, 'asc']],
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
 		});
+
+// Handle form submission event 
+   jQuery('#frm-example').on('submit', function(e){
+      var form = this;
+      
+      var rows_selected = dataTable.column(0).checkboxes.selected();
+
+      // Iterate over all selected checkboxes
+      jQuery.each(rows_selected, function(index, rowId){
+         // Create a hidden element 
+         jQuery(form).append(
+             jQuery('<input>')
+                .attr('type', 'hidden')
+                .attr('name', 'id[]')
+                .val(rowId)
+         );
+      });
+
+      // FOR DEMONSTRATION ONLY
+      // The code below is not needed in production
+      
+      // Output form data to a console     
+      jQuery('#example-console-rows').text(rows_selected.join(","));
+      
+      // Output form data to a console     
+      jQuery('#example-console-form').text(jQuery(form).serialize());
+       
+      // Remove added elements
+      jQuery('input[name="id\[\]"]', form).remove();
+       
+      // Prevent actual form submission
+      e.preventDefault();
+   });
 
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
@@ -215,7 +293,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <?php
 }
 ?>
-} );
+});
 
 </script>
 

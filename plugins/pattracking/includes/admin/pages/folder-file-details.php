@@ -9,6 +9,7 @@ $subfolder_path = site_url( '', 'relative');
 
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
+$GLOBALS['page'] = $_GET['page'];
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
@@ -99,6 +100,9 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 	<div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
     	
+    	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+
+
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
 ?>
@@ -131,6 +135,17 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 ?>
   <div class="col-sm-8 col-md-9 wpsc_it_body">
     <div class="row wpsc_it_subject_widget">
+<?php
+if($folderfile_destruction > 0){
+?>
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> This 
+<?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
+is flagged as unauthorized destruction.
+</div>
+<?php
+}
+?>
 
 <?php
 if($folderfile_validation > 0){
@@ -151,10 +166,7 @@ echo '</div>';
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
         	<?php if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
-            echo $GLOBALS['id']; 
-            if($folderfile_destruction > 0) {
-            echo ' <span style="font-size: .7em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span>';
-            }
+            echo $GLOBALS['id'];
             ?>]
 		  <?php } ?>		
 		  
@@ -224,7 +236,10 @@ echo '</div>';
 			}
 			
 ?>
-
+<form>
+<input type='hidden' id='page_id' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='doc_id' value='<?php echo $GLOBALS['id']; ?>' />
+</form>
 <!-- Pop-up snippet start -->
 <div id="wpsc_popup_background" style="display:none;"></div>
 <div id="wpsc_popup_container" style="display:none;">
@@ -249,6 +264,32 @@ echo '</div>';
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 <script>
  jQuery(document).ready(function() {
+     
+jQuery('#wpsc_individual_validation_btn').on('click', function(e){
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
+postvarsfolderdocid : jQuery('#doc_id').val(),
+potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
+postvarpid : jQuery('#page_id').val()
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+   });
+});
+
+jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
+postvarsfolderdocid : jQuery('#doc_id').val(),
+postvarpid : jQuery('#page_id').val()
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+   });
+});
+
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 

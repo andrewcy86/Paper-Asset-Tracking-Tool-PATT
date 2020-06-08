@@ -9,6 +9,7 @@ $subfolder_path = site_url( '', 'relative');
 
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
+$GLOBALS['page'] = $_GET['page'];
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();

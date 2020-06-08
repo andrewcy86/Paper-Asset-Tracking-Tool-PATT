@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
 
@@ -32,9 +34,9 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
 		
 	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
 
@@ -149,9 +151,6 @@ $tbl .='<tr>';
 
 $tbl.='<td>' . $boxcontent_id . '</td>';
 				$tbl .= '<td>';
-if($boxcontent_destruction == 1) {
-            $tbl .='<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> ';
-}
 if ($GLOBALS['pid'] == 'requestdetails') {
 $tbl .= '<a href="admin.php?pid=requestdetails&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
 }
@@ -161,6 +160,9 @@ $tbl .= '<a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id
 }
 if ($GLOBALS['pid'] == 'docsearch') {
 $tbl .= '<a href="admin.php?pid=docsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
+}
+if($boxcontent_destruction == 1) {
+            $tbl .=' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> ';
 }
             $tbl .= '</td>';
             $tbl .='
@@ -187,14 +189,6 @@ $tbl .= '</tr>';
 			echo $tbl;
 ?>			
 <br /><br />
-
-<p><button>Submit</button></p>
-
-<p><b>Selected rows data:</b></p>
-<pre id="example-console-rows"></pre>
-
-<p><b>Form data as submitted to the server:</b></p>
-<pre id="example-console-form"></pre>
 
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
@@ -230,38 +224,63 @@ $tbl .= '</tr>';
 		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
 		});
 
-// Handle form submission event 
-   jQuery('#frm-example').on('submit', function(e){
-      var form = this;
-      
-      var rows_selected = dataTable.column(0).checkboxes.selected();
-
-      // Iterate over all selected checkboxes
-      jQuery.each(rows_selected, function(index, rowId){
-         // Create a hidden element 
-         jQuery(form).append(
-             jQuery('<input>')
-                .attr('type', 'hidden')
-                .attr('name', 'id[]')
-                .val(rowId)
-         );
-      });
-
-      // FOR DEMONSTRATION ONLY
-      // The code below is not needed in production
-      
-      // Output form data to a console     
-      jQuery('#example-console-rows').text(rows_selected.join(","));
-      
-      // Output form data to a console     
-      jQuery('#example-console-form').text(jQuery(form).serialize());
-       
-      // Remove added elements
-      jQuery('input[name="id\[\]"]', form).remove();
-       
-      // Prevent actual form submission
-      e.preventDefault();
+jQuery('#wpsc_individual_validation_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
+postvarsfolderdocid : rows_selected.join(","),
+potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
    });
+});
+
+jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();	
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
+postvarsfolderdocid : rows_selected.join(",")
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
+   });
+});
+
+jQuery('#wpsc_individual_label_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+     var arr = {};
+
+    // Loop through array
+    [].forEach.call(rows_selected, function(inst){
+
+        var x = inst.split("-")[2].substr(1);
+
+        // Check if arr already has an index x, if yes then push
+        if(arr.hasOwnProperty(x)) 
+            arr[x].push(inst);
+
+        // Or else create a new one with inst as the first element.
+        else 
+            arr[x] = [inst];
+
+
+    });
+    
+if (arr[1].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+}
+
+if (arr[2].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+
+});
 
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 

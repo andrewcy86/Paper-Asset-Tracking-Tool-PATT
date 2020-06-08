@@ -54,8 +54,10 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
 			$folderfile_essential_record = $folderfile_details->essential_record;
 			$folderfile_validation = $folderfile_details->validation;
-			$folderfile_validation_user = $folderfile_details->validation_user;				
+			$folderfile_validation_user = $folderfile_details->validation_user_id;				
 		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
+
+            $user = get_user_by( 'id', $folderfile_validation_user);
 
 			$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
 
@@ -100,6 +102,7 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 	<div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
     	
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
     	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
 
 
@@ -152,7 +155,7 @@ if($folderfile_validation > 0){
 echo '
 <div class="alert alert-success" role="alert">
 <span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
-if ($folderfile_index_level == '1') { echo' Folder Validated.'; }else{ echo' File Validated.'; }
+if ($folderfile_index_level == '1') { echo' Folder Validated ('.$user->user_login.').'; }else{ echo' File Validated ('.$user->user_login.').'; }
 echo '</div>';
 } else {
 echo '

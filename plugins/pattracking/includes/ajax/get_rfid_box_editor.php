@@ -31,7 +31,7 @@ $patt_ticket_id = $box_details->request_id;
 
 ?>
 
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.open('http://086.info/wordpress3/wp-content/plugins/pattracking/includes/ajax/pdf/box_label.php?id=<?php echo $box_ids; ?>');" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-tags"></i> Regenerate Box Labels</button>
+<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.open('<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id=<?php echo $box_ids; ?>');" style="background-color:#337ab7 !important;color:#FFFFFF !important;"><i class="fas fa-tags"></i> Regenerate Box Labels</button>
 
 <?php 
 $body = ob_get_clean();

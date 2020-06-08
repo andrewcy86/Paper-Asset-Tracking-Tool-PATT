@@ -189,7 +189,7 @@ $tbl .= '</tr>';
 			echo $tbl;
 ?>			
 <br /><br />
-
+<input type='hidden' id='page_id' value='<?php echo $GLOBALS['page']; ?>' />
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
@@ -230,11 +230,12 @@ jQuery('#wpsc_individual_validation_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
 postvarsfolderdocid : rows_selected.join(","),
-potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>
+potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
+postvarpid : jQuery('#page_id').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){dataTable.ajax.reload();}
+      //window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
    });
 });
 
@@ -243,7 +244,8 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var rows_selected = dataTable.column(0).checkboxes.selected();	
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
-postvarsfolderdocid : rows_selected.join(",")
+postvarsfolderdocid : rows_selected.join(","),
+postvarpid : jQuery('#page_id').val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}

@@ -43,7 +43,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 
 $folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
 FROM wpqa_wpsc_epa_folderdocinfo
-WHERE box_id = " .$item->id);
+WHERE index_level = 2 AND box_id = " .$item->id);
 
 //print_r($folderfile_info);
 
@@ -120,7 +120,7 @@ foreach($folderfile_array as $item) {
 
 $folderfile_info = $wpdb->get_row("SELECT folderdocinfo_id, title
 FROM wpqa_wpsc_epa_folderdocinfo
-WHERE folderdocinfo_id = '" .$item."'");
+WHERE index_level = 2 AND folderdocinfo_id = '" .$item."'");
 
 $parent = new stdClass;
 $parent->folderdocinfo_id = $folderfile_info->folderdocinfo_id;
@@ -140,14 +140,20 @@ $batch = array_chunk($final_array, $batch_of);
 foreach($batch as $b) {
 
 //Open the table and its first row
-$tbl = '<table style="width: 638px;font-size: 9px;" cellspacing="10"; nobr="true">';
-$tbl .= '<tr">';
+$tbl   =  '<style>
+                .tableWithOuterBorder{
+                    border-spacing: 80px 2px;
+                }
+                </style>';
+                
+$tbl .= '<table class="tableWithOuterBorder" style="width: 638px; font-size: 9px;" cellspacing="10" nobr="true">';
+$tbl .= '<tr>';
 
 foreach($b as $info){
 
     $folderfile_id = $info->folderdocinfo_id;
-    $folderfile_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($folderfile_id, 'C128', '', '', 62, 20, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
-    $folderfile_title = $info->title;
+ $folderfile_barcode =  $obj_pdf->serializeTCPDFtagParameters(array($folderfile_id, 'C128', '', '', 57, 17, 0.4, array('position'=>'S', 'border'=>false, 'padding'=>1, 'fgcolor'=>array(0,0,0), 'bgcolor'=>array(255,255,255), 'text'=>true, 'font'=>'helvetica', 'fontsize'=>8, 'stretchtext'=>4), 'N'));
+$folderfile_title = $info->title;
     $folderfile_title_truncate = (strlen($folderfile_title) > 30) ? substr($folderfile_title, 0, 30) . '...' : $folderfile_title;
 
     if ($i == $maxcols) {

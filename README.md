@@ -593,6 +593,30 @@ ADD ABOVE
 ```
 <?php do_action('patt_print_js_functions_create'); ?>
 ```
+###### /supportcandy/includes/admin/tickets/create_ticket/load_create_ticket.php
+FIND
+```
+if (validation) {
+```
+ADD BELOW
+```
+//New get DataTable data in the form of an
+var data = jQuery('#boxinfodatatable').DataTable().rows().data().toArray();
+var data = JSON.stringify(jQuery('#boxinfodatatable').toJson());
+var dataform = new FormData(jQuery('#wpsc_frm_create_ticket')[0]);
+dataform.append('boxinfo', data);
+```
+###### /supportcandy/includes/admin/tickets/create_ticket/submit_ticket.php
+FIND
+```
+// Subject
+$ticket_subject = isset($_POST['ticket_subject']) ? sanitize_text_field($_POST['ticket_subject']) : '';
+```
+ADD ABOVE
+```
+$boxinfodata = $_POST["boxinfo"];
+$args['box_info'] = $boxinfodata;
+```
 ###### /supportcandy/includes/functions/create_ticket.php
 FIND
 ```

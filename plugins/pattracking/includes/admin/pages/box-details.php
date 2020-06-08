@@ -234,8 +234,8 @@ potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpid : jQuery('#page_id').val()
 }, 
    function (response) {
-      if(!alert(response)){dataTable.ajax.reload();}
-      //window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
    });
 });
 
@@ -273,13 +273,19 @@ jQuery('#wpsc_individual_label_btn').on('click', function(e){
 
 
     });
-    
-if (arr[1].length) {
+
+if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
+
+if (Array.isArray(arr[1]) && arr[1].length) {
 window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
 }
 
-if (arr[2].length) {
+if (Array.isArray(arr[2]) && arr[2].length) {
 window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+
+} else {
+alert('Please select a folder/file.');
 }
 
 });

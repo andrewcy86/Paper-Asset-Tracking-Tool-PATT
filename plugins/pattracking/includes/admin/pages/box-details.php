@@ -363,6 +363,11 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
 			if(!empty($location_program_office)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
             }
+            
+            if(!empty($location_record_schedule)) {
+                echo '<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong>' . $location_record_schedule . '</div>';
+            }
+            
             if(!empty($location_digitization_center)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>' . $location_digitization_center . '</div>';
                 
@@ -380,7 +385,6 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
             }
 			?>
 			
-			<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong> <?php echo $location_record_schedule ?></div>
 	</div>
 	</div>
 	

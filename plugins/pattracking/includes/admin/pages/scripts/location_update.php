@@ -20,10 +20,14 @@ if(isset($_POST['postvarspname']) && isset($_POST['postvaraname']) && isset($_PO
 
    $center_value = '';
    
-   if ($center == 'East') {
+   if ($center == 62) {
      $center_value = 'E';
-   } else if ($center == 'West'){
-     $center_value = 'W';       
+   } else if ($center == 2){
+     $center_value = 'W';  
+   } else if ($center == 663){
+     $center_value = 'ECUI';    
+   } else if ($center == 664){
+     $center_value = 'WCUI';    
    }
 
 			$box_details = $wpdb->get_row(

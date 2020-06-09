@@ -51,18 +51,11 @@ Enter one or more Document IDs:<br />
          <input type='text' id='searchByDocID' class="form-control" data-role="tagsinput">
 <br />
          <?php
-  /*$po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-<select id='searchByProgramOffice'>
-     <option value=''>-- Select Program Office --</option>
-     <?php foreach($po_array as $key => $value) { ?>
-      <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
-     <?php } ?></select>*/
-     
     $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-    <input type="text" list="searchByProgramOfficelist" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
-    <datalist id='searchByProgramOfficelist'>
+    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
+    <datalist id='searchByProgramOfficeList'>
      <?php foreach($po_array as $key => $value) { ?>
-        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>
      <?php } ?>
      </datalist>
      
@@ -132,9 +125,10 @@ jQuery(document).ready(function(){
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/document_processing.php',
        'data': function(data){
           // Read values
+          var po_value = jQuery('#searchByProgramOffice').val();
+          var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
           var sg = jQuery('#searchGeneric').val();
           var docid = jQuery('#searchByDocID').val();
-          var po = jQuery('#searchByProgramOffice').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
           // Append to data
           data.searchGeneric = sg;

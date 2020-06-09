@@ -63,7 +63,7 @@ Enter one or more Box IDs:<br />
     <input type="search" list="searchByProgramOfficeList" placeholder='Enter program office' id='searchByProgramOffice' autocomplete='off'/>
     <datalist id='searchByProgramOfficeList'>
      <?php foreach($po_array as $key => $value) { ?>
-        <option value='<?php echo $value; ?>'><?php echo preg_replace("/\([^)]+\)/","",$value); ?></option>
+        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>
      <?php } ?>
      </datalist>
      
@@ -109,6 +109,7 @@ color: rgb(255, 255, 255) !important;
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
                 <th class="datatable_header">Program Office</th>
+                <th class="datatable_header">Validation</th>
             </tr>
         </thead>
     </table>
@@ -133,9 +134,10 @@ jQuery(document).ready(function(){
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_processing.php',
        'data': function(data){
           // Read values
+          var po_value = jQuery('#searchByProgramOffice').val();
+          var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
           var sg = jQuery('#searchGeneric').val();
           var boxid = jQuery('#searchByBoxID').val();
-          var po = jQuery('#searchByProgramOffice').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
           // Append to data
           data.searchGeneric = sg;
@@ -149,6 +151,7 @@ jQuery(document).ready(function(){
        { data: 'request_id' },
        { data: 'location' },
        { data: 'acronym' },
+       { data: 'validation' },
     ]
   });
 

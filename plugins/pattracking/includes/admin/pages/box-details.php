@@ -144,16 +144,11 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 				$boxcontent_validation = $info->validation;
 				$boxcontent_validation_user = $info->validation_user;				
 				$boxcontent_destruction = $info->destruction;
-
-/*
 if($boxcontent_destruction == 1) {
 $tbl .='<tr style="background-color: #e7c3c3;">';
 } else {
 $tbl .='<tr>';   
 }
-*/
-
-$tbl .='<tr>';
 
 $tbl.='<td>' . $boxcontent_id . '</td>';
 				$tbl .= '<td>';
@@ -216,9 +211,9 @@ $tbl .= '</tr>';
             }
          },
          
-      { width: '150px', targets: 1 },
+      { width: '300px', targets: 1 },
       { width: '300px', targets: 2 },
-      { width: '150px', targets: 3 },
+      { width: '300px', targets: 3 },
       { width: '50px', targets: 4 },
       { width: '5px', targets: 5 }
       ],
@@ -370,11 +365,17 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
 			<hr class="widget_divider">
 			<!--error handling implemented, will not display a field if it is empty/null-->
 			<?php 
-			if(!empty($location_request_id)) {
+            
+			if(empty($location_program_office) || empty($location_record_schedule)) {
+                echo '<div class="wpsp_sidebar_labels"><strong>Program office and record schedule MUST be assigned before displaying any information</strong></div>';
+            }
+            
+            else {
+            if(!empty($location_request_id)) {
                 echo "<div class='wpsp_sidebar_labels'><strong>Request ID: </strong> <a href='admin.php?page=wpsc-tickets&id=" . $location_request_id . "'>" . $location_request_id . "</a></div>";
             }
             
-			if(!empty($location_program_office)) {
+            if(!empty($location_program_office)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
             }
             
@@ -396,6 +397,7 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
 			        } 
 			    }
+            }
             }
 			?>
 			

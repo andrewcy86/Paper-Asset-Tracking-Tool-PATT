@@ -144,11 +144,16 @@ $box_content = Patt_Custom_Func::fetch_box_content($box_id);
 				$boxcontent_validation = $info->validation;
 				$boxcontent_validation_user = $info->validation_user;				
 				$boxcontent_destruction = $info->destruction;
+
+/*
 if($boxcontent_destruction == 1) {
 $tbl .='<tr style="background-color: #e7c3c3;">';
 } else {
 $tbl .='<tr>';   
 }
+*/
+
+$tbl .='<tr>';
 
 $tbl.='<td>' . $boxcontent_id . '</td>';
 				$tbl .= '<td>';
@@ -211,9 +216,9 @@ $tbl .= '</tr>';
             }
          },
          
-      { width: '300px', targets: 1 },
+      { width: '150px', targets: 1 },
       { width: '300px', targets: 2 },
-      { width: '300px', targets: 3 },
+      { width: '150px', targets: 3 },
       { width: '50px', targets: 4 },
       { width: '5px', targets: 5 }
       ],

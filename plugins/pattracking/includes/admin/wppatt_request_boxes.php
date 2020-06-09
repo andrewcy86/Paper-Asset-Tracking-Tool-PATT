@@ -183,16 +183,19 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
                 $boxlist_dc_location = $info->digitization_center;
 				}
 				$boxlist_unathorized_destruction = $info->ud;
-				
+			/*	
 			if($boxlist_unathorized_destruction > 0) {
 			$tbl .= '<tr class="wpsc_tl_row_item" style="background-color: #e7c3c3;">';
 			} else {
 			$tbl .= '<tr class="wpsc_tl_row_item">';
 			}
+			*/
+			$tbl .= '<tr class="wpsc_tl_row_item">';
+			
             $tbl .= '
             <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
             if($boxlist_unathorized_destruction > 0) {
-            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span>';
+            $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
             $tbl .= '</td>';
            
@@ -214,9 +217,9 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             if($boxlist_doc_total == 0){
             $tbl .= '<td data-sort="4">-</td>';
             } else if($boxlist_val_sum != 0 && $boxlist_val_sum < $boxlist_doc_total){
-            $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #FF8C00;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == 0 && $boxlist_val_sum < $boxlist_doc_total){
-            $tbl .= '<td data-sort="1"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
+            $tbl .= '<td data-sort="2"><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             } else if($boxlist_val_sum == $boxlist_doc_total){
             $tbl .= '<td data-sort="3"><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ' . $boxlist_val_sum . '/' . $boxlist_doc_total . '</td>';
             }

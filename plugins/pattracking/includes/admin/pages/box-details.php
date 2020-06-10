@@ -125,8 +125,7 @@ width: 204px;
 $convert_box_id = $wpdb->get_row(
 "SELECT id
 FROM wpqa_wpsc_epa_boxinfo
-WHERE box_id = '" .  $GLOBALS['id'] . "'"
-);
+WHERE box_id = '" .  $GLOBALS['id'] . "'");
 
 $box_id = $convert_box_id->id;
 ?>
@@ -231,7 +230,7 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
 		   jQuery.post(
-   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
 postvarsfolderdocid : rows_selected.join(","),
 postvarpage : jQuery('#page').val(),
 boxid : jQuery('#box_id').val()
@@ -334,7 +333,7 @@ jQuery('#ud_alert').hide();
  <?php
     //get widget fields
     //$location_details = $wpdb->get_row("SELECT acronym, location, shelf, bay, record_schedule_number FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
-    $location_details = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_program_office.office_acronym as acronym, wpqa_terms.name as digitization_center, locations, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.position as position, record_schedule_number 
+    /*$location_details = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_program_office.office_acronym as acronym, wpqa_terms.name as digitization_center, locations, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.position as position, record_schedule_number 
 FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule, wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_storage_location, wpqa_terms, wpqa_wpsc_ticket
 WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_location_status.id = wpqa_wpsc_epa_boxinfo.location_status_id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
 AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
@@ -347,13 +346,31 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     $location_bay = $location_details->bay;
     $location_shelf = $location_details->shelf;
     $location_position = $location_details->position;
-    $location_record_schedule = $location_details->record_schedule_number;
+    $location_record_schedule = $location_details->record_schedule_number;*/
     
+    $request_id = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
+    $location_request_id = $request_id->request_id;
+    
+    $program_office = $wpdb->get_row("SELECT wpqa_wpsc_epa_program_office.office_acronym as acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+    $location_program_office = $program_office->acronym;
+    
+    $record_schedule = $wpdb->get_row("SELECT Record_Schedule_Number FROM wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
+    $location_record_schedule = $record_schedule->Record_Schedule_Number;
+    
+    $box_location = $wpdb->get_row("SELECT wpqa_terms.name as digitization_center, aisle, bay, shelf, position FROM wpqa_terms, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_boxinfo WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+    $location_digitization_center = $box_location->digitization_center;
+    $location_aisle = $box_location->aisle;
+    $location_bay = $box_location->bay;
+    $location_shelf = $box_location->shelf;
+    $location_position = $box_location->position;
+    
+    $general_box_location = $wpdb->get_row("SELECT locations FROM wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
+    $location_general = $general_box_location->locations;
  ?>
  
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location
+      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Box Details
 			<!--only admins/agents have the ability to edit box details-->
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();
@@ -368,12 +385,6 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
 			<hr class="widget_divider">
 			<!--error handling implemented, will not display a field if it is empty/null-->
 			<?php 
-            
-			if(empty($location_program_office) || empty($location_record_schedule)) {
-                echo '<div class="wpsp_sidebar_labels"><strong>Program office and record schedule MUST be assigned before displaying any information</strong></div>';
-            }
-            
-            else {
             if(!empty($location_request_id)) {
                 echo "<div class='wpsp_sidebar_labels'><strong>Request ID: </strong> <a href='admin.php?page=wpsc-tickets&id=" . $location_request_id . "'>" . $location_request_id . "</a></div>";
             }
@@ -381,9 +392,15 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
             if(!empty($location_program_office)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
             }
+            else {
+                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: REASSIGN IMMEDIATELY</strong> </div>';
+            }
             
             if(!empty($location_record_schedule)) {
                 echo '<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong>' . $location_record_schedule . '</div>';
+            }
+            else {
+                echo '<div class="wpsp_sidebar_labels"><strong>Record Schedule: REASSIGN IMMEDIATELY</strong> </div>';
             }
             
             if(!empty($location_digitization_center)) {
@@ -400,7 +417,6 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
     			        echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>' . $location_position . '</div>';
 			        } 
 			    }
-            }
             }
 			?>
 			

@@ -13,7 +13,7 @@ if(
 $folderdocid_string = $_POST['postvarsfolderdocid'];
 $get_userid = $_POST['potvarsuserid'];
 $folderdocid_arr = explode (",", $folderdocid_string);  
-$page_id = $_POST['postvarpid'];
+$page_id = $_POST['postvarpage'];
 
 $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 

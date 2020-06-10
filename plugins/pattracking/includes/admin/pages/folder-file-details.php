@@ -186,8 +186,19 @@ echo '</div>';
     </div>
 
 <?php
-			echo "<strong>Program Office:</strong> " . $box_po . "<br />";
-            echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
+			if(!empty($box_po)) {
+			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
+			}
+			else {
+			    echo "<strong>Program Office: UNASSIGNED</strong> <br />";
+			}
+            
+            if(!empty($box_rs)) {
+                echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
+            }
+            else {
+			    echo "<strong>Record Schedule: UNASSIGNED</strong> <br />";
+			}
   
   			if (!empty($folderfile_title)) {
 				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
@@ -240,8 +251,9 @@ echo '</div>';
 			
 ?>
 <form>
-<input type='hidden' id='page_id' value='<?php echo $GLOBALS['page']; ?>' />
 <input type='hidden' id='doc_id' value='<?php echo $GLOBALS['id']; ?>' />
+<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
 </form>
 <!-- Pop-up snippet start -->
 <div id="wpsc_popup_background" style="display:none;"></div>
@@ -273,7 +285,7 @@ jQuery('#wpsc_individual_validation_btn').on('click', function(e){
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
 postvarsfolderdocid : jQuery('#doc_id').val(),
 potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
-postvarpid : jQuery('#page_id').val()
+postvarpage : jQuery('#page').val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}
@@ -283,9 +295,9 @@ postvarpid : jQuery('#page_id').val()
 
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		   jQuery.post(
-   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
 postvarsfolderdocid : jQuery('#doc_id').val(),
-postvarpid : jQuery('#page_id').val()
+postvarpage : jQuery('#page').val()
 }, 
    function (response) {
       if(!alert(response)){window.location.reload();}

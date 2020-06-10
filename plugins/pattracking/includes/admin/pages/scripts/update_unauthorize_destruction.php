@@ -66,6 +66,7 @@ $get_destruction_sum = $wpdb->get_row("SELECT sum(unauthorized_destruction) as s
 
 $get_destruction_sum_val = $get_destruction_sum->sum;
 
+if ($page_id == 'boxdetails') {
 if ($get_destruction_sum_val > 0) {
     
 if ($destruction_reversal == 1) {
@@ -76,6 +77,15 @@ echo "Unauthorized destruction has been updated";
 
 } else {
 echo "All unathorized destruction flags removed";
+}
+}
+
+if ($page_id == 'filedetails') {
+if ($destruction_reversal == 1) {
+echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
+} else {
+echo "Unauthorized destruction has been updated";
+}
 }
 
 

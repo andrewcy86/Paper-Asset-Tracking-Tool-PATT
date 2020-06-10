@@ -393,14 +393,14 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
                 echo '<div class="wpsp_sidebar_labels"><strong>Program Office: </strong>' . $location_program_office . '</div>';
             }
             else {
-                echo '<div class="wpsp_sidebar_labels"><strong>Program Office: REASSIGN IMMEDIATELY</strong> </div>';
+                echo '<div class="wpsp_sidebar_labels"><strong style="color:red">Program Office: REASSIGN IMMEDIATELY</strong> </div>';
             }
             
             if(!empty($location_record_schedule)) {
-                echo '<div class="wpsp_sidebar_labels"><strong>Record Schedule: </strong>' . $location_record_schedule . '</div>';
+                echo '<div class="wpsp_sidebar_labels"><strong >Record Schedule: </strong>' . $location_record_schedule . '</div>';
             }
             else {
-                echo '<div class="wpsp_sidebar_labels"><strong>Record Schedule: REASSIGN IMMEDIATELY</strong> </div>';
+                echo '<div class="wpsp_sidebar_labels"><strong style="color:red">Record Schedule: REASSIGN IMMEDIATELY</strong> </div>';
             }
             
             if(!empty($location_digitization_center)) {

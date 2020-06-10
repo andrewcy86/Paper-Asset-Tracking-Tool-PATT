@@ -285,7 +285,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             {
                 // Even
                 //1D barcode coordinates
-                $x_loc_1d = 65;
+                $x_loc_1d = 55;
                 $y_loc_1d = 70;
                 //QR barcode coordinates
                 $x_loc_2d = 155;
@@ -294,7 +294,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_b = 45;
                 $y_loc_b = 115;
                 //Box ID Printout coordinates
-                $x_loc_c = 90;
+                $x_loc_c = 80;
                 $y_loc_c = 97;
                 //Line seperator coordinates
                 $x_loc_l1 = 45;
@@ -307,7 +307,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 169;
+                $x_loc_l = 154;
                 $y_loc_l = 90;
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
@@ -322,8 +322,8 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_digi_box_regular = 164;
                 $y_loc_digi_box_regular = 89;
                 //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 160.5;
-                $y_loc_digi_box_dashed = 86;
+                $x_loc_digi_box_dashed = 151;
+                $y_loc_digi_box_dashed = 87;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 10;
                 $y_loc_black_rectangle = 15;
@@ -350,7 +350,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             {
                 // Odd
                 //1D barcode coordinates
-                $x_loc_1d = 65;
+                $x_loc_1d = 55;
                 $y_loc_1d = 200;
                 //QR barcode coordinates
                 $x_loc_2d = 155;
@@ -359,7 +359,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_b = 45;
                 $y_loc_b = 245;
                 //Box ID Printout coordinates
-                $x_loc_c = 90;
+                $x_loc_c = 80;
                 $y_loc_c = 227;
                 //Line seperator coordinates
                 $x_loc_l1 = 45;
@@ -372,7 +372,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 169;
+                $x_loc_l = 154;
                 $y_loc_l = 220;                
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
@@ -387,8 +387,8 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_digi_box_regular = 164;
                 $y_loc_digi_box_regular = 219;
                 //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 160.5;
-                $y_loc_digi_box_dashed = 216;
+                $x_loc_digi_box_dashed = 151;
+                $y_loc_digi_box_dashed = 217;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 10;
                 $y_loc_black_rectangle = 145;
@@ -432,10 +432,10 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             //));
             
             //Digitization center box regular border
-            $obj_pdf->Rect($x_loc_digi_box_regular, $y_loc_digi_box_regular, 30, 10, '', '', array(0, 0, 0));
+            //$obj_pdf->Rect($x_loc_digi_box_regular, $y_loc_digi_box_regular, 30, 10, '', '', array(0, 0, 0));
             
             //Digitization center box dashed border
-            $obj_pdf->RoundedRect($x_loc_digi_box_dashed, $y_loc_digi_box_dashed, 37, 16, 2, '1111', null, $style_box_dash);
+            $obj_pdf->RoundedRect($x_loc_digi_box_dashed, $y_loc_digi_box_dashed, 46.5, 16, 2, '1111', null, $style_box_dash);
             
             //Black rectangle containing program office and month/year of request
             $obj_pdf->Rect($x_loc_black_rectangle, $y_loc_black_rectangle, 140, 35, 'F', '', array(0,0,0));
@@ -559,7 +559,12 @@ $url_id = $asset_id;
             
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             //Obtain array of box locations
-            $obj_pdf->Text($x_loc_l, $y_loc_l, $box_location[$i]);
+            //$obj_pdf->Text($x_loc_l, $y_loc_l, $box_location[$i]);
+            
+            $obj_pdf->SetXY($x_loc_l, $y_loc_l);
+            $obj_pdf->SetLineStyle(array('width' => 0.8, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetFont('helvetica', 'B', 20);
+            $obj_pdf->Cell(40, 10, $box_location[$i], 1, 0, 'C', 1);
 }
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {

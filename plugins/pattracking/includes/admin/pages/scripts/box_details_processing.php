@@ -24,8 +24,8 @@ $searchValue = $_POST['search']['value']; // Search value
 
 ## Custom Field value
 $box_id = str_replace(",", "|", $_POST['BoxID']);
-$page_id = str_replace(",", "|", $_POST['page']);
-$p_id = str_replace(",", "|", $_POST['PID']);
+$page_id = $_POST['page'];
+$p_id = $_POST['PID'];
 $searchGeneric = $_POST['searchGeneric'];
 
 ## Search 
@@ -55,10 +55,21 @@ WHERE 1 ".$searchQuery." AND box_id = ".$box_id);
 $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
+$url_var = '';
+if ($p_id == 'requestdetails') {
+$url_var = 'admin.php?pid=requestdetails&page=filedetails&id=';
+}
+if ($p_id == 'boxsearch') {
+$url_var = 'admin.php?pid=boxsearch&page=filedetails&id=';
+}
+if ($p_id == 'docsearch') {
+$url_var = 'admin.php?pid=docsearch&page=filedetails&id=';
+}
+
 ## Fetch records
 $boxQuery = "SELECT 
-
-CONCAT('<a href=\"admin.php?pid=requestdetails&page=filedetails&id=',folderdocinfo_id,'\">',folderdocinfo_id,'</a>',
+CONCAT(
+'<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\">',folderdocinfo_id,'</a>',
 CASE WHEN unauthorized_destruction = 1 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
 ELSE '' 
 END) as folderdocinfo_id_flag,

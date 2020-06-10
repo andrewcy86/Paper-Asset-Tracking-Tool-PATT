@@ -370,7 +370,7 @@ AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
  
 	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 		<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Box Details
+      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Edit Box Details
 			<!--only admins/agents have the ability to edit box details-->
 			<?php
 			    $agent_permissions = $wpscfunction->get_current_agent_permissions();

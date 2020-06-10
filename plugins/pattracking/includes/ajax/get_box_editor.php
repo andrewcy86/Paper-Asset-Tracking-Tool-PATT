@@ -26,13 +26,26 @@ INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_
 INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
 WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'");*/
 
-$box_details = $wpdb->get_row("SELECT a.box_id as box_id, b.office_acronym as acronym, c.Record_Schedule_Number as record_schedule_number 
+/*$box_details = $wpdb->get_row("SELECT a.box_id as box_id, b.office_acronym as acronym, c.Record_Schedule_Number as record_schedule_number 
 FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_epa_program_office as b ON a.program_office_id = b.office_code INNER JOIN wpqa_epa_record_schedule as c ON a.record_schedule_id = c.id 
 WHERE a.id = '" . $box_id . "'");
     
     $patt_box_id = $box_details->box_id;
     $program_office = $box_details->acronym;
-    $record_schedule = $box_details->record_schedule_number;
+    $record_schedule = $box_details->record_schedule_number;*/
+    
+    $box_patt_id = $wpdb->get_row("SELECT box_id FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+    $patt_box_id = $box_patt_id->box_id;
+    
+    $box_program_office = $wpdb->get_row("SELECT b.office_acronym as acronym 
+    FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_epa_program_office as b ON a.program_office_id = b.office_code
+    WHERE box_id = '" . $box_id . "'");
+    $program_office = $box_program_office->acronym;
+    
+    $box_record_schedule = $wpdb->get_row("SELECT c.Record_Schedule_Number as record_schedule_number 
+    FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_epa_record_schedule as c ON record_schedule_id = c.id
+    WHERE box_id = '" . $box_id . "'");
+    $record_schedule = $box_record_schedule->record_schedule_number;
 
 ?>
 <?php  ?>

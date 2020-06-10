@@ -131,7 +131,8 @@ WHERE box_id = '" .  $GLOBALS['id'] . "'"
 $box_id = $convert_box_id->id;
 ?>
 <input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
@@ -154,11 +155,13 @@ jQuery(document).ready(function(){
           // Read values
           var sg = jQuery('#searchGeneric').val();
           var boxid = jQuery('#box_id').val();
+          var page = jQuery('#page').val();
           var pid = jQuery('#p_id').val();
           // Append to data
           data.searchGeneric = sg;
           data.BoxID = boxid;
           data.PID = pid;
+          data.page = page;
        }
     },
     'columnDefs': [
@@ -218,7 +221,7 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
 postvarsfolderdocid : rows_selected.join(","),
 potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
-postvarpid : jQuery('#p_id').val()
+postvarpage : jQuery('#page').val()
 }, 
    function (response) {
       if(!alert(response)){dataTable.ajax.reload( null, false );}
@@ -230,10 +233,21 @@ jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
 postvarsfolderdocid : rows_selected.join(","),
-postvarpid : jQuery('#p_id').val()
+postvarpage : jQuery('#page').val(),
+boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){dataTable.ajax.reload( null, false );}
+      if(!alert(response)){
+       var substring = "removed";
+       dataTable.ajax.reload( null, false );
+       
+       if(response.indexOf(substring) !== -1) {
+       jQuery('#ud_alert').hide();
+       } else {
+       jQuery('#ud_alert').show(); 
+       }
+       
+      }
    });
 });
 jQuery('#wpsc_individual_label_btn').on('click', function(e){

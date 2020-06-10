@@ -33,6 +33,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Box Labels</button></button>
+		
   </div>
 
 </div>
@@ -105,6 +107,7 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
+                <th class="datatable_header"></th>
                 <th class="datatable_header">Box ID</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
@@ -119,7 +122,10 @@ color: rgb(255, 255, 255) !important;
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
-  
+
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
+    
   
 <script>
 
@@ -146,8 +152,21 @@ jQuery(document).ready(function(){
           data.searchByDigitizationCenter = dc;
        }
     },
+    	    'columnDefs': [	
+         {	
+            'targets': 0,	
+            'checkboxes': {	
+               'selectRow': true	
+            }	
+         }
+      ],	
+      'select': {	
+         'style': 'multi'	
+      },	
+      'order': [[1, 'asc']],
     'columns': [
        { data: 'box_id' }, 
+       { data: 'box_id_flag' }, 
        { data: 'request_id' },
        { data: 'location' },
        { data: 'acronym' },
@@ -212,6 +231,16 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
     }, 0);
 });
 
+jQuery('#wpsc_individual_label_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+     var rows_string = rows_selected.join(",");
+if(rows_string) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
+} else {
+alert('Please select a folder/file.');
+}
+});
 
 });
 

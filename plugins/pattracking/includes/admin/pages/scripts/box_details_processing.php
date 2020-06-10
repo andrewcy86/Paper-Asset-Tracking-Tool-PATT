@@ -24,7 +24,8 @@ $searchValue = $_POST['search']['value']; // Search value
 
 ## Custom Field value
 $box_id = str_replace(",", "|", $_POST['BoxID']);
-$page_id = str_replace(",", "|", $_POST['PID']);
+$page_id = str_replace(",", "|", $_POST['page']);
+$p_id = str_replace(",", "|", $_POST['PID']);
 $searchGeneric = $_POST['searchGeneric'];
 
 ## Search 

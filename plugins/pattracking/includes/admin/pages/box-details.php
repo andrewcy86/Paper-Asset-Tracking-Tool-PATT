@@ -93,204 +93,174 @@ width: 204px;
 .bootstrap-iso .alert {
     padding: 8px;
 }
+#searchGeneric {
+    padding: 0 30px !important;
+}
 </style>
-<?php
-$box_details = $wpdb->get_row(
-"SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
-WHERE wpqa_wpsc_epa_folderdocinfo.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
-			);
 
-$unauthorized_destruction_count = $box_details->count;
-
-if($unauthorized_destruction_count > 0){
-?>
-<div class="alert alert-danger" role="alert">
+<div class="alert alert-danger" role="alert" id="ud_alert">
 <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents within this box contains a unauthorized destruction flag.
 </div>
-<?php
-}
-?>
 
-<?php
-$box_id = Patt_Custom_Func::convert_box_id($GLOBALS['id']);
-
-$box_content = Patt_Custom_Func::fetch_box_content($box_id);
-			$tbl = '
 <div class="table-responsive" style="overflow-x:auto;">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<br /><br />
 <form id="frm-example" method="POST">
-	<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
-<thead>
-  <tr>
-                    <th class="datatable_header"></th>
+<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
+        <thead>
+            <tr>
+                <th class="datatable_header"></th>
     	  			<th class="datatable_header">ID</th>
     	  			<th class="datatable_header">Title</th>
     	  			<th class="datatable_header">Date</th>
     	  			<th class="datatable_header">Contact</th>
     	  			<th class="datatable_header">Validation</th>
-  </tr>
- </thead><tbody>
-';
-
-			foreach ($box_content as $info) {
-				$boxcontent_id = $info->id;
-				$boxcontent_title = $info->title;
-				$boxcontent_title_truncated = (strlen($boxcontent_title) > 20) ? substr($boxcontent_title, 0, 20) . '...' : $boxcontent_title;
-				$boxcontent_date = $info->date;
-				$boxcontent_site = $info->site;
-				$boxcontent_contact = $info->contact;
-				$boxcontent_sf = $info->source_format;
-				$boxcontent_validation = $info->validation;
-				$boxcontent_validation_user = $info->validation_user;				
-				$boxcontent_destruction = $info->destruction;
-if($boxcontent_destruction == 1) {
-$tbl .='<tr style="background-color: #e7c3c3;">';
-} else {
-$tbl .='<tr>';   
-}
-
-$tbl.='<td>' . $boxcontent_id . '</td>';
-				$tbl .= '<td>';
-if ($GLOBALS['pid'] == 'requestdetails') {
-$tbl .= '<a href="admin.php?pid=requestdetails&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
-}
-
-if ($GLOBALS['pid'] == 'boxsearch') {
-$tbl .= '<a href="admin.php?pid=boxsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
-}
-if ($GLOBALS['pid'] == 'docsearch') {
-$tbl .= '<a href="admin.php?pid=docsearch&page=filedetails&id=' . $boxcontent_id . '">' . $boxcontent_id . '</a>';
-}
-if($boxcontent_destruction == 1) {
-            $tbl .=' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> ';
-}
-            $tbl .= '</td>';
-            $tbl .='
-            <td>' . $boxcontent_title_truncated . '</td>
-            <td>' . $boxcontent_date . '</td>
-            <td>' . $boxcontent_contact . '</td>
-            ';
-if($boxcontent_validation == 0) {
-            $tbl .='
-            <td><span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span></td>
-            ';
-}
-if($boxcontent_validation == 1) {
-$user = get_user_by( 'id', $boxcontent_validation_user);
-            $tbl .='
-            <td><span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span> ('.$user->user_login.')</td>
-            ';
-}
-$tbl .= '</tr>';
-
-			}
-			$tbl .= '</tbody></table></div>';
-
-			echo $tbl;
-?>			
+            </tr>
+        </thead>
+    </table>
+</div>
 <br /><br />
-<input type='hidden' id='page_id' value='<?php echo $GLOBALS['page']; ?>' />
+<?php
+$convert_box_id = $wpdb->get_row(
+"SELECT id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE box_id = '" .  $GLOBALS['id'] . "'"
+);
+
+$box_id = $convert_box_id->id;
+?>
+<input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['page']; ?>' />
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
-
+  
 <script>
- jQuery(document).ready(function() {
-	 var dataTable = jQuery('#tbl_templates_boxes').DataTable({
-	   autoWidth: false,
-	     'columnDefs': [
+
+jQuery(document).ready(function(){
+  var dataTable = jQuery('#tbl_templates_boxes').DataTable({
+    'autoWidth': false,
+    'processing': true,
+    'serverSide': true,
+    'serverMethod': 'post',
+    'searching': false, // Remove default Search Control
+    'ajax': {
+       'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_details_processing.php',
+       'data': function(data){
+          // Read values
+          var sg = jQuery('#searchGeneric').val();
+          var boxid = jQuery('#box_id').val();
+          var pid = jQuery('#p_id').val();
+          // Append to data
+          data.searchGeneric = sg;
+          data.BoxID = boxid;
+          data.PID = pid;
+       }
+    },
+    'columnDefs': [
          {
-             width: '5px',
+	     width: '5px',
             'targets': 0,
             'checkboxes': {
                'selectRow': true
             }
          },
-         
       { width: '300px', targets: 1 },
       { width: '300px', targets: 2 },
       { width: '300px', targets: 3 },
       { width: '50px', targets: 4 },
       { width: '5px', targets: 5 }
       ],
-
       'select': {
          'style': 'multi'
       },
       'order': [[1, 'asc']],
-		 "aLengthMenu": [[10, 20, 30, -1], [10, 20, 30, "All"]]
-		});
+    'columns': [
+       { data: 'folderdocinfo_id' },
+       { data: 'folderdocinfo_id_flag' },
+       { data: 'title' }, 
+       { data: 'date' },
+       { data: 'epa_contact_email' },
+       { data: 'validation' },
+    ]
+  });
 
-jQuery('#wpsc_individual_validation_btn').on('click', function(e){
+  jQuery(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        dataTable.draw();
+    }
+});
+
+jQuery('#searchGeneric').on('input keyup paste', function () {
+    var hasValue = jQuery.trim(this.value).length;
+    if(hasValue == 0) {
+            dataTable.draw();
+        }
+});
+
+
+		function onAddTag(tag) {
+			dataTable.draw();
+		}
+		function onRemoveTag(tag) {
+			dataTable.draw();
+		}
+
+
+	jQuery('#wpsc_individual_validation_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
 postvarsfolderdocid : rows_selected.join(","),
 potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
-postvarpid : jQuery('#page_id').val()
+postvarpid : jQuery('#p_id').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
-
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
-     var rows_selected = dataTable.column(0).checkboxes.selected();	
+     var rows_selected = dataTable.column(0).checkboxes.selected();
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unathorize_destruction.php',{
 postvarsfolderdocid : rows_selected.join(","),
-postvarpid : jQuery('#page_id').val()
+postvarpid : jQuery('#p_id').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=boxdetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
-
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
      var arr = {};
-
     // Loop through array
     [].forEach.call(rows_selected, function(inst){
-
         var x = inst.split("-")[2].substr(1);
-
         // Check if arr already has an index x, if yes then push
         if(arr.hasOwnProperty(x)) 
             arr[x].push(inst);
-
         // Or else create a new one with inst as the first element.
         else 
             arr[x] = [inst];
-
-
     });
-
 if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
-
 if (Array.isArray(arr[1]) && arr[1].length) {
 window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
 }
-
 if (Array.isArray(arr[2]) && arr[2].length) {
 window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
 }
-
 } else {
 alert('Please select a folder/file.');
 }
-
 });
-
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 
@@ -321,8 +291,27 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 <?php
 }
 ?>
-});
 
+<?php
+$box_details = $wpdb->get_row(
+"SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.unauthorized_destruction = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
+			);
+
+$unauthorized_destruction_count = $box_details->count;
+
+if($unauthorized_destruction_count == 0){
+?>
+jQuery('#ud_alert').hide();
+<?php
+}
+?>
+
+
+});
+       
 </script>
 
 

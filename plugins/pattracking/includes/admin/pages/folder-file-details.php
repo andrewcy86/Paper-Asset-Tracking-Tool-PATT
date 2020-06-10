@@ -253,7 +253,7 @@ echo '</div>';
 <form>
 <input type='hidden' id='doc_id' value='<?php echo $GLOBALS['id']; ?>' />
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
 </form>
 <!-- Pop-up snippet start -->
 <div id="wpsc_popup_background" style="display:none;"></div>

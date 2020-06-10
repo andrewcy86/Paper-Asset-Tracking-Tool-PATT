@@ -74,17 +74,21 @@ $totalRecordwithFilter = $records['allcount'];
 ## Fetch records
 $boxQuery = "
 SELECT 
-
+a.box_id,
 CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>',
 CASE WHEN (SELECT sum(unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) > 0 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
 ELSE '' 
 END
-) as box_id,
+) as box_id_flag,
 CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, 
 e.name as location, 
 c.office_acronym as acronym,
 CONCAT(
 CASE 
+
+WHEN (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) = 0 AND (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) = 0
+THEN
+''
 
 WHEN (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0 AND (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) < (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id)
 THEN 
@@ -102,7 +106,7 @@ ELSE ''
 END,
 
 CASE 
-WHEN (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
+WHEN (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) != 0
 THEN
 CONCAT((SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id), '/', (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id))
 ELSE '-'
@@ -121,6 +125,7 @@ $data = array();
 while ($row = mysqli_fetch_assoc($boxRecords)) {
    $data[] = array(
      "box_id"=>$row['box_id'],
+     "box_id_flag"=>$row['box_id_flag'],
      "request_id"=>$row['request_id'],
      "location"=>$row['location'],
      "acronym"=>$row['acronym'],

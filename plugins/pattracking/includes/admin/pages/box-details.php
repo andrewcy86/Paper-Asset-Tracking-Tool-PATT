@@ -131,7 +131,7 @@ $box_id = $convert_box_id->id;
 ?>
 <input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
 </form>
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>

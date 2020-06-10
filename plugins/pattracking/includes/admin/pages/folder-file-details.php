@@ -58,8 +58,9 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
 
             $user = get_user_by( 'id', $folderfile_validation_user);
-
-			$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
+            
+            //split up sql statement to split program office, record schedule, and location
+			/*$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
 
 FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_storage_location, wpqa_wpsc_ticket, wpqa_terms
 
@@ -76,7 +77,34 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 			$box_aisle = $box_details->aisle;
 			$box_bay = $box_details->bay;
 			$box_shelf = $box_details->shelf;
-			$box_position = $box_details->position;
+			$box_position = $box_details->position;*/
+			
+			//id, request_id, ticket_id, box_id
+		    $box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id
+FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket
+WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
+            $box_boxid = $box_details->box_id;
+			$box_ticketid = $box_details->ticket_id;
+			$box_requestid = $box_details->request_id;
+			$request_id = substr($box_boxid, 0, 7);
+            
+            //record schedule
+            $box_record_schedule = $wpdb->get_row("SELECT wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
+            $box_rs = $box_record_schedule->rsnum;
+            
+            //program office
+            $box_program_office = $wpdb->get_row("SELECT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
+            $box_po = $box_program_office->program_office;
+            
+            //box location
+            $location = $wpdb->get_row("SELECT wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position
+FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_storage_location, wpqa_terms
+WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
+            $box_location = $location->location;
+			$box_aisle = $location->aisle;
+			$box_bay = $location->bay;
+			$box_shelf = $location->shelf;
+			$box_position = $location->position;
 ?>
 <style>
 .bootstrap-iso .alert {
@@ -190,14 +218,14 @@ echo '</div>';
 			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
 			}
 			else {
-			    echo "<strong>Program Office: UNASSIGNED</strong> <br />";
+			    echo "<strong style='color:red'>Program Office: REASSIGN IMMEDIATELY</strong> <br />";
 			}
             
             if(!empty($box_rs)) {
                 echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
             }
             else {
-			    echo "<strong>Record Schedule: UNASSIGNED</strong> <br />";
+			    echo "<strong style='color:red'>Record Schedule: REASSIGN IMMEDIATELY</strong> <br />";
 			}
   
   			if (!empty($folderfile_title)) {
@@ -253,7 +281,7 @@ echo '</div>';
 <form>
 <input type='hidden' id='doc_id' value='<?php echo $GLOBALS['id']; ?>' />
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
 </form>
 <!-- Pop-up snippet start -->
 <div id="wpsc_popup_background" style="display:none;"></div>
@@ -398,7 +426,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>';
 	                            echo $box_location . "<br />";
 	                                //if aisle/bay/shelf/position <= 0, does not display location on front end
-    	                            if(!($box_aisle <= 0 || $box_bay <= 0 || $box_shelf <= 0 || $box_position <= 0))
+    	                            if(!($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
     								{
         								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
         	                            echo $box_aisle . "<br />";

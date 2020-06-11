@@ -7,6 +7,8 @@ global $wpdb, $current_user, $wpscfunction;
 
 $ticket_id 	 = isset($_POST['ticket_id']) ? intval($_POST['ticket_id']) : 0 ;
 
+$subfolder_path = site_url( '', 'relative'); 
+
 ob_start();
 ?>
 
@@ -32,7 +34,6 @@ ob_start();
   width: auto !IMPORTANT
 }
   </style>
-
         <div class="container>  
    <br />
    <div class="table-responsive">
@@ -60,32 +61,36 @@ ob_start();
      controller: {
       loadData: function(filter){
        var ticket_id = <?php echo $ticket_id; ?>; 
+       var subfolder = '<?php echo $subfolder_path; ?>';
        return $.ajax({
         type: "GET",
-        url: "/wordpress2/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: filter
        });
       },
       insertItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
+       var subfolder = '<?php echo $subfolder_path; ?>';
        return $.ajax({
         type: "POST",
-        url: "/wordpress2/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data:item
        });
       },
       updateItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
+       var subfolder = '<?php echo $subfolder_path; ?>';
        return $.ajax({
         type: "PUT",
-        url: "/wordpress2/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
+        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: item
        });
       },
       deleteItem: function(item){
+       var subfolder = '<?php echo $subfolder_path; ?>';
        return $.ajax({
         type: "DELETE",
-        url: "/wordpress2/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php",
+        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php",
         data: item
        });
       },

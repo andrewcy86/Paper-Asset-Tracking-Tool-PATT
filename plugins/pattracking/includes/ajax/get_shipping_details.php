@@ -40,10 +40,14 @@ ob_start();
     <div id="grid_table"></div>
    </div>  
   </div>
+<link rel="stylesheet" type="text/css" href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/css/jsgrid.min.css';?>"/>
+<link rel="stylesheet" type="text/css" href="<?php echo WPPATT_PLUGIN_URL.'includes/admin/css/jsgrid-theme.min.css';?>"/>
+<script type="text/javascript" src="<?php echo WPPATT_PLUGIN_URL.'includes/admin/js/jsgrid.min.js';?>"></script>
+
 <script>
-(function ($) {
+ jQuery(document).ready(function() {
            
-    $('#grid_table').jsGrid({
+    jQuery('#grid_table').jsGrid({
 
      width: "auto",
      height: "auto",
@@ -62,7 +66,7 @@ ob_start();
       loadData: function(filter){
        var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo $subfolder_path; ?>';
-       return $.ajax({
+       return jQuery.ajax({
         type: "GET",
         url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: filter
@@ -71,7 +75,7 @@ ob_start();
       insertItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo $subfolder_path; ?>';
-       return $.ajax({
+       return jQuery.ajax({
         type: "POST",
         url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data:item
@@ -80,7 +84,7 @@ ob_start();
       updateItem: function(item){
        var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo $subfolder_path; ?>';
-       return $.ajax({
+       return jQuery.ajax({
         type: "PUT",
         url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: item
@@ -88,7 +92,7 @@ ob_start();
       },
       deleteItem: function(item){
        var subfolder = '<?php echo $subfolder_path; ?>';
-       return $.ajax({
+       return jQuery.ajax({
         type: "DELETE",
         url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php",
         data: item
@@ -147,7 +151,7 @@ ob_start();
      ]
 
     });
-                })(jQuery);
+                 });
 </script>
 
 <?php 

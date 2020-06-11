@@ -87,11 +87,11 @@ ob_start();
 		<div class="row wpsc_threads_container">
 		    <div class="col-md-8 col-md-offset-2 logtitle"><h4>Request History:</h4></div>
 			<?php
-			$order = $reply_form_position ? 'DESC' : 'ASC';
+			$order = $reply_form_position ? 'ASC' : 'DESC';
 			$args = array(
 				'post_type'      => 'wpsc_ticket_thread',
 				'post_status'    => 'publish',
-				'orderby'        => 'ID',
+				'orderby'        => 'post_date',
 				'order'          => $order,
 				'posts_per_page' => -1,
 				'meta_query'     => array(

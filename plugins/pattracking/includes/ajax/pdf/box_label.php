@@ -307,7 +307,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 154;
+                $x_loc_l = 152;
                 $y_loc_l = 90;
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
@@ -322,7 +322,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_digi_box_regular = 164;
                 $y_loc_digi_box_regular = 89;
                 //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 151;
+                $x_loc_digi_box_dashed = 148.5;
                 $y_loc_digi_box_dashed = 87;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 10;
@@ -372,7 +372,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_la2 = 25;
                 $y_loc_la2 = 70;
                 //Location Coordinates
-                $x_loc_l = 154;
+                $x_loc_l = 152;
                 $y_loc_l = 220;                
                 //Creation Date Coordinates
                 $x_loc_cd = 79;
@@ -387,7 +387,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_digi_box_regular = 164;
                 $y_loc_digi_box_regular = 219;
                 //Digitization center box dashed border
-                $x_loc_digi_box_dashed = 151;
+                $x_loc_digi_box_dashed = 148.5;
                 $y_loc_digi_box_dashed = 217;
                 //Black rectangle containing program office and month/year of request
                 $x_loc_black_rectangle = 10;
@@ -561,6 +561,7 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             //Obtain array of box locations
             //$obj_pdf->Text($x_loc_l, $y_loc_l, $box_location[$i]);
             
+            //prints digitization center for all box labels in a request
             $obj_pdf->SetXY($x_loc_l, $y_loc_l);
             $obj_pdf->SetLineStyle(array('width' => 0.8, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
             $obj_pdf->SetFont('helvetica', 'B', 20);
@@ -569,7 +570,13 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
 
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             //Obtain array of box locations
-            $obj_pdf->Text($x_loc_l, $y_loc_l, $box_location_a);
+            //$obj_pdf->Text($x_loc_l, $y_loc_l, $box_location_a);
+            
+            //prints digitization center for specific box labels
+            $obj_pdf->SetXY($x_loc_l, $y_loc_l);
+            $obj_pdf->SetLineStyle(array('width' => 0.8, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetFont('helvetica', 'B', 20);
+            $obj_pdf->Cell(40, 10, $box_location_a, 1, 0, 'C', 1);
 }
 
             //set month/year text color = white

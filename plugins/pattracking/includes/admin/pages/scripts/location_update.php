@@ -98,9 +98,20 @@ digitization_center = '" . $center_term_id . "'
 				$new_ss_data_where = array('shelf_id' => $new_shelf_id_update);
 
 				$wpdb->update($new_ss_table_name, $new_ss_data_update, $new_ss_data_where);
-				
 
-   echo "Box ID #: " . $boxid . " has been updated. New Location: " .$aisle. "A_" .$bay . "B_" . $shelf ."S_".$position."P_".$center_value;
+				$get_ticket_id = $wpdb->get_row("
+SELECT ticket_id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE
+box_id = '" . $boxid . "'
+");
+
+				$ticket_id = $get_ticket_id->ticket_id;
+				
+$shelf_info = $aisle. 'A_' .$bay . 'B_' . $shelf .'S_'.$position.'P_'.$center_value;
+do_action('wpppatt_after_shelf_location', $ticket_id, $boxid, $shelf_info);
+
+   echo "Box ID #: " . $boxid . " has been updated. New Location: " .$shelf_info;
 } else {
    echo "Update not successful.";
 }

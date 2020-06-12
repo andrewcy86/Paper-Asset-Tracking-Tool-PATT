@@ -97,6 +97,7 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
+                <th class="datatable_header"></th>
                 <th class="datatable_header">Document/File ID</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
@@ -111,6 +112,8 @@ color: rgb(255, 255, 255) !important;
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
   
+  <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+  <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
   
 <script>
 
@@ -137,8 +140,23 @@ jQuery(document).ready(function(){
           data.searchByDigitizationCenter = dc;
        }
     },
+    
+    'columnDefs': [	
+         {	
+            'targets': 0,	
+            'checkboxes': {	
+               'selectRow': true	
+            }	
+         }
+      ],	
+      'select': {	
+         'style': 'multi'	
+      },	
+      'order': [[1, 'asc']],
+    
     'columns': [
-       { data: 'folderdocinfo_id' }, 
+       { data: 'folderdocinfo_id' },
+       { data: 'folderdocinfo_id_flag' }, 
        { data: 'request_id' },
        { data: 'location' },
        { data: 'acronym' },

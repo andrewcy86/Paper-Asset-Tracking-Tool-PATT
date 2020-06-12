@@ -80,7 +80,7 @@ $tbl .= '</table>';
 $obj_pdf->AddPage();
 $obj_pdf->writeHTML($tbl, true, false, false, false, '');
 
-$filename = 'request_log_'.$padded_request_id.'.pdf';
+$filename = 'patt_request_log_'.$padded_request_id.'.pdf';
 
     //Generate PDF
     $obj_pdf->Output($filename, 'I');

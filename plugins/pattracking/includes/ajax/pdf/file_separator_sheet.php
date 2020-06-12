@@ -186,7 +186,7 @@ $obj_pdf->writeHTML($tbl, true, false, false, false, '');
 }  //end box id regex
 
     //Generate PDF
-    $obj_pdf->Output('file.pdf', 'I');
+    $obj_pdf->Output('patt_file_seperator_printout.pdf', 'I');
 
 } else {
 echo "Pass a valid ID in URL";

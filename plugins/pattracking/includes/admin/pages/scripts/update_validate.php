@@ -34,14 +34,14 @@ $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfo_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('invalidate_document', $ticket_id, $key);
+do_action('wpppatt_after_invalidate_document', $ticket_id, $key);
 }
 
 if ($get_validation_val == 0){
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfo_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('validate_document', $ticket_id, $key);
+do_action('wpppatt_after_validate_document', $ticket_id, $key);
 }
 
 //echo $get_validation_val;
@@ -62,14 +62,14 @@ $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfo_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('invalidate_document', $ticket_id, $folderdocid_string);
+do_action('wpppatt_after_invalidate_document', $ticket_id, $folderdocid_string);
 }
 
 if ($get_validation_val == 0){
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfo_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
-do_action('validate_document', $ticket_id, $folderdocid_string);
+do_action('wpppatt_after_validate_document', $ticket_id, $folderdocid_string);
 }
 
 }

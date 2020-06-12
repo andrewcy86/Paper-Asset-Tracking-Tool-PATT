@@ -81,7 +81,15 @@ CASE WHEN(unauthorized_destruction = 1)  THEN ' <span style=\"font-size: 1em; co
 ELSE ''
 END) as folderdocinfo_id_flag,
 
-CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym 
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym,
+
+CONCAT(
+CASE WHEN (validation = 0) THEN '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
+
+WHEN (validation = 1) THEN '<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> '
+ELSE ''
+END
+) as validation
 
 FROM wpqa_wpsc_epa_folderdocinfo as a
 
@@ -100,7 +108,8 @@ while ($row = mysqli_fetch_assoc($docRecords)) {
      "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
      "request_id"=>$row['request_id'],
      "location"=>$row['location'],
-     "acronym"=>$row['acronym']
+     "acronym"=>$row['acronym'],
+     "validation"=>$row['validation']
    );
 }
 

@@ -73,7 +73,14 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$docQuery = "SELECT CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>') as folderdocinfo_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym FROM wpqa_wpsc_epa_folderdocinfo as a
+$docQuery = "SELECT 
+a.folderdocinfo_id as folderdocinfo_id,
+CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>') as folderdocinfo_id_flag,
+
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym 
+
+FROM wpqa_wpsc_epa_folderdocinfo as a
+
 INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
@@ -86,6 +93,7 @@ $data = array();
 while ($row = mysqli_fetch_assoc($docRecords)) {
    $data[] = array(
      "folderdocinfo_id"=>$row['folderdocinfo_id'],
+     "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
      "request_id"=>$row['request_id'],
      "location"=>$row['location'],
      "acronym"=>$row['acronym']

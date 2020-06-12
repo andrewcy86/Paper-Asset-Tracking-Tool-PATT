@@ -52,13 +52,13 @@ ob_start();
      width: "auto",
      height: "auto",
 
-     filtering: true,
+     //filtering: true,
      inserting:true,
      editing: true,
      sorting: true,
      paging: true,
      autoload: true,
-     pageSize: 10,
+     pageSize: 20,
      pageButtonCount: 5,
      deleteConfirm: "Do you really want to delete this tracking number?",
 
@@ -91,10 +91,11 @@ ob_start();
        });
       },
       deleteItem: function(item){
+       var ticket_id = <?php echo $ticket_id; ?>; 
        var subfolder = '<?php echo $subfolder_path; ?>';
        return jQuery.ajax({
         type: "DELETE",
-        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php",
+        url: subfolder+"/wp-content/plugins/pattracking/includes/ajax/fetch_shipping_data.php?ticket_id="+ticket_id,
         data: item
        });
       },

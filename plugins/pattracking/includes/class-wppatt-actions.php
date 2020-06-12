@@ -18,6 +18,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       
       // PATT Log Entry
       add_action( 'wpppatt_after_unauthorized_destruction', array($this,'unauthorized_destruction'), 10, 2 );
+      add_action( 'wpppatt_after_unauthorized_destruction_unflag', array($this,'unauthorized_destruction_unflag'), 10, 2 );
       add_action( 'wpppatt_after_shelf_location', array($this,'shelf_location'), 10, 3 );   
       add_action( 'wpppatt_after_digitization_center', array($this,'digitization_center'), 10, 3 );   
     }
@@ -29,6 +30,23 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s flagged Document ID: %2$s as unauthorize destruction','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
       } else {
         $log_str = sprintf( __('Document ID %1$s flagged as unauthorize destruction','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // Reverse destruction
+    function unauthorized_destruction_unflag ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s un-flagged Document ID: %2$s as unauthorize destruction','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s un-flagged as unauthorize destruction','supportcandy'), '<strong>'.$doc_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,
@@ -63,6 +81,40 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s changed digitization center of Box ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $box_id .'</strong>','<strong>'. $dc .'</strong>');
       } else {
         $log_str = sprintf( __('Box ID: %1$s has changed digitization center to %1$s ','supportcandy'), '<strong>'.$box_id.'</strong>','<strong>'. $dc .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Validate
+    function validate_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s validated Document ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s validated','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Invalidate
+    function invalidate_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s invalidated Document ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s invalidated','supportcandy'), '<strong>'.$doc_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

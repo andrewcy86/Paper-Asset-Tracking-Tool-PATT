@@ -240,7 +240,7 @@ $obj_pdf->writeHTML($tbl, true, false, false, false, '');
     }
     
     //Generate PDF
-    $obj_pdf->Output('file.pdf', 'I');
+    $obj_pdf->Output('patt_box_list_printout.pdf', 'I');
 }
 
 else

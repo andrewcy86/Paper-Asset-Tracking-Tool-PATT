@@ -26,6 +26,9 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_add_request_shipping_tracking', array($this,'add_request_shipping_tracking'), 10, 2 );
       add_action( 'wpppatt_after_modify_request_shipping_tracking', array($this,'modify_request_shipping_tracking'), 10, 2 );
       add_action( 'wpppatt_after_remove_request_shipping_tracking', array($this,'remove_request_shipping_tracking'), 10, 2 );
+      
+      add_action( 'wpppatt_after_box_metadata', array($this,'box_metadata'), 10, 3 );
+      add_action( 'wpppatt_after_folder_doc_metadata', array($this,'folder_doc_metadata'), 10, 3 );
     }
     
     // Change destruction
@@ -170,6 +173,38 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s removed tracking number %2$s from request','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $tracking_number .'</strong>');
       } else {
         $log_str = sprintf( __('Tracking number %1$s removed from request','supportcandy'), '<strong>'.$tracking_number.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    // Box Metadata edit
+    function box_metadata ( $ticket_id, $metadata, $box_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s edited the following metadata %2$s on Box ID: %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $metadata .'</strong>','<strong>'. $box_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('The following metadata %1$s on Box ID: %2$s has been edited','supportcandy'), '<strong>'.$metadata.'</strong>','<strong>'. $box_id .'</strong>');
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    // Folder/Document Metadata edit
+    function folder_doc_metadata ( $ticket_id, $metadata, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s edited the following metadata %2$s on Document ID: %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $metadata .'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('The following metadata %1$s on Document ID: %2$s has been edited','supportcandy'), '<strong>'.$metadata.'</strong>','<strong>'. $doc_id .'</strong>');
       }
       $args = array(
         'ticket_id'      => $ticket_id,

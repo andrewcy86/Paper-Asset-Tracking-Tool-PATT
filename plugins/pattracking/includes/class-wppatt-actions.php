@@ -21,6 +21,11 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_unauthorized_destruction_unflag', array($this,'unauthorized_destruction_unflag'), 10, 2 );
       add_action( 'wpppatt_after_shelf_location', array($this,'shelf_location'), 10, 3 );   
       add_action( 'wpppatt_after_digitization_center', array($this,'digitization_center'), 10, 3 );   
+      add_action( 'wpppatt_after_validate_document', array($this,'validate_document'), 10, 2 );
+      add_action( 'wpppatt_after_invalidate_document', array($this,'invalidate_document'), 10, 2 );
+      add_action( 'wpppatt_after_add_request_shipping_tracking', array($this,'add_request_shipping_tracking'), 10, 2 );
+      add_action( 'wpppatt_after_modify_request_shipping_tracking', array($this,'modify_request_shipping_tracking'), 10, 2 );
+      add_action( 'wpppatt_after_remove_request_shipping_tracking', array($this,'remove_request_shipping_tracking'), 10, 2 );
     }
     
     // Change destruction
@@ -125,6 +130,55 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $wpscfunction->submit_ticket_thread($args);
     }
     
+    // Add Shipping Tracking on Request
+    function add_request_shipping_tracking ( $ticket_id, $tracking_number ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s added tracking number %2$s to request','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $tracking_number .'</strong>');
+      } else {
+        $log_str = sprintf( __('Tracking number %1$s added to request','supportcandy'), '<strong>'.$tracking_number.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Modified Shipping Tracking on Request
+    function modify_request_shipping_tracking ( $ticket_id, $tracking_number ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s updated tracking number %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $tracking_number .'</strong>');
+      } else {
+        $log_str = sprintf( __('Tracking number %1$s updated','supportcandy'), '<strong>'.$tracking_number.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    // Removed Shipping Tracking on Request
+    function remove_request_shipping_tracking ( $ticket_id, $tracking_number ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s removed tracking number %2$s from request','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $tracking_number .'</strong>');
+      } else {
+        $log_str = sprintf( __('Tracking number %1$s removed from request','supportcandy'), '<strong>'.$tracking_number.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
 }
   
 endif;

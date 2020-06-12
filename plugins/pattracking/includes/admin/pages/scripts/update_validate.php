@@ -23,20 +23,25 @@ $validation_reversal = 0;
 if($page_id == 'boxdetails') {
 foreach($folderdocid_arr as $key) {    
 $get_validation = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
-
 $get_validation_val = $get_validation->validation;
+
+$get_request_id = substr($key, 0, 7);
+$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$ticket_id = $get_ticket_id->id;
 
 if ($get_validation_val == 1){
 $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfo_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
+do_action('invalidate_document', $ticket_id, $key);
 }
 
 if ($get_validation_val == 0){
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfo_id' => $key);
 $wpdb->update($table_name , $data_update, $data_where);
+do_action('validate_document', $ticket_id, $key);
 }
 
 //echo $get_validation_val;
@@ -46,20 +51,25 @@ $wpdb->update($table_name , $data_update, $data_where);
 if($page_id == 'filedetails') {
  
 $get_validation = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$folderdocid_string."'");
-
 $get_validation_val = $get_validation->validation;
+
+$get_request_id = substr($folderdocid_string, 0, 7);
+$get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
+$ticket_id = $get_ticket_id->id;
 
 if ($get_validation_val == 1){
 $validation_reversal = 1;
 $data_update = array('validation' => 0, 'validation_user_id'=>'');
 $data_where = array('folderdocinfo_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
+do_action('invalidate_document', $ticket_id, $folderdocid_string);
 }
 
 if ($get_validation_val == 0){
 $data_update = array('validation' => 1, 'validation_user_id'=>$get_userid);
 $data_where = array('folderdocinfo_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
+do_action('validate_document', $ticket_id, $folderdocid_string);
 }
 
 }

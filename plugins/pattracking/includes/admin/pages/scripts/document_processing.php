@@ -75,7 +75,11 @@ $totalRecordwithFilter = $records['allcount'];
 ## Fetch records
 $docQuery = "SELECT 
 a.folderdocinfo_id as folderdocinfo_id,
-CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>') as folderdocinfo_id_flag,
+CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>',
+
+CASE WHEN(unauthorized_destruction = 1)  THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
+ELSE ''
+END) as folderdocinfo_id_flag,
 
 CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym 
 

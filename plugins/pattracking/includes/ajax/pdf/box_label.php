@@ -597,7 +597,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         }
         
         //Generate PDF
-        $obj_pdf->Output('box_label_printout.pdf', 'I');     
+        $obj_pdf->Output('patt_box_label_printout.pdf', 'I');     
 } else {
 echo "Pass a valid ID in URL";
 }

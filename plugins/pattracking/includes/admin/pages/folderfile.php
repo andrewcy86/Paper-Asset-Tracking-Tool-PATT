@@ -102,6 +102,7 @@ color: rgb(255, 255, 255) !important;
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
                 <th class="datatable_header">Program Office</th>
+                <th class="datatable_header">Validation</th>
             </tr>
         </thead>
     </table>
@@ -160,6 +161,7 @@ jQuery(document).ready(function(){
        { data: 'request_id' },
        { data: 'location' },
        { data: 'acronym' },
+       { data: 'validation' },
     ]
   });
 

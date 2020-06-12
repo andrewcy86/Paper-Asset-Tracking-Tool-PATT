@@ -65,6 +65,17 @@ $sl_update = array('digitization_center' => $dc, 'aisle' => '0' ,'bay'=>'0','she
 $sl_where = array('id' => $box_storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
+$get_ticket_id = $wpdb->get_row("
+SELECT ticket_id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE
+box_id = '" . $box_id_val . "'
+");
+
+$ticket_id = $get_ticket_id->ticket_id;
+
+do_action('wpppatt_after_digitization_center', $ticket_id, $box_id_val, $box_dc_name);
+
 echo "Box ID #: " . $box_id_val . " has been updated.\nAssigned Digitization Center: " .$box_dc_name;
    
 } else {

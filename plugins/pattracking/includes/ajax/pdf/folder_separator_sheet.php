@@ -167,7 +167,7 @@ WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
     }
     
     //Generate PDF
-    $obj_pdf->Output('file.pdf', 'I');
+    $obj_pdf->Output('folder_seperator_printout.pdf', 'I');
     
     
 } else {

@@ -348,27 +348,3 @@ if( !function_exists( 'remove_footer_admin' )) {
 }
  
 add_filter('admin_footer_text', 'remove_footer_admin');
-
-
-/**
- * Add jsgrid css and JavaScript.
- * Added function_exists as function is declared in the child theme. This will be acceptably overwritten once the theme is updated. 
- */
-if( !function_exists( 'jsgrid_load_scripts' )) {
-	function jsgrid_load_scripts() {
-	
-	    wp_enqueue_style('admin-jsgrid-css', get_template_directory_uri().'/jsgrid/css/jsgrid.min.css');
-	    wp_enqueue_style('admin-jsgrid-css-theme', get_template_directory_uri().'/jsgrid/css/jsgrid-theme.min.css');
-		wp_enqueue_script('admin-jsgrid', get_template_directory_uri().'/jsgrid/js/jsgrid.min.js');
-	}
-}
-add_action('admin_enqueue_scripts', 'jsgrid_load_scripts');
-
-/**
- * Add jsgrid css and JavaScript.
- */
-if(function_exists('add_db_table_editor')){
-add_db_table_editor('title=Record Schedule Editor&table=wpqa_epa_record_schedule');
-add_db_table_editor('title=File Folder Details&table=wpqa_wpsc_epa_folderdocinfo');
-add_db_table_editor('title=Error Log&table=wpqa_epa_error_log');
-}

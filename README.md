@@ -316,6 +316,72 @@ COMMENT OUT
 ```
  // PATT do_action('wpsc_add_submenu_page');
 ```
+### Disable status based on validation and assignment of digitization staff.
+###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_ticket_status.php
+BELOW
+```<form id="frm_get_ticket_change_status" method="post">```
+ADD
+```
+<?php
+//PATT BEGIN
+$get_assigned = $wpdb->get_row("SELECT sum(meta_value) as assigned_val FROM wpqa_wpsc_ticketmeta WHERE ticket_id = '" . $ticket_id . "' AND meta_key = 'assigned_agent' ORDER BY ticket_id DESC");
+$assigned_val = $get_assigned->assigned_val.',';
+
+$get_sum_total = $wpdb->get_row("select sum(a.total_count) as sum_total_count
+    from (
+SELECT (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) as total_count FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id WHERE b.id = '" . $ticket_id . "'
+    ) a");
+$sum_total_val = $get_sum_total->sum_total_count;
+
+$get_sum_validation = $wpdb->get_row("select sum(a.validation) as sum_validation
+    from (
+SELECT (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) as validation FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id WHERE b.id = '" . $ticket_id . "'
+    ) a");
+$sum_validation = $get_sum_validation->sum_validation;
+
+$validated = '';
+$assigned = '';
+
+if($sum_total_val == $sum_validation) {
+$validated = 1;
+} else {
+$validated = 0;
+}
+
+$validated_array = array(673,674,66,68,67,69);
+
+if($assigned_val > 0) {
+$assigned = 1;
+} else {
+$assigned = 0;
+}
+
+$assigned_array = array(3,4,670,5,63);
+//PATT END
+?>
+```
+BELOW
+```$selected = $status_id == $status->term_id ? 'selected="selected"' : '';```
+ADD
+```
+//PATT BEGIN
+$disabled = '';
+if (in_array($status->term_id, $validated_array) && $validated == 0) {
+    $disabled = 'disabled';
+}
+if (in_array($status->term_id, $assigned_array) && $assigned == 1) {
+    $disabled = 'disabled';
+}
+//PATT END
+```
+ADD
+```
+$disabled
+```
+TO
+```
+echo '<option '.$selected.' value="'.$status->term_id.'" '.$disabled.'>
+```
 ### Enable auto-assignment functionality in the change status modal window.
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_ticket_status.php AND
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_bulk_change_status.php

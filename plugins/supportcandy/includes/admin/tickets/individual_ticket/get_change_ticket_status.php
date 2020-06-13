@@ -19,7 +19,43 @@ $wpsc_custom_priority_localize = get_option('wpsc_custom_priority_localize');
 ob_start();
 ?>
 <form id="frm_get_ticket_change_status" method="post">
+<?php
+//PATT BEGIN
+$get_assigned = $wpdb->get_row("SELECT sum(meta_value) as assigned_val FROM wpqa_wpsc_ticketmeta WHERE ticket_id = '" . $ticket_id . "' AND meta_key = 'assigned_agent' ORDER BY ticket_id DESC");
+$assigned_val = $get_assigned->assigned_val.',';
 
+$get_sum_total = $wpdb->get_row("select sum(a.total_count) as sum_total_count
+    from (
+SELECT (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) as total_count FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id WHERE b.id = '" . $ticket_id . "'
+    ) a");
+$sum_total_val = $get_sum_total->sum_total_count;
+
+$get_sum_validation = $wpdb->get_row("select sum(a.validation) as sum_validation
+    from (
+SELECT (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = a.id) as validation FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_ticket as b ON a.ticket_id = b.id WHERE b.id = '" . $ticket_id . "'
+    ) a");
+$sum_validation = $get_sum_validation->sum_validation;
+
+$validated = '';
+$assigned = '';
+
+if($sum_total_val == $sum_validation) {
+$validated = 1;
+} else {
+$validated = 0;
+}
+
+$validated_array = array(673,674,66,68,67,69);
+
+if($assigned_val > 0) {
+$assigned = 1;
+} else {
+$assigned = 0;
+}
+
+$assigned_array = array(3,4,670,5,63);
+//PATT END
+?>
 	<div class="form-group">
 		<label for="wpsc_default_ticket_status"><?php _e('Ticket Status','supportcandy');?></label>
 		<select class="form-control" name="status">
@@ -33,7 +69,18 @@ ob_start();
 			]);
       foreach ( $statuses as $status ) :
 				$selected = $status_id == $status->term_id ? 'selected="selected"' : '';
-				echo '<option '.$selected.' value="'.$status->term_id.'">'.$wpsc_custom_status_localize['custom_status_'.$status->term_id].'</option>';
+
+//PATT BEGIN
+$disabled = '';
+if (in_array($status->term_id, $validated_array) && $validated == 0) {
+    $disabled = 'disabled';
+}
+if (in_array($status->term_id, $assigned_array) && $assigned == 1) {
+    $disabled = 'disabled';
+}
+//PATT END
+
+echo '<option '.$selected.' value="'.$status->term_id.'" '.$disabled.'>'.$wpsc_custom_status_localize['custom_status_'.$status->term_id].'</option>';
 			endforeach;
 			?>
 		</select>

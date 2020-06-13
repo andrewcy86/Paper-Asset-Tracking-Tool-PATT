@@ -10,7 +10,6 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     // constructor
     public function __construct() {
       add_action( 'init', array( $this, 'load_actions') );
-      add_action( 'plugins_loaded', array( $this, 'check_download_file'), 1 );
     }
     
      // Load actions

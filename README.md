@@ -620,7 +620,7 @@ REPLACE
 ."t.request_id  LIKE '$term' OR "
 //PATT END
 ```
-### Fix Advance Search to accept QR Code
+### Fix Advance Search to accept QR Code and Basic Search to clear url when QR is scanned.
 ###### /supportcandy/includes/admin/tickets/ticket_list/get_ticket_list.php
 FIND
 ```
@@ -668,6 +668,27 @@ jQuery(function() {
                 e.stopPropagation();
 			}
 		});
+//PATT END
+```
+FIND
+```
+jQuery('#wpsc_load_apply_filter_btn').on("click", function(e) {
+```
+ADD ABOVE
+```
+//PATT BEGIN		
+		jQuery("#wpsc_ticket_search").on("keyup", function(event) {
+    var url_string = jQuery(this).val();
+    var matches = /id=([^&#=]*)/.exec(url_string);
+    if (matches !== null) {
+       var paramid = matches[1]; 
+    } else {
+       var paramid = jQuery(this).val();
+    }
+    if (url_string.includes('id=')) {
+      jQuery(this).val(paramid);
+    }
+});
 //PATT END
 ```
 ### Ensure Request Page refreshes when an agent is assigned so that the status auto updates

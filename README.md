@@ -660,6 +660,9 @@ jQuery(function() {
 });
 
 		jQuery('.wpsc_search_autocomplete').on("keypress", function(e) {
+			   jQuery("#ui-id-1").css("padding", "2px");
+       			   jQuery("#ui-id-1").css("border", "1px solid #aaaaaa");
+                           jQuery(".ui-menu-item").show();
 			if (e.keyCode == 13) {
 			    e.preventDefault();
                 e.stopPropagation();

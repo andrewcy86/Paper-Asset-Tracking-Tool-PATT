@@ -640,6 +640,8 @@ jQuery(function() {
     }
     if (url_string.includes('id=')) {
       jQuery(this).val(paramid);
+      jQuery("#ui-id-1").css("padding", "0px");
+      jQuery("#ui-id-1").css("border", "0px");
       jQuery(".ui-menu-item").hide();
 			        var html_str = '<li class="wpsp_filter_display_element">'
 															+'<div class="flex-container">'

@@ -630,7 +630,7 @@ ADD ABOVE
 ```
 //PATT BEGIN
 jQuery(function() {
-  jQuery(".wpsc_search_autocomplete").on("keyup", function(event) {
+  jQuery('.wpsc_search_autocomplete').on('keyup', function(event) {
     var url_string = jQuery(this).val();
     var matches = /id=([^&#=]*)/.exec(url_string);
     if (matches !== null) {
@@ -640,9 +640,9 @@ jQuery(function() {
     }
     if (url_string.includes('id=')) {
       jQuery(this).val(paramid);
-      jQuery("#ui-id-1").css("padding", "0px");
-      jQuery("#ui-id-1").css("border", "0px");
-      jQuery(".ui-menu-item").hide();
+      jQuery('.ui-autocomplete').css('padding', '0px');
+      jQuery('.ui-autocomplete').css('border', '0px');
+      jQuery('.ui-menu-item').hide();
 			        var html_str = '<li class="wpsp_filter_display_element">'
 															+'<div class="flex-container">'
 																+'<div class="wpsp_filter_display_text">'
@@ -659,10 +659,10 @@ jQuery(function() {
   })
 });
 
-		jQuery('.wpsc_search_autocomplete').on("keypress", function(e) {
-			   jQuery("#ui-id-1").css("padding", "2px");
-       			   jQuery("#ui-id-1").css("border", "1px solid #aaaaaa");
-                           jQuery(".ui-menu-item").show();
+		jQuery('.wpsc_search_autocomplete').on('keypress', function(e) {
+			   jQuery('.ui-autocomplete').css('padding', '2px');
+       		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
+               jQuery('.ui-menu-item').show();
 			if (e.keyCode == 13) {
 			    e.preventDefault();
                 e.stopPropagation();
@@ -677,7 +677,7 @@ jQuery('#wpsc_load_apply_filter_btn').on("click", function(e) {
 ADD ABOVE
 ```
 //PATT BEGIN		
-		jQuery("#wpsc_ticket_search").on("keyup", function(event) {
+jQuery('#wpsc_ticket_search').on('keyup', function(event) {
     var url_string = jQuery(this).val();
     var matches = /id=([^&#=]*)/.exec(url_string);
     if (matches !== null) {

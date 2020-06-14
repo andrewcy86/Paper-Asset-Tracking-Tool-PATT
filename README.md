@@ -664,6 +664,9 @@ jQuery(function() {
        		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
                jQuery('.ui-menu-item').show();
 			if (e.keyCode == 13) {
+			   jQuery('.ui-autocomplete').css('padding', '0px');
+               jQuery('.ui-autocomplete').css('border', '0px');
+               jQuery('.ui-menu-item').hide();
 			    e.preventDefault();
                 e.stopPropagation();
 			}

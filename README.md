@@ -620,6 +620,51 @@ REPLACE
 ."t.request_id  LIKE '$term' OR "
 //PATT END
 ```
+### Fix Advance Search to accept QR Code
+###### /supportcandy/includes/admin/tickets/ticket_list/get_ticket_list.php
+FIND
+```
+jQuery( ".wpsc_search_autocomplete" ).autocomplete({
+```
+ADD ABOVE
+```
+//PATT BEGIN
+jQuery(function() {
+  jQuery(".wpsc_search_autocomplete").on("keyup", function(event) {
+    var url_string = jQuery(this).val();
+    var matches = /id=([^&#=]*)/.exec(url_string);
+    if (matches !== null) {
+       var paramid = matches[1]; 
+    } else {
+       var paramid = jQuery(this).val();
+    }
+    if (url_string.includes('id=')) {
+      jQuery(this).val(paramid);
+      jQuery(".ui-menu-item").hide();
+			        var html_str = '<li class="wpsp_filter_display_element">'
+															+'<div class="flex-container">'
+																+'<div class="wpsp_filter_display_text">'
+																	+paramid
+																	+'<input type="hidden" name="custom_filter[request_id][]" value="'+paramid+'">'
+																+'</div>'
+																+'<div class="wpsp_filter_display_remove" onclick="wpsc_remove_filter(this);"><i class="fa fa-times"></i></div>'
+															+'</div>'
+														+'</li>';
+							jQuery('#tf_request_id .wpsp_filter_display_container').append(html_str);
+							jQuery(this).val(''); return false;
+    }
+
+  })
+});
+
+		jQuery('.wpsc_search_autocomplete').on("keypress", function(e) {
+			if (e.keyCode == 13) {
+			    e.preventDefault();
+                e.stopPropagation();
+			}
+		});
+//PATT END
+```
 ### Ensure Request Page refreshes when an agent is assigned so that the status auto updates
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_assign_agent.php
 FIND INSIDE ONCLICK

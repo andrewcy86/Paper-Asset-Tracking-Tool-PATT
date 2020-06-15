@@ -20,7 +20,7 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 $validation_reversal = 0;
 
 
-if($page_id == 'boxdetails') {
+if($page_id == 'boxdetails' || $page_id == 'folderfile') {
 foreach($folderdocid_arr as $key) {    
 $get_validation = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
 $get_validation_val = $get_validation->validation;

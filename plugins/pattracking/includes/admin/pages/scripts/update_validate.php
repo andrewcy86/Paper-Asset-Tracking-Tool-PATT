@@ -11,7 +11,7 @@ if(
 
 
 $folderdocid_string = $_POST['postvarsfolderdocid'];
-$get_userid = $_POST['potvarsuserid'];
+$get_userid = $_POST['postvarsuserid'];
 $folderdocid_arr = explode (",", $folderdocid_string);  
 $page_id = $_POST['postvarpage'];
 

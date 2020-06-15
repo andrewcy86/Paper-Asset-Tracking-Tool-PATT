@@ -365,6 +365,57 @@ $field->slug = 'request_id';
 						 timeFormat: 'HH:mm:ss'
 					 });
 
+//PATT BEGIN
+jQuery(function() {
+  jQuery('.wpsc_search_autocomplete').on('keyup', function(event) {
+    var url_string = jQuery(this).val();
+    var matches = /id=([^&#=]*)/.exec(url_string);
+    if (matches !== null) {
+       var paramid = matches[1].replace(/[\n\r]+/g, ' ').replace(/\s{2,}/g,' ').replace(/^\s+|\s+$/,'') ; 
+    } else {
+       var paramid = jQuery(this).val();
+    }
+    if (url_string.includes('id=')) {
+      jQuery(this).val(paramid);
+      jQuery('.ui-autocomplete').css('padding', '0px');
+      jQuery('.ui-autocomplete').css('border', '0px');
+      jQuery('.ui-menu-item').hide();
+    }
+
+  })
+});
+
+		jQuery('.wpsc_search_autocomplete').on('keypress', function(e) {
+			   jQuery('.ui-autocomplete').css('padding', '2px');
+       		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
+               jQuery('.ui-menu-item').show();
+			if (e.keyCode == 13) {
+			    e.preventDefault();
+                e.stopPropagation();
+                var paramid = jQuery(this).val();
+    var matches = /^\d{7}$/.exec(paramid);
+
+    if (matches !== null) {
+      //jQuery(this).val(paramid);
+      jQuery('.ui-autocomplete').css('padding', '0px');
+      jQuery('.ui-autocomplete').css('border', '0px');
+      jQuery('.ui-menu-item').hide();
+			        var html_str = '<li class="wpsp_filter_display_element">'
+															+'<div class="flex-container">'
+																+'<div class="wpsp_filter_display_text">'
+																	+paramid
+																	+'<input type="hidden" name="custom_filter[request_id][]" value="'+paramid+'">'
+																+'</div>'
+																+'<div class="wpsp_filter_display_remove" onclick="wpsc_remove_filter(this);"><i class="fa fa-times"></i></div>'
+															+'</div>'
+														+'</li>';
+							jQuery('#tf_request_id .wpsp_filter_display_container').append(html_str);
+							jQuery(this).val(''); return false;
+    }
+			}
+		});
+//PATT END
+		
 					jQuery( ".wpsc_search_autocomplete" ).autocomplete({
 			      minLength: 0,
 			      appendTo: jQuery('.wpsc_search_autocomplete').parent(),
@@ -634,6 +685,21 @@ var link = true;
 			}
 		});
 		
+//PATT BEGIN		
+		jQuery('#wpsc_ticket_search').on('keyup', function(event) {
+    var url_string = jQuery(this).val();
+    var matches = /id=([^&#=]*)/.exec(url_string);
+    if (matches !== null) {
+       var paramid = matches[1]; 
+    } else {
+       var paramid = jQuery(this).val();
+    }
+    if (url_string.includes('id=')) {
+      jQuery(this).val(paramid);
+    }
+});
+//PATT END
+
 		jQuery('#wpsc_load_apply_filter_btn').on("click", function(e) {
 			jQuery('#wpsc_pg_no').val('1');
 		});

@@ -620,7 +620,7 @@ REPLACE
 ."t.request_id  LIKE '$term' OR "
 //PATT END
 ```
-### Fix Advance Search to accept QR Code and Basic Search to clear url when QR is scanned.
+### Fix Advanced Search to accept QR Code and Basic Search to clear url when QR is scanned.
 ###### /supportcandy/includes/admin/tickets/ticket_list/get_ticket_list.php
 FIND
 ```
@@ -634,12 +634,32 @@ jQuery(function() {
     var url_string = jQuery(this).val();
     var matches = /id=([^&#=]*)/.exec(url_string);
     if (matches !== null) {
-       var paramid = matches[1]; 
+       var paramid = matches[1].replace(/[\n\r]+/g, ' ').replace(/\s{2,}/g,' ').replace(/^\s+|\s+$/,'') ; 
     } else {
        var paramid = jQuery(this).val();
     }
     if (url_string.includes('id=')) {
       jQuery(this).val(paramid);
+      jQuery('.ui-autocomplete').css('padding', '0px');
+      jQuery('.ui-autocomplete').css('border', '0px');
+      jQuery('.ui-menu-item').hide();
+    }
+
+  })
+});
+
+		jQuery('.wpsc_search_autocomplete').on('keypress', function(e) {
+			   jQuery('.ui-autocomplete').css('padding', '2px');
+       		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
+               jQuery('.ui-menu-item').show();
+			if (e.keyCode == 13) {
+			    e.preventDefault();
+                e.stopPropagation();
+                var paramid = jQuery(this).val();
+    var matches = /^\d{7}$/.exec(paramid);
+
+    if (matches !== null) {
+      //jQuery(this).val(paramid);
       jQuery('.ui-autocomplete').css('padding', '0px');
       jQuery('.ui-autocomplete').css('border', '0px');
       jQuery('.ui-menu-item').hide();
@@ -655,20 +675,6 @@ jQuery(function() {
 							jQuery('#tf_request_id .wpsp_filter_display_container').append(html_str);
 							jQuery(this).val(''); return false;
     }
-
-  })
-});
-
-		jQuery('.wpsc_search_autocomplete').on('keypress', function(e) {
-			   jQuery('.ui-autocomplete').css('padding', '2px');
-       		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
-               jQuery('.ui-menu-item').show();
-			if (e.keyCode == 13) {
-			   jQuery('.ui-autocomplete').css('padding', '0px');
-               jQuery('.ui-autocomplete').css('border', '0px');
-               jQuery('.ui-menu-item').hide();
-			    e.preventDefault();
-                e.stopPropagation();
 			}
 		});
 //PATT END

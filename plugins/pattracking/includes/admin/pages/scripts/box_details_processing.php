@@ -67,6 +67,12 @@ $url_var = 'admin.php?pid=docsearch&page=filedetails&id=';
 }
 
 ## Fetch records
+
+if ($rowperpage == '-1') {
+$row_limit = '';
+} else {
+$row_limit = " limit ".$row.",".$rowperpage;    
+}
 $boxQuery = "SELECT 
 CONCAT(
 '<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\">',folderdocinfo_id,'</a>',
@@ -84,7 +90,7 @@ ELSE '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-
 END) as validation
 FROM 
 wpqa_wpsc_epa_folderdocinfo
-WHERE 1 ".$searchQuery." AND box_id = ".$box_id." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+WHERE 1 ".$searchQuery." AND box_id = ".$box_id." order by ".$columnName." ".$columnSortOrder.$row_limit;
 $boxRecords = mysqli_query($con, $boxQuery);
 $data = array();
 

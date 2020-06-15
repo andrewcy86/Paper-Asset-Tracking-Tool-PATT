@@ -11,6 +11,8 @@ $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
 $GLOBALS['page'] = $_GET['page'];
 
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
 //$load_styles->addStyles();
@@ -34,11 +36,17 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-
+        
+        <?php		
+        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+        {
+        ?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
-		
+		<?php
+        }
+        ?>
 	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
 
 <?php
@@ -110,7 +118,14 @@ width: 204px;
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
         <thead>
             <tr>
-                <th class="datatable_header"></th>
+                    <?php		
+                    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+                    {
+                    ?>
+                    <th class="datatable_header"></th>
+                    <?php
+                    }
+                    ?>
     	  			<th class="datatable_header">ID</th>
     	  			<th class="datatable_header">Title</th>
     	  			<th class="datatable_header">Date</th>
@@ -163,6 +178,10 @@ jQuery(document).ready(function(){
           data.page = page;
        }
     },
+    <?php		
+    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+    {
+    ?>
     'columnDefs': [
          {
 	     width: '5px',
@@ -181,8 +200,18 @@ jQuery(document).ready(function(){
          'style': 'multi'
       },
       'order': [[1, 'asc']],
+      <?php
+      }
+      ?>	
     'columns': [
+        <?php		
+        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+        {
+        ?>
        { data: 'folderdocinfo_id' },
+       <?php
+        }
+        ?>
        { data: 'folderdocinfo_id_flag' },
        { data: 'title' }, 
        { data: 'date' },
@@ -212,7 +241,10 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
 			dataTable.draw();
 		}
 
-
+    <?php		
+    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+    {
+    ?>
 	jQuery('#wpsc_individual_validation_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -226,6 +258,14 @@ postvarpage : jQuery('#page').val()
       if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -249,6 +289,14 @@ boxid : jQuery('#box_id').val()
       }
    });
 });
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -274,6 +322,10 @@ window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sh
 alert('Please select a folder/file.');
 }
 });
+<?php
+}
+?>
+
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
 	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 

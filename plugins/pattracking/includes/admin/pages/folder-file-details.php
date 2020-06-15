@@ -323,7 +323,7 @@ jQuery('#wpsc_individual_validation_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
 postvarsfolderdocid : jQuery('#doc_id').val(),
-potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
+postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {

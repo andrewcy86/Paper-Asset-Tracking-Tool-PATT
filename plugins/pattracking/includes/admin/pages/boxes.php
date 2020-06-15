@@ -7,6 +7,8 @@ global $wpdb, $current_user, $wpscfunction;
 
 $GLOBALS['id'] = $_GET['id'];
 
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
 //$load_styles->addStyles();
@@ -33,8 +35,14 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Box Labels</button></button>
-		
+<?php
+}
+?>		
   </div>
 
 </div>
@@ -107,7 +115,14 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
                 <th class="datatable_header"></th>
+<?php
+}
+?>
                 <th class="datatable_header">Box ID</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
@@ -152,6 +167,10 @@ jQuery(document).ready(function(){
           data.searchByDigitizationCenter = dc;
        }
     },
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
     	    'columnDefs': [	
          {	
             'targets': 0,	
@@ -159,13 +178,23 @@ jQuery(document).ready(function(){
                'selectRow': true	
             }	
          }
-      ],	
+      ],
       'select': {	
          'style': 'multi'	
-      },	
+      },
       'order': [[1, 'asc']],
+<?php
+}
+?>
     'columns': [
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
        { data: 'box_id' }, 
+<?php
+}
+?>
        { data: 'box_id_flag' }, 
        { data: 'request_id' },
        { data: 'location' },
@@ -231,6 +260,11 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
     }, 0);
 });
 
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -242,6 +276,9 @@ alert('Please select a folder/file.');
 }
 });
 
+<?php
+}
+?>
 });
 
 </script>

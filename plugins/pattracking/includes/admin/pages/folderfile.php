@@ -186,6 +186,7 @@ jQuery(document).ready(function(){
           data.page = page;
        }
     },
+    'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
     <?php		
     if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
     {

@@ -6,6 +6,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $wpdb, $current_user, $wpscfunction;
 
 $GLOBALS['id'] = $_GET['id'];
+$GLOBALS['pid'] = $_GET['pid'];
+$GLOBALS['page'] = $_GET['page'];
+
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
 
 //include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
 //$load_styles = new wppatt_Functions();
@@ -33,6 +37,17 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+        
+        <?php		
+        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+        {
+        ?>
+            <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
+        <?php
+        }
+        ?>
   </div>
 	
 </div>
@@ -97,7 +112,14 @@ color: rgb(255, 255, 255) !important;
 <table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
+                <?php		
+                if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+                {
+                ?>
                 <th class="datatable_header"></th>
+                <?php
+                }
+                ?>
                 <th class="datatable_header">Document/File ID</th>
                 <th class="datatable_header">Request ID</th>
                 <th class="datatable_header">Digitization Center</th>
@@ -107,6 +129,21 @@ color: rgb(255, 255, 255) !important;
         </thead>
     </table>
 <br /><br />
+
+<?php
+$convert_box_id = $wpdb->get_row(
+"SELECT wpqa_wpsc_epa_boxinfo.id
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
+WHERE wpqa_wpsc_epa_boxinfo.box = '" .  $GLOBALS['id'] . "'");
+
+$box_id = $convert_box_id->id;
+?>
+<!--reuse box_id in update_validate and update_unauthorize_destruction-->
+<input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
+<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
+</form>
+
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
 
@@ -134,15 +171,26 @@ jQuery(document).ready(function(){
           var sg = jQuery('#searchGeneric').val();
           var docid = jQuery('#searchByDocID').val();
           var dc = jQuery('#searchByDigitizationCenter').val();
+          
+          var boxid = jQuery('#box_id').val();
+          var page = jQuery('#page').val();
+          var pid = jQuery('#p_id').val();
           // Append to data
           data.searchGeneric = sg;
           data.searchByDocID = docid;
           data.searchByProgramOffice = po;
           data.searchByDigitizationCenter = dc;
+          
+          data.BoxID = boxid;
+          data.PID = pid;
+          data.page = page;
        }
     },
-    
-    'columnDefs': [	
+    <?php		
+    if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+    {
+    ?>
+        'columnDefs': [	
          {	
             'targets': 0,	
             'checkboxes': {	
@@ -154,9 +202,18 @@ jQuery(document).ready(function(){
          'style': 'multi'	
       },	
       'order': [[1, 'asc']],
-    
+    <?php
+    }
+    ?>
     'columns': [
+        <?php		
+        if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+        {
+        ?>
        { data: 'folderdocinfo_id' },
+       <?php
+        }
+        ?>
        { data: 'folderdocinfo_id_flag' }, 
        { data: 'request_id' },
        { data: 'location' },
@@ -194,6 +251,93 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
 			dataTable.draw();
 		}
 
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+//reprint labels button		
+jQuery('#wpsc_individual_label_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+     var arr = {};
+    // Loop through array
+    [].forEach.call(rows_selected, function(inst){
+        var x = inst.split("-")[2].substr(1);
+        // Check if arr already has an index x, if yes then push
+        if(arr.hasOwnProperty(x)) 
+            arr[x].push(inst);
+        // Or else create a new one with inst as the first element.
+        else 
+            arr[x] = [inst];
+    });
+if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
+if (Array.isArray(arr[1]) && arr[1].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+}
+if (Array.isArray(arr[2]) && arr[2].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+} else {
+alert('Please select a folder/file.');
+}
+});
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+//validation button
+jQuery('#wpsc_individual_validation_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
+postvarsfolderdocid : rows_selected.join(","),
+postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
+postvarpage : jQuery('#page').val()
+}, 
+   function (response) {
+      if(!alert(response)){dataTable.ajax.reload( null, false );}
+   });
+});
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+//unauthorize destruction button
+jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
+postvarsfolderdocid : rows_selected.join(","),
+postvarpage : jQuery('#page').val(),
+boxid : jQuery('#box_id').val()
+}, 
+   function (response) {
+      if(!alert(response)){
+       var substring = "removed";
+       dataTable.ajax.reload( null, false );
+       
+       if(response.indexOf(substring) !== -1) {
+       jQuery('#ud_alert').hide();
+       } else {
+       jQuery('#ud_alert').show(); 
+       }
+       
+      }
+   });
+});
+<?php
+}
+?>
 
 jQuery("#searchByDocID").tagsInput({
    'defaultText':'',
@@ -221,7 +365,6 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
          }
     }, 0);
 });
-
 
 });
 

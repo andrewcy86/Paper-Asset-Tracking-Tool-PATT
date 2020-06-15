@@ -19,7 +19,7 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 
 $destruction_reversal = 0;
 
-if($page_id == 'boxdetails') {
+if($page_id == 'boxdetails' || $page_id == 'folderfile') {
 foreach($folderdocid_arr as $key) {    
 $get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
 $get_destruction_val = $get_destruction->unauthorized_destruction;
@@ -92,7 +92,7 @@ echo "All unathorized destruction flags removed";
 }
 }
 
-if ($page_id == 'filedetails') {
+if ($page_id == 'filedetails' || $page_id == 'folderfile') {
 if ($destruction_reversal == 1) {
 echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
 } else {

@@ -5,8 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $wpdb, $current_user, $wpscfunction;
 
-$subfolder_path = site_url( '', 'relative');
-
 $GLOBALS['id'] = $_GET['id'];
 $GLOBALS['pid'] = $_GET['pid'];
 $GLOBALS['page'] = $_GET['page'];
@@ -27,433 +25,306 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 
 
 <div class="bootstrap-iso">
-<?php
-			$folderfile_details = $wpdb->get_row(
-				"SELECT *
-            FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '" . $GLOBALS['id'] . "'"
-			);
-
-            $folderfile_id = $folderfile_details->id;
-            $folderfile_index_level = $folderfile_details->index_level;
-			$folderfile_boxid = $folderfile_details->box_id;
-			$folderfile_title = $folderfile_details->title;
-			$folderfile_date = $folderfile_details->date;
-			$folderfile_author = $folderfile_details->author;
-			$folderfile_record_type = $folderfile_details->record_type;
-			$folderfile_site_name = $folderfile_details->site_name;
-			$folderfile_site_id = $folderfile_details->site_id;
-			$folderfile_close_date = $folderfile_details->close_date;
-			$folderfile_epa_contact_email = $folderfile_details->epa_contact_email;
-			$folderfile_access_type = $folderfile_details->access_type;
-			$folderfile_source_format = $folderfile_details->source_format;
-			$folderfile_rights = $folderfile_details->rights;
-			$folderfile_contract_number = $folderfile_details->contract_number;
-			$folderfile_grant_number = $folderfile_details->grant_number;
-			$folderfile_file_location = $folderfile_details->file_location;
-			$folderfile_file_name = $folderfile_details->file_name;
-			$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
-			$folderfile_essential_record = $folderfile_details->essential_record;
-			$folderfile_validation = $folderfile_details->validation;
-			$folderfile_validation_user = $folderfile_details->validation_user_id;				
-		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
-
-            $user = get_user_by( 'id', $folderfile_validation_user);
-            
-            //split up sql statement to split program office, record schedule, and location
-			/*$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
-
-FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_storage_location, wpqa_wpsc_ticket, wpqa_terms
-
-WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
-AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-
-			$box_boxid = $box_details->box_id;
-			$box_ticketid = $box_details->ticket_id;
-			$box_requestid = $box_details->request_id;
-			$box_rs = $box_details->rsnum;
-			$box_po = $box_details->program_office;
-			$request_id = substr($box_boxid, 0, 7);
-			$box_location = $box_details->location;
-			$box_aisle = $box_details->aisle;
-			$box_bay = $box_details->bay;
-			$box_shelf = $box_details->shelf;
-			$box_position = $box_details->position;*/
-			
-			//id, request_id, ticket_id, box_id
-		    $box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id
-FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket
-WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-            $box_boxid = $box_details->box_id;
-			$box_ticketid = $box_details->ticket_id;
-			$box_requestid = $box_details->request_id;
-			$request_id = substr($box_boxid, 0, 7);
-            
-            //record schedule
-            $box_record_schedule = $wpdb->get_row("SELECT wpqa_epa_record_schedule.Record_Schedule_Number as rsnum FROM wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-            $box_rs = $box_record_schedule->rsnum;
-            
-            //program office
-            $box_program_office = $wpdb->get_row("SELECT wpqa_wpsc_epa_program_office.office_acronym as program_office FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-            $box_po = $box_program_office->program_office;
-            
-            //box location
-            $location = $wpdb->get_row("SELECT wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position
-FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_storage_location, wpqa_terms
-WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-            $box_location = $location->location;
-			$box_aisle = $location->aisle;
-			$box_bay = $location->bay;
-			$box_shelf = $location->shelf;
-			$box_position = $location->position;
-?>
-<style>
-.bootstrap-iso .alert {
-    padding: 8px;
-}
-</style>
-<?php
-			if ($folderfile_index_level == '1') {
-?>
-  <h3>Folder Details</h3>
-<?php
-			} else {
-?>
-  <h3>File Details</h3>
-<?php
-			}
-?>
-
+  
+  <h3>Folder/File Search</h3>
+  
  <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
 
 <div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
   
-	<div class="col-sm-12">
+  <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-    	
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+  
         <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
-    	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
-
-
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
-?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
-<?php
-}
-?>
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
-?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=boxdetails&pid=requestdetails&id=<?php echo $box_boxid ?>';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Box Details</button>
-<?php
-}
-?>
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
-?>
-<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="location.href='admin.php?page=folderfile';" style="<?php echo $action_default_btn_css?>"><i class="fas fa-chevron-circle-left"></"></i> Back to Folder/File Dashboard</button>
-<?php
-}
-?>   	
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
   </div>
 	
 </div>
 
 <div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
-?>
-  <div class="col-sm-8 col-md-9 wpsc_it_body">
-    <div class="row wpsc_it_subject_widget">
-<?php
-if($folderfile_destruction > 0){
-?>
-<div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> This 
-<?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
-is flagged as unauthorized destruction.
-</div>
-<?php
-}
-?>
+	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
-<?php
-if($folderfile_validation > 0){
-echo '
-<div class="alert alert-success" role="alert">
-<span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
-if ($folderfile_index_level == '1') { echo' Folder Validated ('.$user->user_login.').'; }else{ echo' File Validated ('.$user->user_login.').'; }
-echo '</div>';
-} else {
-echo '
-<div class="alert alert-danger" role="alert">
-<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
-if ($folderfile_index_level == '1') { echo' Folder Not Validated.'; }else{ echo' File Not Validated.'; }
-echo '</div>';
-}
-?>
-        
-      <h3>
-	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	<?php if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
-            echo $GLOBALS['id'];
-            ?>]
-		  <?php } ?>		
-		  
-		  <?php 
-		  $agent_permissions = $wpscfunction->get_current_agent_permissions();
-          $agent_permissions['label'];
-		  if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-                {
-			         echo '<a href="#" onclick="wpsc_get_folderfile_editor(' . $folderfile_id . ')"><i class="fas fa-edit fa-xs"></i></a>';
-			    }
-		  ?>
-      </h3>
+							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
+					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters
+								</h4>
+								<hr class="widget_divider">
 
-    </div>
-
-<?php
-			if(!empty($box_po)) {
-			    echo "<strong>Program Office:</strong> " . $box_po . "<br />";
-			}
-			else {
-			    echo "<strong style='color:red'>Program Office: REASSIGN IMMEDIATELY</strong> <br />";
-			}
-            
-            if(!empty($box_rs)) {
-                echo "<strong>Record Schedule:</strong> " . $box_rs ."<br />";
-            }
-            else {
-			    echo "<strong style='color:red'>Record Schedule: REASSIGN IMMEDIATELY</strong> <br />";
-			}
-  
-  			if (!empty($folderfile_title)) {
-				echo "<strong>Title:</strong> " . $folderfile_title . "<br />";
-			}
-
-			if (!empty($folderfile_date)) {
-				echo "<strong>Date:</strong> " . $folderfile_date . "<br />";
-			}
-			if (!empty($folderfile_author)) {
-				echo "<strong>Author:</strong> " . $folderfile_author . "<br />";
-			}
-			if (!empty($folderfile_record_type)) {
-				echo "<strong>Record Type:</strong> " . $folderfile_record_type . "<br />";
-			}
-			if (!empty($folderfile_site_name)) {
-				echo "<strong>Site Name:</strong> " . $folderfile_site_name . "<br />";
-			}
-			if (!empty($folderfile_site_id)) {
-				echo "<strong>Site ID #:</strong> " . $folderfile_site_id . "<br />";
-			}
-			if (!empty($folderfile_close_date)) {
-				echo "<strong>Close Date:</strong> " . $folderfile_close_date . "<br />";
-			}
-			if (!empty($folderfile_epa_contact_email)) {
-				echo "<strong>Contact Email:</strong> " . $folderfile_epa_contact_email . "<br />";
-			}
-			if (!empty($folderfile_access_type)) {
-				echo "<strong>Access Type:</strong> " . $folderfile_access_type . "<br />";
-			}
-			if (!empty($folderfile_source_format)) {
-				echo "<strong>Source Format:</strong> " . $folderfile_source_format . "<br />";
-			}
-			if (!empty($folderfile_rights)) {
-				echo "<strong>Rights:</strong> " . $folderfile_rights . "<br />";
-			}
-			if (!empty($folderfile_contract_number)) {
-				echo "<strong>Contract #:</strong> " . $folderfile_contract_number . "<br />";
-			}
-			if (!empty($folderfile_grant_number)) {
-				echo "<strong>Grant #:</strong> " . $folderfile_grant_number . "<br />";
-			}
-			
-			if($folderfile_essential_record == 1) {
-			    echo "<strong>Essential Record:</strong> Yes <br />";
-			}
-			
-			if (!empty($folderfile_file_location) || !empty($folderfile_file_name)) {
-				echo '<strong>Link to File:</strong> <a href="' . $folderfile_file_location . '" target="_blank">' . $folderfile_file_name . '</a><br />';
-			}
-			
-?>
-<form>
-<input type='hidden' id='doc_id' value='<?php echo $GLOBALS['id']; ?>' />
-<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
-<input type='hidden' id='p_id' value='<?php echo $GLOBALS['p_id']; ?>' />
-</form>
-<!-- Pop-up snippet start -->
-<div id="wpsc_popup_background" style="display:none;"></div>
-<div id="wpsc_popup_container" style="display:none;">
-  <div class="bootstrap-iso">
-    <div class="row">
-      <div id="wpsc_popup" class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
-        <div id="wpsc_popup_title" class="row"><h3>Modal Title</h3></div>
-        <div id="wpsc_popup_body" class="row">I am body!</div>
-        <div id="wpsc_popup_footer" class="row">
-          <button type="button" class="btn wpsc_popup_close"><?php _e('Close','supportcandy');?></button>
-          <button type="button" class="btn wpsc_popup_action"><?php _e('Save Changes','supportcandy');?></button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-<!-- Pop-up snippet end -->
-
+	                            <div class="wpsp_sidebar_labels">
+Enter one or more Document IDs:<br />
+         <input type='text' id='searchByDocID' class="form-control" data-role="tagsinput">
 <br />
+         <?php
+    $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
+    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
+    <datalist id='searchByProgramOfficeList'>
+     <?php foreach($po_array as $key => $value) { ?>
+        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>
+     <?php } ?>
+     </datalist>
+     
+<br /><br />
+        <select id='searchByDigitizationCenter'>
+           <option value=''>-- Select Digitization Center --</option>
+           <option value='East'>East</option>
+           <option value='East CUI'>East CUI</option>
+           <option value='West'>West</option>
+           <option value='West CUI'>West CUI</option>
+         </select>
+
+	                            </div>
+			    		</div>
+	
+	</div>
+	
+  <div class="col-sm-8 col-md-9 wpsc_it_body">
+
+<style>
+.datatable_header {
+background-color: rgb(66, 73, 73) !important; 
+color: rgb(255, 255, 255) !important; 
+}
+
+.bootstrap-tagsinput {
+   width: 100%;
+  }
+
+#searchGeneric {
+    padding: 0 30px !important;
+}
+</style>
+
+<div class="table-responsive" style="overflow-x:auto;">
+<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
+<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
+<br /><br />
+<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
+        <thead>
+            <tr>
+                <th class="datatable_header"></th>
+                <th class="datatable_header">Document/File ID</th>
+                <th class="datatable_header">Request ID</th>
+                <th class="datatable_header">Digitization Center</th>
+                <th class="datatable_header">Program Office</th>
+                <th class="datatable_header">Validation</th>
+            </tr>
+        </thead>
+    </table>
+<br /><br />
+
+<?php
+$convert_box_id = $wpdb->get_row(
+"SELECT wpqa_wpsc_epa_boxinfo.id
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo
+WHERE wpqa_wpsc_epa_boxinfo.box = '" .  $GLOBALS['id'] . "'");
+
+$box_id = $convert_box_id->id;
+?>
+<!--reuse box_id in update_validate and update_unauthorize_destruction-->
+<input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
+<input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
+<input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
+</form>
 
 <link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
 <script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
+  
+  <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
+  <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
+  
 <script>
- jQuery(document).ready(function() {
-     
+
+jQuery(document).ready(function(){
+
+  var dataTable = jQuery('#tbl_templates_boxes').DataTable({
+    'processing': true,
+    'serverSide': true,
+    'serverMethod': 'post',
+    'searching': false, // Remove default Search Control
+    'ajax': {
+       'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/document_processing.php',
+       'data': function(data){
+          // Read values
+          var po_value = jQuery('#searchByProgramOffice').val();
+          var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
+          var sg = jQuery('#searchGeneric').val();
+          var docid = jQuery('#searchByDocID').val();
+          var dc = jQuery('#searchByDigitizationCenter').val();
+          
+          var boxid = jQuery('#box_id').val();
+          var page = jQuery('#page').val();
+          var pid = jQuery('#p_id').val();
+          // Append to data
+          data.searchGeneric = sg;
+          data.searchByDocID = docid;
+          data.searchByProgramOffice = po;
+          data.searchByDigitizationCenter = dc;
+          
+          data.BoxID = boxid;
+          data.PID = pid;
+          data.page = page;
+       }
+    },
+        'columnDefs': [	
+         {	
+            'targets': 0,	
+            'checkboxes': {	
+               'selectRow': true	
+            }	
+         }
+      ],	
+      'select': {	
+         'style': 'multi'	
+      },	
+      'order': [[1, 'asc']],
+    
+    'columns': [
+       { data: 'folderdocinfo_id' },
+       { data: 'folderdocinfo_id_flag' }, 
+       { data: 'request_id' },
+       { data: 'location' },
+       { data: 'acronym' },
+       { data: 'validation' },
+    ]
+  });
+
+  jQuery(document).on('keypress',function(e) {
+    if(e.which == 13) {
+        dataTable.draw();
+    }
+});
+
+  jQuery("#searchByProgramOffice").change(function(){
+    dataTable.draw();
+});
+
+  jQuery("#searchByDigitizationCenter").change(function(){
+    dataTable.draw();
+});
+
+jQuery('#searchGeneric').on('input keyup paste', function () {
+    var hasValue = jQuery.trim(this.value).length;
+    if(hasValue == 0) {
+            dataTable.draw();
+        }
+});
+
+
+		function onAddTag(tag) {
+			dataTable.draw();
+		}
+		function onRemoveTag(tag) {
+			dataTable.draw();
+		}
+
+//reprint labels button		
+jQuery('#wpsc_individual_label_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+     var arr = {};
+    // Loop through array
+    [].forEach.call(rows_selected, function(inst){
+        var x = inst.split("-")[2].substr(1);
+        // Check if arr already has an index x, if yes then push
+        if(arr.hasOwnProperty(x)) 
+            arr[x].push(inst);
+        // Or else create a new one with inst as the first element.
+        else 
+            arr[x] = [inst];
+    });
+if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
+if (Array.isArray(arr[1]) && arr[1].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+}
+if (Array.isArray(arr[2]) && arr[2].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+} else {
+alert('Please select a folder/file.');
+}
+});
+
+//validation button
 jQuery('#wpsc_individual_validation_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{
-postvarsfolderdocid : jQuery('#doc_id').val(),
-potvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
+postvarsfolderdocid : rows_selected.join(","),
+postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
 
+jQuery("#searchByDocID").tagsInput({
+   'defaultText':'',
+   'onAddTag': onAddTag,
+   'onRemoveTag': onRemoveTag,
+   'width':'100%'
+});
+
+//unauthorize destruction button
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
-postvarsfolderdocid : jQuery('#doc_id').val(),
-postvarpage : jQuery('#page').val()
+postvarsfolderdocid : rows_selected.join(","),
+postvarpage : jQuery('#page').val(),
+boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+      if(!alert(response)){
+       var substring = "removed";
+       dataTable.ajax.reload( null, false );
+       
+       if(response.indexOf(substring) !== -1) {
+       jQuery('#ud_alert').hide();
+       } else {
+       jQuery('#ud_alert').show(); 
+       }
+       
+      }
    });
 });
 
-	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-has-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets').addClass('wp-menu-open'); 
-	 jQuery('#toplevel_page_wpsc-tickets a:first').removeClass('wp-not-current-submenu');
-	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-has-current-submenu'); 
-	 jQuery('#toplevel_page_wpsc-tickets a:first').addClass('wp-menu-open');
-	 jQuery('#menu-dashboard').removeClass('current');
-	 jQuery('#menu-dashboard a:first').removeClass('current');
+jQuery("#searchByDocID_tag").on('paste',function(e){
+    var element=this;
+    setTimeout(function () {
+        var text = jQuery(element).val();
+        var target=jQuery("#searchByDocID");
+        var tags = (text).split(/[ ,]+/);
+        for (var i = 0, z = tags.length; i<z; i++) {
+              var tag = jQuery.trim(tags[i]);
+              if (!target.tagExist(tag)) {
+                    target.addTag(tag);
+              }
+              else
+              {
+                  jQuery("#searchByDocID_tag").val('');
+              }
+                
+         }
+    }, 0);
+});
 
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
-?>
-	 jQuery('.wp-first-item').addClass('current'); 
-<?php
-}
-?>
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'boxsearch') {
-?>
-	 jQuery('.wp-submenu li:nth-child(3)').addClass('current');
-<?php
-}
-?>
-<?php
-if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'docsearch') {
-?>
-	 jQuery('.wp-submenu li:nth-child(4)').addClass('current');
-<?php
-}
-?>
-} );
+});
 
-		function wpsc_get_folderfile_editor(doc_id){
-<?php
-			$box_il_val = '';
-			if ($box_il == '1') {
-?>
-		  wpsc_modal_open('Edit Folder Metadata');
-<?php
-			} else {
-?>
-		  wpsc_modal_open('Edit File Metadata');
-<?php
-			}
-?>
-
-		  var data = {
-		    action: 'wpsc_get_folderfile_editor',
-		    doc_id: doc_id
-		  };
-		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
-		    var response = JSON.parse(response_str);
-		    jQuery('#wpsc_popup_body').html(response.body);
-		    jQuery('#wpsc_popup_footer').html(response.footer);
-		    jQuery('#wpsc_cat_name').focus();
-		  });  
-		}
 </script>
 
 
   </div>
  
-	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
 
-							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-arrow-circle-right"></i> Location
-					      </h4>
-								<hr class="widget_divider">
-								<div class="wpsp_sidebar_labels"><strong>Request ID:</strong> 
-	                            <?php 
-	                                echo "<a href='admin.php?page=wpsc-tickets&id=" . $box_requestid . "'>" . $box_requestid . "</a>";
-	                            ?>
-	                            </div>
-	                            <div class="wpsp_sidebar_labels"><strong>Box ID:</strong> 
-	                            <?php 
-	                            if (!empty($box_boxid)) {
-	                                if ($GLOBALS['pid'] == 'requestdetails') {
-	                                echo "<a href='admin.php?pid=requestdetails&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
-	                                }
-	                                if ($GLOBALS['pid'] == 'boxsearch') {
-	                                echo "<a href='admin.php?pid=boxsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
-	                                }
-	                                if ($GLOBALS['pid'] == 'docsearch') {
-	                                echo "<a href='admin.php?pid=docsearch&page=boxdetails&id=" . $box_boxid . "'>" . $box_boxid . "</a>";
-	                                }
-	                                } ?>
-	                            </div>
-	                            <?php
-	                            //if digitization_center field is empty, will not display location on front end
-	                            if(!empty($box_location)) {
-	                            echo '<div class="wpsp_sidebar_labels"><strong>Digitization Center: </strong>';
-	                            echo $box_location . "<br />";
-	                                //if aisle/bay/shelf/position <= 0, does not display location on front end
-    	                            if(!($box_aisle <= 0 && $box_bay <= 0 && $box_shelf <= 0 && $box_position <= 0))
-    								{
-        								echo '<div class="wpsp_sidebar_labels"><strong>Aisle: </strong>';
-        	                            echo $box_aisle . "<br />";
-        	                            echo '</div>';
-        								echo '<div class="wpsp_sidebar_labels"><strong>Bay: </strong>';
-        	                            echo $box_bay . "<br />";
-        	                            echo '</div>';
-        								echo '<div class="wpsp_sidebar_labels"><strong>Shelf: </strong>';
-        	                            echo $box_shelf . "<br />";
-        								echo '</div>';
-        								echo '<div class="wpsp_sidebar_labels"><strong>Position: </strong>';
-        	                            echo $box_position . "<br />";
-        	                            echo '</div>';
-    								}
-	                            }
-	                            ?> 
-	                            </div>
-			    		</div>
-	
-	</div>
-<?php
-} else {
 
-echo '<span style="padding-left: 10px">Please pass a valid Folder/File ID</span>';
-
-}
-?>
 </div>
 </div>
 </div>

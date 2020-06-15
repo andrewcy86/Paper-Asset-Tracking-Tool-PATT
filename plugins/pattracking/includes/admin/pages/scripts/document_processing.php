@@ -76,22 +76,20 @@ $totalRecordwithFilter = $records['allcount'];
 $docQuery = "SELECT 
 a.folderdocinfo_id as folderdocinfo_id,
 CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>',
-
 CASE WHEN(unauthorized_destruction = 1)  THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
 ELSE ''
 END) as folderdocinfo_id_flag,
 CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym,
 
 CONCAT(
-CASE WHEN (validation = 0) THEN '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
-WHEN (validation = 1) THEN CONCAT('<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> ',' (',(user_nicename),')')
-ELSE ''
-END
-) as validation
+CASE 
+WHEN validation = 1 THEN CONCAT('<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> ',' (',(user_nicename),')')
+ELSE '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
+END) as validation
 
 FROM wpqa_wpsc_epa_folderdocinfo as a
 
-INNER JOIN wpqa_users as u ON a.validation_user_id = u.ID
+LEFT JOIN wpqa_users as u ON a.validation_user_id = u.ID
 INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
 INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
 INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id

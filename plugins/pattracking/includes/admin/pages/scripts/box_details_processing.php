@@ -75,7 +75,12 @@ $row_limit = " limit ".$row.",".$rowperpage;
 }
 $boxQuery = "SELECT 
 CONCAT(
-'<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\">',folderdocinfo_id,'</a>',
+
+CASE WHEN (SELECT wpqa_wpsc_epa_boxinfo.box_destroyed FROM wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id) > 0 
+THEN CONCAT('<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',folderdocinfo_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+ELSE CONCAT('<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\">',folderdocinfo_id,'</a>')
+END,
+
 CASE 
 WHEN (unauthorized_destruction = 1 AND freeze = 1) THEN CONCAT(' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>', ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>')
 WHEN(freeze = 1)  THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'

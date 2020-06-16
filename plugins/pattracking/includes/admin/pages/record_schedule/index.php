@@ -51,7 +51,7 @@
                                </tr>  
                                ';  
                           }  
-                          //CloseCon($conn);
+                          CloseCon($conn);
                           ?>  
                      </table>  
                 </div>  

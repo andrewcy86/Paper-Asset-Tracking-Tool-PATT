@@ -629,8 +629,15 @@ jQuery( ".wpsc_search_autocomplete" ).autocomplete({
 ADD ABOVE
 ```
 //PATT BEGIN
+
+jQuery( '#tf_request_id .wpsc_search_autocomplete' ).after( "<sub>Use a barcode reader or type a Request ID and <strong>press enter.</strong></sub>" );
+
+jQuery( '#tf_request_id .wpsc_search_autocomplete' ).autocomplete({
+			      disabled: true
+			        });
+			        
 jQuery(function() {
-  jQuery('.wpsc_search_autocomplete').on('keyup', function(event) {
+  jQuery('#tf_request_id .wpsc_search_autocomplete').on('keyup', function(event) {
     var url_string = jQuery(this).val();
     var matches = /id=([^&#=]*)/.exec(url_string);
     if (matches !== null) {
@@ -640,18 +647,12 @@ jQuery(function() {
     }
     if (url_string.includes('id=')) {
       jQuery(this).val(paramid);
-      jQuery('.ui-autocomplete').css('padding', '0px');
-      jQuery('.ui-autocomplete').css('border', '0px');
-      jQuery('.ui-menu-item').hide();
     }
 
   })
 });
 
-		jQuery('.wpsc_search_autocomplete').on('keypress', function(e) {
-			   jQuery('.ui-autocomplete').css('padding', '2px');
-       		   jQuery('.ui-autocomplete').css('border', '1px solid #aaaaaa');
-               jQuery('.ui-menu-item').show();
+		jQuery('#tf_request_id .wpsc_search_autocomplete').on('keypress', function(e) {
 			if (e.keyCode == 13) {
 			    e.preventDefault();
                 e.stopPropagation();
@@ -659,10 +660,6 @@ jQuery(function() {
     var matches = /^\d{7}$/.exec(paramid);
 
     if (matches !== null) {
-      //jQuery(this).val(paramid);
-      jQuery('.ui-autocomplete').css('padding', '0px');
-      jQuery('.ui-autocomplete').css('border', '0px');
-      jQuery('.ui-menu-item').hide();
 			        var html_str = '<li class="wpsp_filter_display_element">'
 															+'<div class="flex-container">'
 																+'<div class="wpsp_filter_display_text">'

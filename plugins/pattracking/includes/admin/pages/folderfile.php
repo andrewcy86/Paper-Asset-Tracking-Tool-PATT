@@ -44,6 +44,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
         ?>
             <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+    		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze</button></button>
     		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
         <?php
         }
@@ -302,6 +303,38 @@ postvarpage : jQuery('#page').val()
 }, 
    function (response) {
       if(!alert(response)){dataTable.ajax.reload( null, false );}
+   });
+});
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+//freeze button
+jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{
+postvarsfolderdocid : rows_selected.join(","),
+postvarpage : jQuery('#page').val(),
+boxid : jQuery('#box_id').val()
+}, 
+   function (response) {
+      if(!alert(response)){
+       var substring = "removed";
+       dataTable.ajax.reload( null, false );
+       
+       if(response.indexOf(substring) !== -1) {
+       jQuery('#ud_alert').hide();
+       } else {
+       jQuery('#ud_alert').show(); 
+       }
+       
+      }
    });
 });
 <?php

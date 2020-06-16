@@ -58,6 +58,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			$folderfile_validation = $folderfile_details->validation;
 			$folderfile_validation_user = $folderfile_details->validation_user_id;				
 		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
+		    
+		    $folderfile_freeze = $folderfile_details->freeze;
 
             $user = get_user_by( 'id', $folderfile_validation_user);
             
@@ -138,6 +140,7 @@ WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AN
         ?>
         <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
     	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+    	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze</button></button>
         <?php
         }
         ?>	
@@ -168,6 +171,7 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id']) &&
 
 <div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
 
+<!--only appears if document is marked as unauthorized destruction-->
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 ?>
@@ -177,9 +181,22 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}-[0-9]{2}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 if($folderfile_destruction > 0){
 ?>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> This 
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> This 
 <?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
 is flagged as unauthorized destruction.
+</div>
+<?php
+}
+?>
+
+<!--only appears if document is marked as frozen-->
+<?php
+if($folderfile_freeze > 0){
+?>
+<div class="alert alert-info" role="alert">
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> This 
+<?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
+is marked as frozen.
 </div>
 <?php
 }
@@ -342,6 +359,25 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
+postvarsfolderdocid : jQuery('#doc_id').val(),
+postvarpage : jQuery('#page').val()
+}, 
+   function (response) {
+      if(!alert(response)){window.location.reload();}
+      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+   });
+});
+<?php
+}
+?>	
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{
 postvarsfolderdocid : jQuery('#doc_id').val(),
 postvarpage : jQuery('#page').val()
 }, 

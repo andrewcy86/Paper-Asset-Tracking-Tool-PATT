@@ -1,267 +1,124 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit; // Exit if accessed directly
-}
-
-global $wpdb, $current_user, $wpscfunction;
-
-$GLOBALS['id'] = $_GET['id'];
-
-//include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
-//$load_styles = new wppatt_Functions();
-//$load_styles->addStyles();
-
-$general_appearance = get_option('wpsc_appearance_general_settings');
-
-$action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_btn_action_bar_bg_color'].' !important;color:'.$general_appearance['wpsc_default_btn_action_bar_text_color'].' !important;';
-
-$wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_page');
-
-$edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_bg_color'].' !important;color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_text_color'].' !important;border-color:'.$wpsc_appearance_individual_ticket_page['wpsc_edit_btn_border_color'].'!important';
-
-?>
-
-
-<div class="bootstrap-iso">
-  
-  <h3>Folder/File Search</h3>
-  
- <div id="wpsc_tickets_container" class="row" style="border-color:#1C5D8A !important;">
-
-<div class="row wpsc_tl_action_bar" style="background-color:<?php echo $general_appearance['wpsc_action_bar_color']?> !important;">
-  
-  <div class="col-sm-12">
-    	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
-  
-        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
-  </div>
+$WP_PATH = implode("/", (explode("/", $_SERVER["PHP_SELF"], -8)));
+require_once($_SERVER['DOCUMENT_ROOT'].$WP_PATH.'/wp-config.php');
 	
-</div>
+$host = DB_HOST; /* Host name */
+$user = DB_USER; /* User */
+$password = DB_PASSWORD; /* Password */
+$dbname = DB_NAME; /* Database name */
 
-<div class="row" style="background-color:<?php echo $general_appearance['wpsc_bg_color']?> !important;color:<?php echo $general_appearance['wpsc_text_color']?> !important;">
-
-	<div class="col-sm-4 col-md-3 wpsc_sidebar individual_ticket_widget">
-
-							<div class="row" id="wpsc_status_widget" style="background-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_bg_color']?> !important;color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_text_color']?> !important;border-color:<?php echo $wpsc_appearance_individual_ticket_page['wpsc_ticket_widgets_border_color']?> !important;">
-					      <h4 class="widget_header"><i class="fa fa-filter"></i> Filters
-								</h4>
-								<hr class="widget_divider">
-
-	                            <div class="wpsp_sidebar_labels">
-Enter one or more Document IDs:<br />
-         <input type='text' id='searchByDocID' class="form-control" data-role="tagsinput">
-<br />
-         <?php
-    $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
-    <datalist id='searchByProgramOfficeList'>
-     <?php foreach($po_array as $key => $value) { ?>
-        <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>
-     <?php } ?>
-     </datalist>
-     
-<br /><br />
-        <select id='searchByDigitizationCenter'>
-           <option value=''>-- Select Digitization Center --</option>
-           <option value='East'>East</option>
-           <option value='East CUI'>East CUI</option>
-           <option value='West'>West</option>
-           <option value='West CUI'>West CUI</option>
-         </select>
-
-	                            </div>
-			    		</div>
-	
-	</div>
-	
-  <div class="col-sm-8 col-md-9 wpsc_it_body">
-
-<style>
-.datatable_header {
-background-color: rgb(66, 73, 73) !important; 
-color: rgb(255, 255, 255) !important; 
+$con = mysqli_connect($host, $user, $password,$dbname);
+// Check connection
+if (!$con) {
+  die("Connection failed: " . mysqli_connect_error());
 }
 
-.bootstrap-tagsinput {
-   width: 100%;
-  }
+## Read value
+$draw = $_POST['draw'];
+$row = $_POST['start'];
+$rowperpage = $_POST['length']; // Rows display per page
+$columnIndex = $_POST['order'][0]['column']; // Column index
+$columnName = $_POST['columns'][$columnIndex]['data']; // Column name
+$columnSortOrder = $_POST['order'][0]['dir']; // asc or desc
+$searchValue = $_POST['search']['value']; // Search value
 
-#searchGeneric {
-    padding: 0 30px !important;
+## Custom Field value
+$searchByDocID = str_replace(",", "|", $_POST['searchByDocID']);
+$searchByProgramOffice = $_POST['searchByProgramOffice'];
+$searchByDigitizationCenter = $_POST['searchByDigitizationCenter'];
+$searchGeneric = $_POST['searchGeneric'];
+
+## Search 
+$searchQuery = " ";
+if($searchByDocID != ''){
+   $searchQuery .= " and (a.folderdocinfo_id REGEXP '^(".$searchByDocID.")$' ) ";
 }
-</style>
 
-<div class="table-responsive" style="overflow-x:auto;">
-<input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
-<i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
-<br /><br />
-<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
-        <thead>
-            <tr>
-                <th class="datatable_header"></th>
-                <th class="datatable_header">Document/File ID</th>
-                <th class="datatable_header">Request ID</th>
-                <th class="datatable_header">Digitization Center</th>
-                <th class="datatable_header">Program Office</th>
-                <th class="datatable_header">Validation</th>
-            </tr>
-        </thead>
-    </table>
-<br /><br />
-<link rel="stylesheet" type="text/css" href="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.css';?>"/>
-<script type="text/javascript" src="<?php echo WPSC_PLUGIN_URL.'asset/lib/DataTables/datatables.min.js';?>"></script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.css" crossorigin="anonymous">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-tagsinput/1.3.3/jquery.tagsinput.js" crossorigin="anonymous"></script>
-  
-  <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
-  <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
-  
-<script>
-
-jQuery(document).ready(function(){
-
-  var dataTable = jQuery('#tbl_templates_boxes').DataTable({
-    'processing': true,
-    'serverSide': true,
-    'serverMethod': 'post',
-    'searching': false, // Remove default Search Control
-    'ajax': {
-       'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/document_processing.php',
-       'data': function(data){
-          // Read values
-          var po_value = jQuery('#searchByProgramOffice').val();
-          var po = jQuery('#searchByProgramOfficeList [value="' + po_value + '"]').data('value');
-          var sg = jQuery('#searchGeneric').val();
-          var docid = jQuery('#searchByDocID').val();
-          var dc = jQuery('#searchByDigitizationCenter').val();
-          // Append to data
-          data.searchGeneric = sg;
-          data.searchByDocID = docid;
-          data.searchByProgramOffice = po;
-          data.searchByDigitizationCenter = dc;
-       }
-    },
-        'columnDefs': [	
-         {	
-            'targets': 0,	
-            'checkboxes': {	
-               'selectRow': true	
-            }	
-         }
-      ],	
-      'select': {	
-         'style': 'multi'	
-      },	
-      'order': [[1, 'asc']],
-    
-    'columns': [
-       { data: 'folderdocinfo_id' },
-       { data: 'folderdocinfo_id_flag' }, 
-       { data: 'request_id' },
-       { data: 'location' },
-       { data: 'acronym' },
-       { data: 'validation' },
-    ]
-  });
-
-  jQuery(document).on('keypress',function(e) {
-    if(e.which == 13) {
-        dataTable.draw();
-    }
-});
-
-  jQuery("#searchByProgramOffice").change(function(){
-    dataTable.draw();
-});
-
-  jQuery("#searchByDigitizationCenter").change(function(){
-    dataTable.draw();
-});
-
-jQuery('#searchGeneric').on('input keyup paste', function () {
-    var hasValue = jQuery.trim(this.value).length;
-    if(hasValue == 0) {
-            dataTable.draw();
-        }
-});
-
-
-		function onAddTag(tag) {
-			dataTable.draw();
-		}
-		function onRemoveTag(tag) {
-			dataTable.draw();
-		}
-
-//reprint labels button		
-jQuery('#wpsc_individual_label_btn').on('click', function(e){
-     var form = this;
-     var rows_selected = dataTable.column(0).checkboxes.selected();
-     var arr = {};
-    // Loop through array
-    [].forEach.call(rows_selected, function(inst){
-        var x = inst.split("-")[2].substr(1);
-        // Check if arr already has an index x, if yes then push
-        if(arr.hasOwnProperty(x)) 
-            arr[x].push(inst);
-        // Or else create a new one with inst as the first element.
-        else 
-            arr[x] = [inst];
-    });
-if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
-if (Array.isArray(arr[1]) && arr[1].length) {
-window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+if($searchByProgramOffice != ''){
+   $searchQuery .= " and (c.office_acronym='".$searchByProgramOffice."') ";
 }
-if (Array.isArray(arr[2]) && arr[2].length) {
-window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+
+if($searchByDigitizationCenter != ''){
+   $searchQuery .= " and (f.name ='".$searchByDigitizationCenter."') ";
 }
-} else {
-alert('Please select a folder/file.');
+
+if($searchGeneric != ''){
+   $searchQuery .= " and (a.folderdocinfo_id like '%".$searchGeneric."%' or 
+      b.request_id like '%".$searchGeneric."%' or 
+      f.name like '%".$searchGeneric."%' or
+      c.office_acronym like '%".$searchGeneric."%') ";
 }
-});
 
+if($searchValue != ''){
+   $searchQuery .= " and (a.folderdocinfo_id like '%".$searchValue."%' or 
+      b.request_id like '%".$searchValue."%' or 
+      f.name like '%".$searchValue."%' or
+      c.office_acronym like '%".$searchValue."%') ";
+}
 
-jQuery("#searchByDocID").tagsInput({
-   'defaultText':'',
-   'onAddTag': onAddTag,
-   'onRemoveTag': onRemoveTag,
-   'width':'100%'
-});
+## Total number of records without filtering
+$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_folderdocinfo");
+$records = mysqli_fetch_assoc($sel);
+$totalRecords = $records['allcount'];
 
-jQuery("#searchByDocID_tag").on('paste',function(e){
-    var element=this;
-    setTimeout(function () {
-        var text = jQuery(element).val();
-        var target=jQuery("#searchByDocID");
-        var tags = (text).split(/[ ,]+/);
-        for (var i = 0, z = tags.length; i<z; i++) {
-              var tag = jQuery.trim(tags[i]);
-              if (!target.tagExist(tag)) {
-                    target.addTag(tag);
-              }
-              else
-              {
-                  jQuery("#searchByDocID_tag").val('');
-              }
-                
-         }
-    }, 0);
-});
+## Total number of records with filtering
+$sel = mysqli_query($con,"select count(a.folderdocinfo_id) as allcount FROM wpqa_wpsc_epa_folderdocinfo as a
+INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN wpqa_wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN wpqa_terms f ON f.term_id = e.digitization_center
+WHERE 1 ".$searchQuery);
+$records = mysqli_fetch_assoc($sel);
+$totalRecordwithFilter = $records['allcount'];
 
+## Fetch records
+$docQuery = "SELECT 
+a.folderdocinfo_id as folderdocinfo_id,
+CONCAT('<a href=admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'>',a.folderdocinfo_id,'</a>',
+CASE 
+WHEN (unauthorized_destruction = 1 AND freeze = 1) THEN CONCAT(' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>', ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>')
+WHEN(freeze = 1)  THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'
+WHEN (unauthorized_destruction = 1) THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
+ELSE ''
+END) as folderdocinfo_id_flag,
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'</a>') as request_id, f.name as location, c.office_acronym as acronym,
 
-});
+CONCAT(
+CASE 
+WHEN validation = 1 THEN CONCAT('<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> ',' (',(user_nicename),')')
+ELSE '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
+END) as validation
 
-</script>
+FROM wpqa_wpsc_epa_folderdocinfo as a
 
+LEFT JOIN wpqa_users as u ON a.validation_user_id = u.ID
+INNER JOIN wpqa_wpsc_epa_boxinfo as d ON a.box_id = d.id
+INNER JOIN wpqa_wpsc_epa_storage_location as e ON d.storage_location_id = e.id
+INNER JOIN wpqa_wpsc_ticket as b ON d.ticket_id = b.id
+INNER JOIN wpqa_wpsc_epa_program_office as c ON d.program_office_id = c.office_code
+INNER JOIN wpqa_terms f ON f.term_id = e.digitization_center
+WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;
+$docRecords = mysqli_query($con, $docQuery);
+$data = array();
 
-  </div>
- 
+while ($row = mysqli_fetch_assoc($docRecords)) {
+   $data[] = array(
+     "folderdocinfo_id"=>$row['folderdocinfo_id'],
+     "folderdocinfo_id_flag"=>$row['folderdocinfo_id_flag'],
+     "request_id"=>$row['request_id'],
+     "location"=>$row['location'],
+     "acronym"=>$row['acronym'],
+     "validation"=>$row['validation']
+   );
+}
 
+## Response
+$response = array(
+  "draw" => intval($draw),
+  "iTotalRecords" => $totalRecords,
+  "iTotalDisplayRecords" => $totalRecordwithFilter,
+  "aaData" => $data
+);
 
-</div>
-</div>
-</div>
+echo json_encode($response);

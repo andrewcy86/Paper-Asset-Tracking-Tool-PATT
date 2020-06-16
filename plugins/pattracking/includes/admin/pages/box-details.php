@@ -43,6 +43,7 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
         ?>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze</button></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Labels</button></button>
 		<?php
         }
@@ -80,15 +81,28 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id'])) {
+
+$convert_box_id = $wpdb->get_row(
+"SELECT id, box_destroyed
+FROM wpqa_wpsc_epa_boxinfo
+WHERE box_id = '" .  $GLOBALS['id'] . "'");
+
+$box_id = $convert_box_id->id;
+$box_destroyed = $convert_box_id->box_destroyed;
 ?>
 
   <div class="col-sm-8 col-md-9 wpsc_it_body">
     <div class="row wpsc_it_subject_widget">
       <h3>
-	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-        	[Box ID # <?php
-            echo $GLOBALS['id']; ?>]
-		  <?php } ?>		
+	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){
+	 	 if($box_destroyed > 0) {
+	 	 ?>
+        	<span style="color:#FF0000 !important;"><strike>[Box ID # <?php
+            echo $GLOBALS['id']; ?>]</strike></span> <span style="font-size: .8em; color:#FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>
+		  <?php } else { ?>		
+	        [Box ID # <?php
+            echo $GLOBALS['id']; ?>]	  
+		  <?php }} ?>	
       </h3>
 
     </div>
@@ -136,14 +150,7 @@ width: 204px;
     </table>
 </div>
 <br /><br />
-<?php
-$convert_box_id = $wpdb->get_row(
-"SELECT id
-FROM wpqa_wpsc_epa_boxinfo
-WHERE box_id = '" .  $GLOBALS['id'] . "'");
 
-$box_id = $convert_box_id->id;
-?>
 <input type='hidden' id='box_id' value='<?php echo $box_id; ?>' />
 <input type='hidden' id='page' value='<?php echo $GLOBALS['page']; ?>' />
 <input type='hidden' id='p_id' value='<?php echo $GLOBALS['pid']; ?>' />
@@ -246,6 +253,7 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
     if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
     {
     ?>
+    //validation button
 	jQuery('#wpsc_individual_validation_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -267,6 +275,7 @@ postvarpage : jQuery('#page').val()
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
+//unauthorized destruction button
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -294,10 +303,43 @@ boxid : jQuery('#box_id').val()
 }
 ?>
 
+//freeze button
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
+jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{
+postvarsfolderdocid : rows_selected.join(","),
+postvarpage : jQuery('#page').val(),
+boxid : jQuery('#box_id').val()
+}, 
+   function (response) {
+      if(!alert(response)){
+       var substring = "removed";
+       dataTable.ajax.reload( null, false );
+       
+       if(response.indexOf(substring) !== -1) {
+       jQuery('#ud_alert').hide();
+       } else {
+       jQuery('#ud_alert').show(); 
+       }
+       
+      }
+   });
+});
+<?php
+}
+?>
+
+<?php		
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+//reprint labels button
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();

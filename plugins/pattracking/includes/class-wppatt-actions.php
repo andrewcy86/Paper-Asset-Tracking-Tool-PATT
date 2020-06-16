@@ -16,6 +16,9 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     function load_actions() {
       
       // PATT Log Entry
+      add_action( 'wpppatt_after_freeze', array($this,'freeze_document'), 10, 2 );
+      add_action( 'wpppatt_after_freeze_unflag', array($this,'unfreeze_document'), 10, 2 );
+      
       add_action( 'wpppatt_after_unauthorized_destruction', array($this,'unauthorized_destruction'), 10, 2 );
       add_action( 'wpppatt_after_unauthorized_destruction_unflag', array($this,'unauthorized_destruction_unflag'), 10, 2 );
       add_action( 'wpppatt_after_shelf_location', array($this,'shelf_location'), 10, 3 );   
@@ -28,6 +31,40 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       
       add_action( 'wpppatt_after_box_metadata', array($this,'box_metadata'), 10, 3 );
       add_action( 'wpppatt_after_folder_doc_metadata', array($this,'folder_doc_metadata'), 10, 3 );
+    }
+    
+    // Freeze document
+    function freeze_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s froze Document ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s frozen','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // Reverse freeze
+    function unfreeze_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s unfroze Document ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s has been unfrozen','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
     }
     
     // Change destruction

@@ -98,6 +98,7 @@ width: 204px;
 }
 </style>
 <?php
+//unauthorized destruction notification
 $box_details = $wpdb->get_row(
 "SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
 FROM wpqa_wpsc_epa_boxinfo
@@ -115,6 +116,24 @@ if($unauthorized_destruction_count > 0){
 <?php
 }
 ?>
+
+<?php
+//freeze notification
+$box_freeze = $wpdb->get_row("SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.freeze = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+$freeze_count = $box_freeze->count;
+
+if($freeze_count > 0) {
+?>
+<div class="alert alert-info" role="alert">
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents related to this request contains a frozen document.
+</div>
+<?php
+}
+?>
+
 <h4>Boxes Related to Request</h4>
 
 <?php

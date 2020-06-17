@@ -249,7 +249,8 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
 			dataTable.draw();
 		}
 
-    <?php		
+    <?php
+    // BEGIN ADMIN BUTTONS
     if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
     {
     ?>
@@ -267,14 +268,7 @@ postvarpage : jQuery('#page').val()
       if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
-<?php
-}
-?>
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 //unauthorized destruction button
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
@@ -299,15 +293,10 @@ boxid : jQuery('#box_id').val()
       }
    });
 });
-<?php
-}
-?>
+
 
 //freeze button
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
+
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -331,14 +320,7 @@ boxid : jQuery('#box_id').val()
       }
    });
 });
-<?php
-}
-?>
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 //reprint labels button
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
@@ -365,8 +347,10 @@ window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sh
 alert('Please select a folder/file.');
 }
 });
+
 <?php
 }
+//END ADMIN BUTTONS
 ?>
 
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 

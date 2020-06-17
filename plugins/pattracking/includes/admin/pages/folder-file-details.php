@@ -336,7 +336,8 @@ echo '</div>';
 <script>
  jQuery(document).ready(function() {
 
-<?php		
+<?php
+// BEGIN ADMIN BUTTONS
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
@@ -352,14 +353,7 @@ postvarpage : jQuery('#page').val()
       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
    });
 });
-<?php
-}
-?>	
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_unauthorize_destruction.php',{
@@ -371,14 +365,7 @@ postvarpage : jQuery('#page').val()
       window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
    });
 });
-<?php
-}
-?>	
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_freeze.php',{
@@ -392,6 +379,7 @@ postvarpage : jQuery('#page').val()
 });
 <?php
 }
+// END ADMIN BUTTONS
 ?>	
 
 	 jQuery('#toplevel_page_wpsc-tickets').removeClass('wp-not-current-submenu'); 

@@ -11,7 +11,7 @@ if(
 
 
 $boxid_string = $_POST['postvarsboxid'];
-$boxid_arr = explode (",", $folderdocid_string);  
+$boxid_arr = explode (",", $boxid_string);  
 $page_id = $_POST['postvarpage'];
 
 $table_name = 'wpqa_wpsc_epa_boxinfo';

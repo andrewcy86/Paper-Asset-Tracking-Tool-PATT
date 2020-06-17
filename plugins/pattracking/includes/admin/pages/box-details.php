@@ -121,7 +121,11 @@ width: 204px;
 </style>
 
 <div class="alert alert-danger" role="alert" id="ud_alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents within this box contains a unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents within this box contains a unauthorized destruction flag.
+</div>
+
+<div class="alert alert-info" role="alert" id="freeze_alert">
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents within this box contains a frozen folder/file.
 </div>
 
 <div class="table-responsive" style="overflow-x:auto;">
@@ -296,7 +300,6 @@ boxid : jQuery('#box_id').val()
 
 
 //freeze button
-
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -312,9 +315,9 @@ boxid : jQuery('#box_id').val()
        dataTable.ajax.reload( null, false );
        
        if(response.indexOf(substring) !== -1) {
-       jQuery('#ud_alert').hide();
+       jQuery('#freeze_alert').hide();
        } else {
-       jQuery('#ud_alert').show(); 
+       jQuery('#freeze_alert').show(); 
        }
        
       }
@@ -401,6 +404,22 @@ jQuery('#ud_alert').hide();
 }
 ?>
 
+<?php
+//freeze notification
+$box_freeze = $wpdb->get_row(
+"SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.freeze = 1 AND wpqa_wpsc_epa_boxinfo.box_id = '" .  $GLOBALS['id'] . "'"
+);
+$freeze_count = $box_freeze->count;
+
+if($freeze_count == 0) {
+?>
+jQuery('#freeze_alert').hide();
+<?php
+}
+?>
 
 });
        

@@ -183,7 +183,7 @@ if($folderfile_destruction > 0){
 ?>
 <div class="alert alert-danger" role="alert">
 <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> This 
-<?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
+<?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is flagged as unauthorized destruction.
 </div>
 <?php
@@ -196,7 +196,7 @@ if($folderfile_freeze > 0){
 ?>
 <div class="alert alert-info" role="alert">
 <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> This 
-<?php if ($folderfile_index_level == '1') {?>Folder <?php }else{ ?>File <?php } ?>
+<?php if ($folderfile_index_level == '1') {?>folder <?php }else{ ?>file <?php } ?>
 is marked as frozen.
 </div>
 <?php

@@ -208,13 +208,13 @@ if($folderfile_validation > 0){
 echo '
 <div class="alert alert-success" role="alert">
 <span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
-if ($folderfile_index_level == '1') { echo' Folder Validated ('.$user->user_login.').'; }else{ echo' File Validated ('.$user->user_login.').'; }
+if ($folderfile_index_level == '1') { echo' Folder validated ('.$user->user_login.').'; }else{ echo' File validated ('.$user->user_login.').'; }
 echo '</div>';
 } else {
 echo '
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Not Validated"></i></span>';
-if ($folderfile_index_level == '1') { echo' Folder Not Validated.'; }else{ echo' File Not Validated.'; }
+<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="not validated"></i></span>';
+if ($folderfile_index_level == '1') { echo' Folder not validated.'; }else{ echo' File not validated.'; }
 echo '</div>';
 }
 ?>

@@ -84,12 +84,13 @@ AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
 			$box_position = $box_details->position;*/
 			
 			//id, request_id, ticket_id, box_id
-		    $box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id
+		    $box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_destroyed, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id
 FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket
 WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
             $box_boxid = $box_details->box_id;
 			$box_ticketid = $box_details->ticket_id;
 			$box_requestid = $box_details->request_id;
+			$box_destruction = $box_details->box_destroyed;
 			$request_id = substr($box_boxid, 0, 7);
             
             //record schedule
@@ -220,9 +221,12 @@ echo '</div>';
         
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
+	 	 <?php if($box_destruction > 0){?>
+	 	 <span style="color: #FF0000 !important; text-decoration: line-through;">
+	 	 <?php } ?>
         	<?php if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
             echo $GLOBALS['id'];
-            ?>]
+            ?>]<?php if($box_destruction > 0){?></span> <span style="font-size: .8em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span><?php } ?>
 		  <?php } ?>		
 		  
 		  <?php 

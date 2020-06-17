@@ -68,7 +68,7 @@ Enter one or more Document IDs:<br />
 <br />
          <?php
     $po_array = Patt_Custom_Func::fetch_program_office_array(); ?>
-    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office...' id="searchByProgramOffice"/>
+    <input type="text" list="searchByProgramOfficeList" name="program_office" placeholder='Enter program office' id="searchByProgramOffice"/>
     <datalist id='searchByProgramOfficeList'>
      <?php foreach($po_array as $key => $value) { ?>
         <option data-value='<?php echo $value; ?>' value='<?php echo preg_replace("/\([^)]+\)/","",$value); ?>'></option>

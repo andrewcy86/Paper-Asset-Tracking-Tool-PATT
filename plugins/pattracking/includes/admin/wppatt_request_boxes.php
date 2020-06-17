@@ -125,6 +125,7 @@ $box_details = $wpdb->get_results(
 wpqa_wpsc_epa_boxinfo.id as id, 
 (SELECT sum(unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as ud,
 (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as val_sum,
+(SELECT sum(freeze = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as freeze_sum,
 (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as doc_total,
 wpqa_wpsc_epa_boxinfo.box_id as box_id, 
 wpqa_terms.name as digitization_center, 
@@ -132,7 +133,8 @@ wpqa_wpsc_epa_storage_location.aisle as aisle,
 wpqa_wpsc_epa_storage_location.bay as bay, 
 wpqa_wpsc_epa_storage_location.shelf as shelf, 
 wpqa_wpsc_epa_storage_location.position as position, 
-wpqa_wpsc_epa_location_status.locations as physical_location 
+wpqa_wpsc_epa_location_status.locations as physical_location,
+wpqa_wpsc_epa_boxinfo.box_destroyed as bd
 FROM wpqa_wpsc_epa_boxinfo 
 INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id 
 INNER JOIN wpqa_wpsc_epa_location_status ON wpqa_wpsc_epa_boxinfo.location_status_id = wpqa_wpsc_epa_location_status.id 
@@ -183,6 +185,8 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
                 $boxlist_dc_location = $info->digitization_center;
 				}
 				$boxlist_unathorized_destruction = $info->ud;
+				$boxlist_box_destroyed = $info->bd;
+				$boxlist_freeze_sum = $info->freeze_sum;
 			/*	
 			if($boxlist_unathorized_destruction > 0) {
 			$tbl .= '<tr class="wpsc_tl_row_item" style="background-color: #e7c3c3;">';
@@ -192,11 +196,28 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			*/
 			$tbl .= '<tr class="wpsc_tl_row_item">';
 			
-            $tbl .= '
+            if($boxlist_box_destroyed > 0) {
+                 $tbl .= '
+            <td><strike><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a></strike>';
+
+            } else {
+                $tbl .= '
             <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
+
+            }
+            
+            if($boxlist_box_destroyed > 0) {
+            $tbl .= ' <span style="font-size: 1em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>';
+            }
+            
             if($boxlist_unathorized_destruction > 0) {
             $tbl .= ' <span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span>';
             }
+            
+            if($boxlist_freeze_sum > 0) {
+                $tbl .= ' <span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span>';
+            }
+            
             $tbl .= '</td>';
            
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   

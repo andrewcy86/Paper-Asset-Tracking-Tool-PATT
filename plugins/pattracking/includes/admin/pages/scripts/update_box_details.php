@@ -7,7 +7,8 @@ include($path.'wp-load.php');
 
 if(
 !empty($_POST['postvarspo']) ||
-!empty($_POST['postvarsrs'])
+!empty($_POST['postvarsrs']) ||
+($_POST['postvarsdc'] == 0) || ($_POST['postvarsdc'] == 1) 
 ){
    //id in box table (e.g. 1)
    $box_id = $_POST['postvarsboxid'];
@@ -15,21 +16,41 @@ if(
    $pattboxid = $_POST['postvarspattboxid'];
    $po = $_POST['postvarspo'];
    $rs = $_POST['postvarsrs'];
+   $dc = $_POST['postvarsdc'];
 
-$get_ticket_id = $wpdb->get_row("
-SELECT ticket_id
-FROM wpqa_wpsc_epa_boxinfo
-WHERE
-box_id = '" . $pattboxid . "'
-");
+$get_ticket_id = $wpdb->get_row("SELECT ticket_id FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
 
 $ticket_id = $get_ticket_id->ticket_id;
-
-   $metadata_array = array();
-
+$metadata_array = array();
 $table_name = 'wpqa_wpsc_epa_boxinfo';
 
-//get exact match of program office acronym and take the id from that, insert id into box table
+$old_box_dc = $wpdb->get_row("SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE box_id = '" . $pattboxid . "'");
+$old_dc = $old_box_dc->box_destroyed;
+
+if($dc != $old_dc) {
+$data_update = array('box_destroyed' => $dc);
+$data_where = array('id' => $box_id);
+
+$dc_val = '';
+$old_dc_val = '';
+if($dc == '1') {
+    $dc_val = 'Yes';
+} 
+elseif($dc == '0') {
+    $dc_val = 'No';
+}
+
+if($old_dc == '1') {
+    $old_dc_val = 'Yes';
+} 
+elseif($old_dc == '0') {
+    $old_dc_val = 'No';
+}
+
+array_push($metadata_array,'Destruction Completed: '.$old_dc_val.' > '.$dc_val);
+$wpdb->update($table_name, $data_update, $data_where);
+}
+
 if(!empty($po)) {
 $get_old_acronym = $wpdb->get_row("SELECT b.office_acronym as office_acronym FROM wpqa_wpsc_epa_boxinfo a LEFT JOIN wpqa_wpsc_epa_program_office b ON a.program_office_id = b.office_code WHERE a.box_id = '" . $pattboxid . "'");
 $po_old_acronym = $get_old_acronym->office_acronym;
@@ -44,7 +65,6 @@ $po_new_acronym = $get_new_acronym->office_acronym;
 array_push($metadata_array,'Program Office: '.$po_old_acronym.' > '.$po_new_acronym);
 }
 
-//get exact match of record_schedule_number and take the id from that, insert id into box table
 if(!empty($rs)) {
 $get_old_rs = $wpdb->get_row("SELECT b.Record_Schedule_Number as Record_Schedule_Number FROM wpqa_wpsc_epa_boxinfo a LEFT JOIN wpqa_epa_record_schedule b ON a.record_schedule_id = b.id WHERE a.box_id = '" . $pattboxid . "'");
 $rs_old_num = $get_old_rs->Record_Schedule_Number;
@@ -62,11 +82,10 @@ array_push($metadata_array,'Record Schedule: '.$rs_old_num.' > '.$rs_new_num);
 $metadata = implode (", ", $metadata_array);
 
 do_action('wpppatt_after_box_metadata', $ticket_id, $metadata, $pattboxid);
- //echo 'Program office: ' . $po;
- //echo 'Record schedule: ' . $rs;
- echo "Box ID #: " . $pattboxid . " has been updated.";
+echo "Box ID #: " . $pattboxid . " has been updated.";
  
 } else {
+    echo $pattboxid;
    echo "Please make an edit.";
 }
 ?>

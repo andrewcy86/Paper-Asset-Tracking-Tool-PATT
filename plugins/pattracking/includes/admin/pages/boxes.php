@@ -262,7 +262,8 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
     }, 0);
 });
 
-<?php		
+<?php	
+// BEGIN ADMIN BUTTONS
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
@@ -292,6 +293,7 @@ postvarsboxid : rows_selected.join(",")
 
 <?php
 }
+// END ADMIN BUTTONS
 ?>
 });
 

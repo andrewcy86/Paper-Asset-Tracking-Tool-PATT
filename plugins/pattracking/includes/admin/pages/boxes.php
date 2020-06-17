@@ -39,6 +39,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_box_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-ban"></i> Destruction Completed</button></button>
 		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_label_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-tags"></i> Reprint Box Labels</button></button>
 <?php
 }
@@ -273,8 +274,20 @@ jQuery('#wpsc_individual_label_btn').on('click', function(e){
 if(rows_string) {
 window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
 } else {
-alert('Please select a folder/file.');
+alert('Please select a box.');
 }
+});
+
+jQuery('#wpsc_box_destruction_btn').on('click', function(e){
+     var form = this;
+     var rows_selected = dataTable.column(0).checkboxes.selected();
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_destruction.php',{
+postvarsboxid : rows_selected.join(",")
+}, 
+   function (response) {
+      if(!alert(response)){dataTable.ajax.reload( null, false );}
+   });
 });
 
 <?php

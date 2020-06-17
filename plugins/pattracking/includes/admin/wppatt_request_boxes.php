@@ -111,7 +111,7 @@ $unauthorized_destruction_count = $box_details->count;
 if($unauthorized_destruction_count > 0){
 ?>
 <div class="alert alert-danger" role="alert">
-<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Distruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-flag" title="Unauthorized Destruction"></i></span> One or more documents related to this request contains a unauthorized destruction flag.
 </div>
 <?php
 }
@@ -128,7 +128,7 @@ $freeze_count = $box_freeze->count;
 if($freeze_count > 0) {
 ?>
 <div class="alert alert-info" role="alert">
-<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents related to this request contains a frozen document.
+<span style="font-size: 1em; color: #009ACD;"><i class="fas fa-snowflake" title="Freeze"></i></span> One or more documents related to this request contains a frozen folder/file.
 </div>
 <?php
 }

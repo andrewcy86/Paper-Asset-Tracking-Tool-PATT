@@ -18,7 +18,9 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       // PATT Log Entry
       add_action( 'wpppatt_after_freeze', array($this,'freeze_document'), 10, 2 );
       add_action( 'wpppatt_after_freeze_unflag', array($this,'unfreeze_document'), 10, 2 );
-      
+      add_action( 'wpppatt_after_box_destruction', array($this,'box_destruction'), 10, 2 );
+      add_action( 'wpppatt_after_box_destruction_unflag', array($this,'unflag_box_destruction'), 10, 2 );
+           
       add_action( 'wpppatt_after_unauthorized_destruction', array($this,'unauthorized_destruction'), 10, 2 );
       add_action( 'wpppatt_after_unauthorized_destruction_unflag', array($this,'unauthorized_destruction_unflag'), 10, 2 );
       add_action( 'wpppatt_after_shelf_location', array($this,'shelf_location'), 10, 3 );   
@@ -57,6 +59,40 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
         $log_str = sprintf( __('%1$s unfroze Document ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
       } else {
         $log_str = sprintf( __('Document ID %1$s has been unfrozen','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Destroy Box
+    function box_destruction ( $ticket_id, $box_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s destroyed Box ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $box_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID %1$s has been destroyed','supportcandy'), '<strong>'.$box_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // Reverse Box Destruction
+    function unflag_box_destruction ( $ticket_id, $box_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s removed destruction flag on Box ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $box_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Box ID %1$s destruction flag removed','supportcandy'), '<strong>'.$box_id.'</strong>' );
       }
       $args = array(
         'ticket_id'      => $ticket_id,

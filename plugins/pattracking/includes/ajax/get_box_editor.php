@@ -1,4 +1,4 @@
- <?php
+<?php
 if ( ! defined( 'ABSPATH' ) ) {
 	exit; // Exit if accessed directly
 }
@@ -15,24 +15,6 @@ if (!isset($_SESSION)) {
 $box_id = $_POST["box_id"];
         
 ob_start();
-
-  /*$box_details = $wpdb->get_row("
-SELECT 
-wpqa_wpsc_epa_boxinfo.box_id as box_id, 
-wpqa_wpsc_epa_program_office.acronym as acronym, 
-wpqa_epa_record_schedule.Record_Schedule_Number as record_schedule_number
-FROM wpqa_wpsc_epa_boxinfo
-INNER JOIN wpqa_wpsc_epa_program_office ON wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id
-INNER JOIN wpqa_epa_record_schedule ON wpqa_wpsc_epa_boxinfo.record_schedule_id = wpqa_epa_record_schedule.id
-WHERE wpqa_wpsc_epa_boxinfo.id = '" . $box_id . "'");*/
-
-/*$box_details = $wpdb->get_row("SELECT a.box_id as box_id, b.office_acronym as acronym, c.Record_Schedule_Number as record_schedule_number 
-FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_wpsc_epa_program_office as b ON a.program_office_id = b.office_code INNER JOIN wpqa_epa_record_schedule as c ON a.record_schedule_id = c.id 
-WHERE a.id = '" . $box_id . "'");
-    
-    $patt_box_id = $box_details->box_id;
-    $program_office = $box_details->acronym;
-    $record_schedule = $box_details->record_schedule_number;*/
     
     $box_patt_id = $wpdb->get_row("SELECT box_id FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
     $patt_box_id = $box_patt_id->box_id;
@@ -46,6 +28,9 @@ WHERE a.id = '" . $box_id . "'");
     FROM wpqa_wpsc_epa_boxinfo as a INNER JOIN wpqa_epa_record_schedule as c ON record_schedule_id = c.id
     WHERE box_id = '" . $box_id . "'");
     $record_schedule = $box_record_schedule->record_schedule_number;
+    
+    $box_dc = $wpdb->get_row("SELECT box_destroyed FROM wpqa_wpsc_epa_boxinfo WHERE id = '" . $box_id . "'");
+    $dc = $box_dc->box_destroyed;
 
 ?>
 <?php  ?>
@@ -87,6 +72,14 @@ WHERE Record_Schedule_Number  = '" . $value . "'");
      <?php } ?>
      </datalist>
 
+<br></br>
+
+<strong>Destruction Completed:</strong><br />
+<select id="dc" name="dc">
+  <option value="1" <?php if ($dc == 1 ) echo 'selected' ; ?>>Yes</option>
+  <option value="0" <?php if ($dc == 0 ) echo 'selected' ; ?>>No</option>
+</select></br></br>
+
 <input type="hidden" id="boxid" name="boxid" value="<?php echo $box_id; ?>">
 <input type="hidden" id="pattboxid" name="pattboxid" value="<?php echo $patt_box_id; ?>">
 </form>
@@ -105,6 +98,7 @@ function wpsc_edit_box_details(){
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_box_details.php',{
 postvarspattboxid: jQuery("#pattboxid").val(),
 postvarsboxid: jQuery("#boxid").val(),
+postvarsdc: jQuery('#dc').val(),
 postvarspo: jQuery('#ProgramOfficeList [value="' + po_value + '"]').data('value'),
 postvarsrs: jQuery('#RecordScheduleList [value="' + rs_value + '"]').data('value')
 }, 

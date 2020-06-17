@@ -254,6 +254,7 @@ jQuery('#searchGeneric').on('input keyup paste', function () {
 		}
 
 <?php		
+// BEGIN ADMIN BUTTONS
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
@@ -283,14 +284,7 @@ window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sh
 alert('Please select a folder/file.');
 }
 });
-<?php
-}
-?>
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 //validation button
 jQuery('#wpsc_individual_validation_btn').on('click', function(e){
      var form = this;
@@ -305,14 +299,7 @@ postvarpage : jQuery('#page').val()
       if(!alert(response)){dataTable.ajax.reload( null, false );}
    });
 });
-<?php
-}
-?>
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 //freeze button
 jQuery('#wpsc_individual_freeze_btn').on('click', function(e){
      var form = this;
@@ -337,14 +324,7 @@ boxid : jQuery('#box_id').val()
       }
    });
 });
-<?php
-}
-?>
 
-<?php		
-if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
-{
-?>
 //unauthorize destruction button
 jQuery('#wpsc_individual_destruction_btn').on('click', function(e){
      var form = this;
@@ -371,6 +351,7 @@ boxid : jQuery('#box_id').val()
 });
 <?php
 }
+// END ADMIN BUTTONS
 ?>
 
 jQuery("#searchByDocID").tagsInput({

@@ -76,7 +76,10 @@ $row_limit = " limit ".$row.",".$rowperpage;
 $boxQuery = "SELECT 
 CONCAT(
 
-CASE WHEN (SELECT wpqa_wpsc_epa_boxinfo.box_destroyed FROM wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id) > 0 
+CASE WHEN (
+SELECT wpqa_wpsc_epa_boxinfo.box_destroyed FROM wpqa_wpsc_epa_boxinfo WHERE wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id) > 0 AND
+freeze <> 1
+
 THEN CONCAT('<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',folderdocinfo_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
 ELSE CONCAT('<a href=\"".$url_var."',folderdocinfo_id,'\" id=\"folderdocinfo_link\">',folderdocinfo_id,'</a>')
 END,

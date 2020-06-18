@@ -215,10 +215,14 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			*/
 			$tbl .= '<tr class="wpsc_tl_row_item">';
 			
-            if($boxlist_box_destroyed > 0) {
+            if($boxlist_box_destroyed > 0 && $boxlist_freeze_sum == 0) {
                  $tbl .= '
             <td><strike><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a></strike>';
 
+            } else if ($boxlist_box_destroyed > 0 && $boxlist_freeze_sum > 0){
+                $tbl .= '
+            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a>';
+                
             } else {
                 $tbl .= '
             <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '">' . $boxlist_id . '</a>';
@@ -240,7 +244,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             $tbl .= '</td>';
            
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
-			if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+			if (($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($boxlist_freeze_sum == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
             {
             if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
@@ -271,8 +275,6 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			$tbl .= '</tbody></table></div>';
 
 			echo $tbl;
-            
-            $htmlOutput = 'The current color of the sky is ' . ($time == 'day' ? 'blue' : 'black');
             
 ?>			
 

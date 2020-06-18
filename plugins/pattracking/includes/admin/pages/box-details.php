@@ -99,17 +99,11 @@ $box_freeze = $convert_box_id->freeze;
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){
 	 	 ?>
 	 	 <?php if($box_destroyed > 0) { ?>
-        	<span style="color:#FF0000 !important;">
-        <?php } ?>
-        <?php if($box_destroyed > 0 && $box_freeze == 0) { ?>
-        	<strike>
+        	<span style="color:#FF0000 !important;<?php if($box_destroyed > 0 && $box_freeze == 0) { ?>text-decoration: line-through;<?php } ?>">
         <?php } ?>
         	[Box ID # <?php
-            echo $GLOBALS['id']; ?>]<?php if($box_destroyed > 0 && $box_freeze == 0) { ?></strike><?php } ?>
-            
-            <?php if($box_destroyed > 0) { ?>
-            </span> 
-            <span style="font-size: .8em; color:#FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>
+            echo $GLOBALS['id']; ?>]<?php if($box_destroyed > 0) { ?></span> 
+            <span style="font-size: .8em; color:#FF0000;"> <i class="fas fa-ban" title="Box Destroyed"></i></span>
             <?php } ?>
   
 		  <?php } ?>	

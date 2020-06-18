@@ -77,7 +77,7 @@ $docQuery = "SELECT
 a.folderdocinfo_id as folderdocinfo_id,
 CONCAT(
 
-CASE WHEN d.box_destroyed > 0 
+CASE WHEN d.box_destroyed > 0  AND a.freeze <> 1
 THEN CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.folderdocinfo_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
 ELSE CONCAT('<a href=\"admin.php?pid=docsearch&page=filedetails&id=',a.folderdocinfo_id,'\">',a.folderdocinfo_id,'</a>')
 END,

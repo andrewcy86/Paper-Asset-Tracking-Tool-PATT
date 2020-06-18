@@ -217,7 +217,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			
             if($boxlist_box_destroyed > 0 && $boxlist_freeze_sum == 0) {
                  $tbl .= '
-            <td><strike><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important;">' . $boxlist_id . '</a></strike>';
+            <td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $boxlist_id . '" style="color:#FF0000 !important; text-decoration: line-through;">' . $boxlist_id . '</a>';
 
             } else if ($boxlist_box_destroyed > 0 && $boxlist_freeze_sum > 0){
                 $tbl .= '

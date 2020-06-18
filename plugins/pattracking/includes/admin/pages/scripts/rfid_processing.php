@@ -65,7 +65,22 @@ $records = mysqli_fetch_assoc($sel);
 $totalRecordwithFilter = $records['allcount'];
 
 ## Fetch records
-$boxQuery = "SELECT a.Reader_Name, CONCAT('<a href=admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'>',a.box_id,'</a>') as box_id, CONCAT('<a href=admin.php?page=wpsc-tickets&id=',c.request_id,'>',c.request_id,'</a>') as request_id, a.epc, a.DateAdded FROM wpqa_wpsc_epa_rfid_data as a
+$boxQuery = "SELECT a.Reader_Name, 
+CONCAT(
+CASE 
+WHEN (SELECT sum(freeze) FROM wpqa_wpsc_epa_folderdocinfo WHERE b.id = box_id) <> 0 AND box_destroyed > 0 THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+WHEN box_destroyed > 0 THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
+END,
+
+CASE 
+WHEN (SELECT sum(unauthorized_destruction = 1 AND freeze = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = b.id) > 0 THEN CONCAT(' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>', ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>')
+WHEN (SELECT sum(unauthorized_destruction = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = b.id) > 0 THEN ' <span style=\"font-size: 1em; color: #8b0000;\"><i class=\"fas fa-flag\" title=\"Unauthorized Destruction\"></i></span>'
+WHEN (SELECT sum(freeze = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = b.id) > 0 THEN ' <span style=\"font-size: 1em; color: #009ACD;\"><i class=\"fas fa-snowflake\" title=\"Freeze\"></i></span>'
+ELSE '' 
+END) as box_id,
+
+CONCAT('<a href=admin.php?page=wpsc-tickets&id=',c.request_id,'>',c.request_id,'</a>') as request_id, a.epc, a.DateAdded FROM wpqa_wpsc_epa_rfid_data as a
 INNER JOIN wpqa_wpsc_epa_boxinfo as b ON a.box_id = b.box_id
 INNER JOIN wpqa_wpsc_ticket as c ON b.ticket_id = c.id
 WHERE 1 ".$searchQuery." order by ".$columnName." ".$columnSortOrder." limit ".$row.",".$rowperpage;

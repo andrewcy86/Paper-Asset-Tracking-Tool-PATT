@@ -221,12 +221,12 @@ echo '</div>';
         
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
-	 	 <?php if($box_destruction > 0){?>
+	 	 <?php if($box_destruction > 0 && $folderfile_freeze == 0){?>
 	 	 <span style="color: #FF0000 !important; text-decoration: line-through;">
 	 	 <?php } ?>
         	<?php if ($folderfile_index_level == '1') {?>[Folder ID #<?php }else{ ?>[File ID #<?php } ?> <?php
             echo $GLOBALS['id'];
-            ?>]<?php if($box_destruction > 0){?></span> <span style="font-size: .8em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span><?php } ?>
+            ?>]<?php if($box_destruction > 0 && $folderfile_freeze == 0){?></span> <span style="font-size: .8em; color: #FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span><?php } ?>
 		  <?php } ?>		
 		  
 		  <?php 

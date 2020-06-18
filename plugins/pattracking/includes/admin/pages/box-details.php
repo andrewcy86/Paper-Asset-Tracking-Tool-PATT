@@ -83,26 +83,36 @@ if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id'])) {
 
 $convert_box_id = $wpdb->get_row(
-"SELECT id, box_destroyed
-FROM wpqa_wpsc_epa_boxinfo
-WHERE box_id = '" .  $GLOBALS['id'] . "'");
+"SELECT a.id, sum(a.box_destroyed) as box_destroyed, sum(b.freeze) as freeze
+FROM wpqa_wpsc_epa_boxinfo a
+LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON a.id = b.box_id
+WHERE a.box_id = '" .  $GLOBALS['id'] . "'");
 
 $box_id = $convert_box_id->id;
 $box_destroyed = $convert_box_id->box_destroyed;
+$box_freeze = $convert_box_id->freeze;
 ?>
 
   <div class="col-sm-8 col-md-9 wpsc_it_body">
     <div class="row wpsc_it_subject_widget">
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){
-	 	 if($box_destroyed > 0) {
 	 	 ?>
-        	<span style="color:#FF0000 !important;"><strike>[Box ID # <?php
-            echo $GLOBALS['id']; ?>]</strike></span> <span style="font-size: .8em; color:#FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>
-		  <?php } else { ?>		
-	        [Box ID # <?php
-            echo $GLOBALS['id']; ?>]	  
-		  <?php }} ?>	
+	 	 <?php if($box_destroyed > 0) { ?>
+        	<span style="color:#FF0000 !important;">
+        <?php } ?>
+        <?php if($box_destroyed > 0 && $box_freeze == 0) { ?>
+        	<strike>
+        <?php } ?>
+        	[Box ID # <?php
+            echo $GLOBALS['id']; ?>]<?php if($box_destroyed > 0 && $box_freeze == 0) { ?></strike><?php } ?>
+            
+            <?php if($box_destroyed > 0) { ?>
+            </span> 
+            <span style="font-size: .8em; color:#FF0000;"><i class="fas fa-ban" title="Box Destroyed"></i></span>
+            <?php } ?>
+  
+		  <?php } ?>	
       </h3>
 
     </div>

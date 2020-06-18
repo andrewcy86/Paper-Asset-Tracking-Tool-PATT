@@ -77,8 +77,21 @@ SELECT
 a.box_id,
 CONCAT(
 
-CASE WHEN a.box_destroyed > 0 
+CASE WHEN 
+(
+SELECT sum(freeze) FROM  wpqa_wpsc_epa_folderdocinfo WHERE a.id = box_id
+) <> 0 AND
+a.box_destroyed > 0 
+
+
+THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+
+WHEN a.box_destroyed > 0 
+
+
 THEN CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\" style=\"color: #FF0000 !important; text-decoration: line-through;\">',a.box_id,'</a> <span style=\"font-size: 1em; color: #FF0000;\"><i class=\"fas fa-ban\" title=\"Box Destroyed\"></i></span>')
+
+
 ELSE CONCAT('<a href=\"admin.php?page=boxdetails&pid=boxsearch&id=',a.box_id,'\">',a.box_id,'</a>')
 END,
 

@@ -110,14 +110,14 @@ $sl_where = array('id' => $storage_location_id);
 $wpdb->update($table_sl , $sl_update, $sl_where);
 
 //ADD AVALABILITY TO STORAGE STATUS
-if ($box_storage_status_remaining <= 4) {
+if ($box_storage_status_remaining <= 4 && $box_sotrage_shelf_id == '0_0_0') {
 $table_ss = 'wpqa_wpsc_epa_storage_status';
 $ssr_update = array('remaining' => $box_storage_status_remaining_added);
 $ssr_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $ssr_update, $ssr_where);
 }
 
-if($box_storage_status_remaining == 4){
+if($box_storage_status_remaining == 4 && $box_sotrage_shelf_id == '0_0_0'){
 $sso_update = array('occupied' => 0);
 $sso_where = array('shelf_id' => $box_sotrage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
 $wpdb->update($table_ss , $sso_update, $sso_where);

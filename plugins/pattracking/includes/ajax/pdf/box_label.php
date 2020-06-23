@@ -48,11 +48,24 @@ if (isset($_GET['id']))
 
         $boxidArray = explode(',', $GLOBALS['id']);
 
-        return $boxidArray;
+        $array = array();
+        
+        $box_result = $wpdb->get_results( "SELECT a.box_id as box_id FROM wpqa_wpsc_epa_boxinfo a LEFT JOIN wpqa_wpsc_epa_storage_location b ON a.storage_location_id = b.id WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666");
 
+        foreach ( $box_result as $box )
+            {
+            
+                array_push($array, $box->box_id);
+            }
+
+        $filteredresult = array_intersect($array, $boxidArray);
+        
+        return array_values($filteredresult);
+        
     }
     
     //Function to obtain location value from database
+    //don't draw pdf page if location = 'Not Assigned'
     function fetch_location()
     {
         global $wpdb;
@@ -202,6 +215,9 @@ if (isset($_GET['id']))
         $obj_pdf->setPrintFooter(false);
         $obj_pdf->SetAutoPageBreak(true, 10);
         $obj_pdf->SetFont('helvetica', '', 11);
+        
+$box_not_assigned = fetch_location();
+if($box_not_assigned != 'Not Assigned') {
 
 if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id']))) {
     
@@ -598,6 +614,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
         //Generate PDF
         $obj_pdf->Output('patt_box_label_printout.pdf', 'I');     
+}
 } else {
 echo "Pass a valid ID in URL";
 }

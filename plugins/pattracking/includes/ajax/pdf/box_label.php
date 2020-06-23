@@ -30,7 +30,7 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
         
-        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo WHERE ticket_id = " . $GLOBALS['id']);
+        $box_result = $wpdb->get_results( "SELECT * FROM wpqa_wpsc_epa_boxinfo a INNER JOIN wpqa_wpsc_epa_storage_location b ON a.storage_location_id = b. id WHERE b.aisle <> 0 AND b.bay <> 0 AND b.shelf <> 0 AND b.position <> 0 AND b.digitization_center <> 666 AND a.ticket_id = " . $GLOBALS['id']);
 
         foreach ( $box_result as $box )
             {
@@ -75,7 +75,13 @@ if (isset($_GET['id']))
         FROM wpqa_wpsc_epa_boxinfo
         INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
         INNER JOIN wpqa_terms ON wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
-        WHERE wpqa_wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
+        WHERE
+        wpqa_wpsc_epa_storage_location.aisle <> 0 AND 
+        wpqa_wpsc_epa_storage_location.bay <> 0 AND 
+        wpqa_wpsc_epa_storage_location.shelf <> 0 AND 
+        wpqa_wpsc_epa_storage_location.position <> 0 AND 
+        wpqa_wpsc_epa_storage_location.digitization_center <> 666 AND
+        wpqa_wpsc_epa_boxinfo.ticket_id = " . $GLOBALS['id']);
 
                 foreach ( $box_digitization_center as $location )
             {
@@ -92,7 +98,18 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
 
-        $request_program_office = $wpdb->get_results("SELECT organization_acronym FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND ticket_id = " . $GLOBALS['id']);
+        $request_program_office = $wpdb->get_results("SELECT b.organization_acronym FROM wpqa_wpsc_epa_boxinfo a
+        INNER JOIN wpqa_wpsc_epa_program_office b ON a.program_office_id = b.office_code
+        INNER JOIN wpqa_wpsc_epa_storage_location c ON a.storage_location_id = c.id
+        WHERE a.program_office_id = b.office_code AND 
+        c.aisle <> 0 AND 
+        c.bay <> 0 AND 
+        c.shelf <> 0 AND 
+        c.position <> 0 AND 
+        c.digitization_center <> 666 AND
+        a.ticket_id = " . $GLOBALS['id']);
+        
+        
         
         foreach($request_program_office as $program_office)
         {
@@ -108,11 +125,20 @@ if (isset($_GET['id']))
         global $wpdb;
         $array = array();
         //$request_shelf = $wpdb->get_results("SELECT aisle, bay, shelf, position FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND ticket_id = " . $GLOBALS['id']);
-        $request_shelf = $wpdb->get_results("SELECT wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND ticket_id = " . $GLOBALS['id']);
+        $request_shelf = $wpdb->get_results("SELECT wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position,
+            UPPER(wpqa_terms.slug) as digitization_center
+            FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_program_office, wpqa_terms WHERE
+            wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND 
+        wpqa_wpsc_epa_storage_location.aisle <> 0 AND 
+        wpqa_wpsc_epa_storage_location.bay <> 0 AND 
+        wpqa_wpsc_epa_storage_location.shelf <> 0 AND 
+        wpqa_wpsc_epa_storage_location.position <> 0 AND 
+        wpqa_wpsc_epa_storage_location.digitization_center <> 666 AND
+            ticket_id = " . $GLOBALS['id']);
         
         foreach($request_shelf as $location)
         {
-            array_push($array, strtoupper($location->aisle.'A_'.$location->aisle.'B_'.$location->shelf.'S_'.$location->position.'P'));
+            array_push($array, strtoupper($location->aisle.'A_'.$location->aisle.'B_'.$location->shelf.'S_'.$location->position.'P_'.$location->digitization_center));
         }
         
         return $array;
@@ -122,7 +148,16 @@ if (isset($_GET['id']))
     function fetch_create_date()
     {
         global $wpdb;
-        $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $GLOBALS['id']);
+        $request_create_date = $wpdb->get_row( "SELECT a.date_created FROM wpqa_wpsc_ticket a 
+INNER JOIN wpqa_wpsc_epa_boxinfo b ON b.ticket_id = a.id
+INNER JOIN wpqa_wpsc_epa_storage_location c ON b.storage_location_id = c.id
+        WHERE
+        c.aisle <> 0 AND 
+        c.bay <> 0 AND 
+        c.shelf <> 0 AND 
+        c.position <> 0 AND 
+        c.digitization_center <> 666 AND
+        a.id = " . $GLOBALS['id']);
         
         $create_date = $request_create_date->date_created;
         $date = strtotime($create_date);
@@ -268,9 +303,10 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         $box_program_office_a = $request_program_office->acronym;
     
         //$request_location_position = $wpdb->get_row("SELECT aisle, bay, shelf, position FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office WHERE wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.id AND box_id = '" . $box_array[$i] ."'");
-        $request_location_position = $wpdb->get_row("SELECT wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position FROM wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office  WHERE wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND box_id =  '" . $box_array[$i] ."'");
+        $request_location_position = $wpdb->get_row("SELECT wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position,
+            UPPER(wpqa_terms.slug) as digitization_center FROM wpqa_wpsc_epa_storage_location, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_program_office, wpqa_terms  WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND wpqa_wpsc_epa_boxinfo.program_office_id = wpqa_wpsc_epa_program_office.office_code AND box_id =  '" . $box_array[$i] ."'");
         
-        $request_location_position_a = $request_location_position->aisle.'A_'.$request_location_position->aisle.'B_'.$request_location_position->shelf.'S_'.$request_location_position->position.'P';
+        $request_location_position_a = $request_location_position->aisle.'A_'.$request_location_position->aisle.'B_'.$request_location_position->shelf.'S_'.$request_location_position->position.'P_'.$request_location_position->digitization_center;
 
         $request_create_date = $wpdb->get_row( "SELECT date_created FROM wpqa_wpsc_ticket WHERE id = " . $asset_ticket_id->ticket_id);
         

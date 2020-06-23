@@ -148,6 +148,7 @@ wpqa_wpsc_epa_boxinfo.id as id,
 (SELECT count(id) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = wpqa_wpsc_epa_boxinfo.id) as doc_total,
 wpqa_wpsc_epa_boxinfo.box_id as box_id, 
 wpqa_terms.name as digitization_center, 
+wpqa_terms.slug as digitization_center_slug, 
 wpqa_wpsc_epa_storage_location.aisle as aisle, 
 wpqa_wpsc_epa_storage_location.bay as bay, 
 wpqa_wpsc_epa_storage_location.shelf as shelf, 
@@ -179,11 +180,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			    $boxlist_dbid = $info->id;
 			    $boxlist_id = $info->box_id;
 			    $boxlist_dc = $info->digitization_center;
-			    if ($boxlist_dc == 'East') {
-					$boxlist_dc_val = "E";
-				} else if ($boxlist_dc == 'West') {
-					$boxlist_dc_val = "W";
-				}
+			    $boxlist_dc_val = strtoupper($info->digitization_center_slug);
 			    $boxlist_aisle = $info->aisle;
 			    $boxlist_bay = $info->bay;
 				$boxlist_shelf = $info->shelf;

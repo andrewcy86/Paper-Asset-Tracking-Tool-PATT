@@ -343,21 +343,21 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_2d = 155;
                 $y_loc_2d = 12;
                 //Box x of y text coordinates
-                $x_loc_b = 45;
+                $x_loc_b = 40;
                 $y_loc_b = 115;
                 //Box ID Printout coordinates
                 $x_loc_c = 80;
                 $y_loc_c = 97;
                 //Line seperator coordinates
-                $x_loc_l1 = 45;
+                $x_loc_l1 = 39;
                 $y_loc_l1 = 110;
                 $x_loc_l2 = 195;
                 $y_loc_l2 = 110;
                 //Box_a RFID coordinates
-                $x_loc_ba1 = 13;
+                $x_loc_ba1 = 11;
                 $y_loc_ba1 = 55;
-                $x_loc_la2 = 25;
-                $y_loc_la2 = 70;
+                $x_loc_la2 = 23;
+                $y_loc_la2 = 68.5;
                 //Location Coordinates
                 $x_loc_l = 152;
                 $y_loc_l = 90;
@@ -368,7 +368,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_rid = 165;
                 $y_loc_rid = 50;
                 //EPC Vertical Text Coordinates
-                $x_loc_rfid = 15;
+                $x_loc_rfid = 12;
                 $y_loc_rfid = 124;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
@@ -392,10 +392,10 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_shelf = 161;
                 $y_loc_shelf = 115;
                 //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 98;
+                $x_loc_dashed_border = 86;
                 $y_loc_dashed_border = 113;
                 //aisle/bay/shelf/position
-                $x_loc_box_position = 101;
+                $x_loc_box_position = 88.5;
                 $y_loc_box_position = 115;
             }
             else
@@ -408,20 +408,20 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_2d = 155;
                 $y_loc_2d = 142;
                 //Box x of y text coordinates
-                $x_loc_b = 45;
+                $x_loc_b = 40;
                 $y_loc_b = 245;
                 //Box ID Printout coordinates
                 $x_loc_c = 80;
                 $y_loc_c = 227;
                 //Line seperator coordinates
-                $x_loc_l1 = 45;
+                $x_loc_l1 = 39;
                 $y_loc_l1 = 240;
                 $x_loc_l2 = 195;
                 $y_loc_l2 = 240;
                 //Box_a RFID coordinates
-                $x_loc_ba1 = 13;
+                $x_loc_ba1 = 11;
                 $y_loc_ba1 = 185;
-                $x_loc_la2 = 25;
+                $x_loc_la2 = 23;
                 $y_loc_la2 = 70;
                 //Location Coordinates
                 $x_loc_l = 152;
@@ -433,7 +433,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_rid = 165;
                 $y_loc_rid = 180;
                 //EPC Vertical Text Coordinates
-                $x_loc_rfid = 15;
+                $x_loc_rfid = 12;
                 $y_loc_rfid = 254;
                 //Digitization center box regular border
                 $x_loc_digi_box_regular = 164;
@@ -457,10 +457,10 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
                 $x_loc_shelf = 161;
                 $y_loc_shelf = 245;
                 //Dashed border around aisle/bay/shelf/position
-                $x_loc_dashed_border = 98;
+                $x_loc_dashed_border = 86;
                 $y_loc_dashed_border = 243;
                 //aisle/bay/shelf/position
-                $x_loc_box_position = 101;
+                $x_loc_box_position = 88.5;
                 $y_loc_box_position = 245;
             }
             //Determine box count out of total
@@ -519,18 +519,18 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
 //Top half of page containing cell with aisle/bay/shelf/position  
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
-            $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
-            $obj_pdf->SetFont('helvetica', 'B', 25);
-            $obj_pdf->Cell(90, 13, $box_location_position[$i], 1, 0, 'C', 1);
+            $obj_pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetFont('helvetica', 'B', 20);
+            $obj_pdf->Cell(105, 13, $box_location_position[$i], 1, 0, 'C', 1);
 
 }
 
 //Bottom half of page containing cell with aisle/bay/shelf/position  
 if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetXY($x_loc_box_position, $y_loc_box_position);
-            $obj_pdf->SetLineStyle(array('width' => 0, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
-            $obj_pdf->SetFont('helvetica', 'B', 25);
-            $obj_pdf->Cell(90, 13, $request_location_position_a, 1, 0, 'C', 1);
+            $obj_pdf->SetLineStyle(array('width' => 0.5, 'cap' => 'butt', 'join' => 'butt', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $obj_pdf->SetFont('helvetica', 'B', 20);
+            $obj_pdf->Cell(105, 13, $request_location_position_a, 1, 0, 'C', 1);
 
 }
             
@@ -554,7 +554,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
             $obj_pdf->SetTextColor(0,0,0);
             
             //Dashed border around aisle/bay/shelf/position
-            $obj_pdf->RoundedRect($x_loc_dashed_border, $y_loc_dashed_border, 96, 18, 2, '1111', null, $style_box_dash);
+            $obj_pdf->RoundedRect($x_loc_dashed_border, $y_loc_dashed_border, 110, 18, 2, '1111', null, $style_box_dash);
             
             //RFID Box Location
             $obj_pdf->RoundedRect($x_loc_ba1, $y_loc_ba1, $x_loc_la2, $y_loc_la2, 5, '1111', null, $style_box_dash);

@@ -8,7 +8,6 @@ if (isset($_GET['id']))
 {
     //Set SuperGlobal ID variable to be used in all functions below
     $GLOBALS['id'] = $_GET['id'];
-    
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
     
@@ -34,7 +33,8 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     SELECT DISTINCT a.id
     FROM wpqa_wpsc_epa_boxinfo a
     LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-    WHERE b.index_level = 2 AND a.ticket_id =" .$GLOBALS['id']);
+    INNER JOIN wpqa_wpsc_epa_storage_location c ON a.storage_location_id = c.id
+    WHERE c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.index_level = 2 AND a.ticket_id = " .$GLOBALS['id']);
 
 //print_r($box_ids);
 

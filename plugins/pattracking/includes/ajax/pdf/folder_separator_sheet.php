@@ -134,7 +134,7 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
         
 $folderfile_info = $wpdb->get_row("SELECT title
         FROM wpqa_wpsc_epa_folderdocinfo
-        folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+        WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
 $txt = '<strong>Title:</strong> ' . ((strlen($folderfile_info->title) > 150) ? substr($folderfile_info->title, 0, 150) . "...": $folderfile_info->title);
     }
     

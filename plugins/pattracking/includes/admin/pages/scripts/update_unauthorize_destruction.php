@@ -107,7 +107,7 @@ do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
 $table_pl = 'wpqa_wpsc_epa_boxinfo';
-$pl_update = array('location_status_id' => '6');
+$pl_update = array('location_status_id' => '6','box_destroyed' => '1');
 $pl_where = array('id' => $box_id);
 $wpdb->update($table_pl , $pl_update, $pl_where);
 

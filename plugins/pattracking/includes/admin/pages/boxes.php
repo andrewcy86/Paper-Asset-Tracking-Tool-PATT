@@ -272,13 +272,36 @@ jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
      var rows_string = rows_selected.join(",");
-if(rows_string) {
-window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
-} else {
-alert('Please select a box.');
-}
-});
+     
+     jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/boxlabels_processing.php',{
+postvarsboxids : rows_selected.join(",")
+}, 
+   function (response) {
+       
+       
+       var substring_false = "false";
+       var substring_warn = "warn";
+       var substring_true = "true";
 
+        
+       if(response.indexOf(substring_false) >= 0) {
+       alert('Cannot print box labels for destroyed boxes.');
+       }
+       
+       if(response.indexOf(substring_warn) >= 0) {
+       alert('One or more boxes that you selected are destroyed and label will not generate.');
+       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
+       }
+       
+       if(response.indexOf(substring_true) >= 0) {
+       //alert('Success! All labels available.');
+       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
+       }
+      
+   });
+
+});
 jQuery('#wpsc_box_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();

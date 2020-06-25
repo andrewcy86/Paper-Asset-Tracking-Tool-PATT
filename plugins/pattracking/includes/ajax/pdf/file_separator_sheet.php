@@ -41,11 +41,12 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     foreach($box_ids as $item)
     {
 
+//only display file labels that are in boxes that have an assigned location
 $folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE index_level = 2 AND box_id = " .$item->id);
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND
+index_level = 2 AND box_id = " .$item->id);
 
-//print_r($folderfile_info);
 
 $maxcols = 3;
 $i = 0;
@@ -53,7 +54,7 @@ $i = 0;
 $batch_of = 30;
 
 $batch = array_chunk($folderfile_info, $batch_of);
-//print_r($batch);
+
 foreach($batch as $b) {
 
 //set table margins
@@ -114,7 +115,7 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS[
 
 $final_array = array();
 
-$folderfile_array= explode(',', $GLOBALS['id']);
+$folderfile_array = explode(',', $GLOBALS['id']);
 
 foreach($folderfile_array as $item) {
 

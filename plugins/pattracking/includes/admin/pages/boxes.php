@@ -290,7 +290,7 @@ postvarsboxids : rows_selected.join(",")
        }
        
        if(response.indexOf(substring_warn) >= 0) {
-       alert('One or more boxes that you selected are destroyed and label will not generate.');
+       alert('One or more boxes that you selected are destroyed and it\'s label will not generate.');
        window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
        }
        

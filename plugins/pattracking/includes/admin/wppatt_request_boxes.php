@@ -241,11 +241,17 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
             $tbl .= '</td>';
            
             $tbl .= '<td>' . $boxlist_physical_location . '</td>';   
-			if (($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($boxlist_freeze_sum == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+			if (($boxlist_unathorized_destruction == 0)&&($boxlist_box_destroyed == 0)&&($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
             {
-            if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Currently Unassigned') {
-            $tbl .= '<td>' . $boxlist_location . ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a></td>';   
+            if ($boxlist_location != 'Currently Unassigned' || $boxlist_dc_location != 'Not Unassigned') {
+            $tbl .= '<td>' . $boxlist_location;
+            if ($boxlist_dc_location != 'Not Assigned') {
+            $tbl .= ' <a href="#" onclick="wpsc_get_inventory_editor(' . $boxlist_dbid . ')"><i class="fas fa-edit"></i></a>';
+            }
+            $tbl .= '</td>';
             $tbl .= '<td>' . $boxlist_dc_location . ' <a href="#" onclick="wpsc_get_digitization_editor_final(' . $boxlist_dbid . ')"><i class="fas fa-exchange-alt"></i></a></td>';
+
+            
             } elseif ($boxlist_location == 'Currently Unassigned' && $boxlist_dc_location == 'Currently Unassigned') {
             $tbl .= '<td>' . $boxlist_location . '</td>';   
             $tbl .= '<td>' . $boxlist_dc_location . '</td>';

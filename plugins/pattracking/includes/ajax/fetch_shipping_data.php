@@ -50,7 +50,7 @@ if($method == "POST")
  $query = "INSERT INTO wpqa_wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '0')";
  $statement = $connect->prepare($query);
  $statement->execute($data);
- do_action('wpppatt_after_add_request_shipping_tracking', $_GET['ticket_id'], $_POST["tracking_number"]);
+ do_action('wpppatt_after_add_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_POST["company_name"]).' - '.$_POST["tracking_number"]);
 }
 
 if($method == 'PUT')
@@ -70,7 +70,7 @@ if($method == 'PUT')
  ";
  $statement = $connect->prepare($query);
  $statement->execute($data);
-  do_action('wpppatt_after_modify_request_shipping_tracking', $_GET['ticket_id'], $_PUT["tracking_number"]);
+  do_action('wpppatt_after_modify_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_PUT["company_name"]).' - '.$_PUT["tracking_number"]);
 }
 
 if($method == "DELETE")
@@ -79,7 +79,7 @@ if($method == "DELETE")
  $query = "DELETE FROM wpqa_wpsc_epa_shipping_tracking WHERE id = '".$_DELETE["id"]."'";
  $statement = $connect->prepare($query);
  $statement->execute();
-  do_action('wpppatt_after_remove_request_shipping_tracking', $_GET['ticket_id'], $_DELETE["tracking_number"]);
+  do_action('wpppatt_after_remove_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_DELETE["company_name"]).' - '.$_DELETE["tracking_number"]);
 }
 
 ?>

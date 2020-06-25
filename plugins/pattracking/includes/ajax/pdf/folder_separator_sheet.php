@@ -24,7 +24,7 @@ if (isset($_GET['id']))
         $request_folderdocinfo = $wpdb->get_results("SELECT folderdocinfo_id 
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
 WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND
-ticket_id =" . $GLOBALS['id']);
+ticket_id = " . $GLOBALS['id']);
         
         foreach($request_folderdocinfo as $folderdocinfo)
         {
@@ -88,6 +88,7 @@ if ((preg_match('/^\d+$/', $GLOBALS['id'])) || (preg_match("/^([0-9]{7}-[0-9]{1,
 if (preg_match('/^\d+$/', $GLOBALS['id'])) {   
     //Obtain array of Box ID's
     $folderdocinfo_array = fetch_folderdocinfo();
+    
     $title_array = fetch_title();
 }
 
@@ -100,13 +101,20 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
     //Begin for loop to iterate through folderdocinfo's arrayb
     for ($i = 0;$i < count($folderdocinfo_array);$i++)
     {
+        //checks to see if folderdocinfo_id is empty, if so won't reprint file labels
+        $folderdocinfo_new = $wpdb->get_row("SELECT folderdocinfo_id 
+        FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+        WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND
+        folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+            $folderdoc_id = $folderdocinfo_new->folderdocinfo_id;
+        
+        if($folderdoc_id != '') {
         //Begin if statement to determine # of new pages based on length of array
         if ($folderdocinfo_array[$i] > 0)
 
         {
             $obj_pdf->AddPage();
         }
-        
         
         //1D Box ID Barcode
         $obj_pdf->SetFont('helvetica', '', 30);
@@ -125,8 +133,8 @@ $folderdocinfo_array = explode(',', $GLOBALS['id']);
     if (preg_match("/^([0-9]{7}-[0-9]{1,4}-01-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS['id'])) {
         
 $folderfile_info = $wpdb->get_row("SELECT title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
+        FROM wpqa_wpsc_epa_folderdocinfo
+        folderdocinfo_id = '" .$folderdocinfo_array[$i]."'");
 $txt = '<strong>Title:</strong> ' . ((strlen($folderfile_info->title) > 150) ? substr($folderfile_info->title, 0, 150) . "...": $folderfile_info->title);
     }
     
@@ -136,7 +144,7 @@ $txt = '<strong>Title:</strong> ' . ((strlen($folderfile_info->title) > 150) ? s
     
         $obj_pdf->MultiCell(145, 0, $txt, 0, 'L', 0, 0, $x_loc_folderdocinfo_title, $y_loc_folderdocinfo_title, true, 0, true);
     }
-    
+    }
     //Generate PDF
     $obj_pdf->Output('folder_seperator_printout.pdf', 'I');
     

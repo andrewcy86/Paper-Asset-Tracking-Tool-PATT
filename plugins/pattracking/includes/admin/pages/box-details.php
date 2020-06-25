@@ -289,10 +289,11 @@ boxid : jQuery('#box_id').val()
 }, 
    function (response) {
       if(!alert(response)){
-       var substring = "removed";
+       var substring_removed = "removed";
+       var substring_select = "select";
        dataTable.ajax.reload( null, false );
        
-       if(response.indexOf(substring) !== -1) {
+       if(response.indexOf(substring_removed) !== -1 || response.indexOf(substring_select) >= 0) {
        jQuery('#ud_alert').hide();
        } else {
        jQuery('#ud_alert').show(); 
@@ -315,10 +316,11 @@ boxid : jQuery('#box_id').val()
 }, 
    function (response) {
       if(!alert(response)){
-       var substring = "removed";
+       var substring_removed = "removed";
+       var substring_select = "select";
        dataTable.ajax.reload( null, false );
        
-       if(response.indexOf(substring) !== -1) {
+       if(response.indexOf(substring_removed) !== -1 || response.indexOf(substring_select) >= 0) {
        jQuery('#freeze_alert').hide();
        } else {
        jQuery('#freeze_alert').show(); 

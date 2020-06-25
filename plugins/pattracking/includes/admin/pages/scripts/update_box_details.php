@@ -49,6 +49,67 @@ elseif($old_dc == '0') {
 
 array_push($metadata_array,'Destruction Completed: '.$old_dc_val.' > '.$dc_val);
 $wpdb->update($table_name, $data_update, $data_where);
+
+$get_storage_id = $wpdb->get_row("
+SELECT id, storage_location_id FROM wpqa_wpsc_epa_boxinfo 
+WHERE id = '" . $box_id . "'
+");
+$storage_location_id = $get_storage_id->storage_location_id;
+
+$box_details = $wpdb->get_row(
+"SELECT 
+b.digitization_center,
+b.aisle,
+b.bay,
+b.shelf,
+b.position
+FROM wpqa_wpsc_epa_boxinfo a
+INNER JOIN wpqa_wpsc_epa_storage_location b WHERE a.storage_location_id = b.id
+AND a.id = '" . $box_id . "'"
+			);
+			
+			$box_storage_digitization_center = $box_details->digitization_center;
+			$box_storage_aisle = $box_details->aisle;
+			$box_storage_bay = $box_details->bay;
+			$box_storage_shelf = $box_details->shelf;
+			$box_storage_shelf_id = $box_storage_aisle . '_' . $box_storage_bay . '_' . $box_storage_shelf;
+
+$box_storage_status = $wpdb->get_row(
+"SELECT 
+occupied,
+remaining
+FROM wpqa_wpsc_epa_storage_status
+WHERE shelf_id = '" . $box_storage_shelf_id . "'"
+			);
+
+$box_storage_status_occupied = $box_storage_status->occupied;
+$box_storage_status_remaining = $box_storage_status->remaining;
+$box_storage_status_remaining_added = $box_storage_status->remaining + 1;
+
+//SET PHYSICAL LOCATION TO DESTROYED
+$pl_update = array('location_status_id' => '6');
+$pl_where = array('id' => $box_id);
+$wpdb->update($table_name , $pl_update, $pl_where);
+
+//SET SHELF LOCATION TO 0
+$table_sl = 'wpqa_wpsc_epa_storage_location';
+$sl_update = array('digitization_center' => '666','aisle' => '0','bay' => '0','shelf' => '0','position' => '0');
+$sl_where = array('id' => $storage_location_id);
+$wpdb->update($table_sl , $sl_update, $sl_where);
+
+//ADD AVALABILITY TO STORAGE STATUS
+if ($box_storage_status_remaining <= 4) {
+$table_ss = 'wpqa_wpsc_epa_storage_status';
+$ssr_update = array('remaining' => $box_storage_status_remaining_added);
+$ssr_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
+$wpdb->update($table_ss , $ssr_update, $ssr_where);
+}
+
+if($box_storage_status_remaining == 4){
+$sso_update = array('occupied' => 0);
+$sso_where = array('shelf_id' => $box_storage_shelf_id, 'digitization_center' => $box_storage_digitization_center);
+$wpdb->update($table_ss , $sso_update, $sso_where);
+}
 }
 
 if(!empty($po)) {

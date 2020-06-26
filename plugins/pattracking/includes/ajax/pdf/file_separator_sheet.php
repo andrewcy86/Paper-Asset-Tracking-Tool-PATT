@@ -8,6 +8,7 @@ if (isset($_GET['id']))
 {
     //Set SuperGlobal ID variable to be used in all functions below
     $GLOBALS['id'] = $_GET['id'];
+    
     //Pull in the TCPDF library
     require_once ('tcpdf/tcpdf.php');
     
@@ -33,20 +34,21 @@ if (preg_match('/^\d+$/', $GLOBALS['id'])) {
     SELECT DISTINCT a.id
     FROM wpqa_wpsc_epa_boxinfo a
     LEFT JOIN wpqa_wpsc_epa_folderdocinfo b ON b.box_id = a.id
-    INNER JOIN wpqa_wpsc_epa_storage_location c ON a.storage_location_id = c.id
-    WHERE c.aisle <> 0 AND c.bay <> 0 AND c.shelf <> 0 AND c.position <> 0 AND c.digitization_center <> 666 AND b.index_level = 2 AND a.ticket_id = " .$GLOBALS['id']);
+    RIGHT JOIN wpqa_wpsc_epa_storage_location s ON a.storage_location_id = s.id
+    WHERE ((index_level = 2 AND freeze = 1) OR (index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666)) AND 
+    a.ticket_id = " .$GLOBALS['id']);
 
 //print_r($box_ids);
 
     foreach($box_ids as $item)
     {
 
-//only display file labels that are in boxes that have an assigned location
 $folderfile_info = $wpdb->get_results("SELECT folderdocinfo_id, title
 FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
-WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND index_level = 1 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666 AND
-index_level = 2 AND box_id = " .$item->id);
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND ((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+wpqa_wpsc_epa_folderdocinfo.box_id = " .$item->id);
 
+//print_r($folderfile_info);
 
 $maxcols = 3;
 $i = 0;
@@ -54,7 +56,7 @@ $i = 0;
 $batch_of = 30;
 
 $batch = array_chunk($folderfile_info, $batch_of);
-
+//print_r($batch);
 foreach($batch as $b) {
 
 //set table margins
@@ -115,13 +117,15 @@ if (preg_match("/^([0-9]{7}-[0-9]{1,4}-02-[0-9]{1,4})(?:,\s*(?1))*$/", $GLOBALS[
 
 $final_array = array();
 
-$folderfile_array = explode(',', $GLOBALS['id']);
+$folderfile_array= explode(',', $GLOBALS['id']);
 
 foreach($folderfile_array as $item) {
 
 $folderfile_info = $wpdb->get_row("SELECT folderdocinfo_id, title
-FROM wpqa_wpsc_epa_folderdocinfo
-WHERE index_level = 2 AND folderdocinfo_id = '" .$item."'");
+FROM wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_storage_location
+WHERE wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id AND 
+((index_level = 2 AND aisle <> 0 AND bay <> 0 AND shelf <> 0 AND position <> 0 AND digitization_center <> 666) OR (index_level = 2 AND freeze = 1)) AND
+folderdocinfo_id = '" .$item."'");
 
 $parent = new stdClass;
 $parent->folderdocinfo_id = $folderfile_info->folderdocinfo_id;

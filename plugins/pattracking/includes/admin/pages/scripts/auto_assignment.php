@@ -5,10 +5,21 @@ $path = preg_replace('/wp-content.*$/', '', __DIR__);
 include ($path . 'wp-load.php');
 include ($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
 
-if (isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 //Grab ticket ID and Selected Digitization Center from Modal
 	$tkid = $_POST['postvartktid'];
 	$dc_final = $_POST['postvardcname'];
+	
+//Obtain Ticket Status
+	$ticket_details = $wpdb->get_row("
+SELECT ticket_status 
+FROM wpqa_wpsc_ticket 
+WHERE
+id = '" . $tkid . "'
+");
+
+	$ticket_details_status = $ticket_details->ticket_status;
+
+if (($ticket_details_status == 3 || $ticket_details_status == 4) && isset($_POST['postvartktid']) && isset($_POST['postvardcname']) && $_POST['postvardcname'] != '666') {
 
 // Finds Shelf ID of next available sequence
 	$find_sequence = $wpdb->get_row("
@@ -38,16 +49,6 @@ ORDER BY COUNT(*) DESC LIMIT 1;
 ");
 
 	$sequence_shelfid = $find_sequence->id;
-
-//Obtain Ticket Status
-	$ticket_details = $wpdb->get_row("
-SELECT ticket_status 
-FROM wpqa_wpsc_ticket 
-WHERE
-id = '" . $tkid . "'
-");
-
-	$ticket_details_status = $ticket_details->ticket_status;
 
 //Get array of unassigned boxes from ticket ID
 	$box_id_assignment = Patt_Custom_Func::get_unassigned_boxes($tkid);
@@ -464,15 +465,14 @@ digitization_center = '" . $dc_final . "'
 			}
 		}
 // Display message to end user
-		if ($ticket_details_status == 3 && $box_details_count > 0) {
-			echo 'Single Ticket selected, # of unassigned boxes = ' . $box_details_count . ' ';
-			echo "Ticket ID #: " . $tkid . " Digitization Center: " . $dc_final . " Status: " . $ticket_details_status;
+		if (($ticket_details_status == 3 || $ticket_details_status == 4) && $box_details_count > 0) {
+			echo "Boxes have been automatically assigned to a shelf.";
 		} else {
-		    echo "No automatic assignments made.";
+		    echo "No automatic box shelf assignments made.";
 		}
 		
 	}
 
 } else {
-	echo "No automatic assignments made.";
+	echo "No automatic box shelf assignments made.";
 }

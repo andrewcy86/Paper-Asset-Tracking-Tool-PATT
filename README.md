@@ -316,7 +316,7 @@ COMMENT OUT
 ```
  // PATT do_action('wpsc_add_submenu_page');
 ```
-### Disable status based on validation and assignment of digitization staff.
+### Disable status based on validation, assignment of digitization staff and box destruction.
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_ticket_status.php
 BELOW
 ```<form id="frm_get_ticket_change_status" method="post">```
@@ -339,8 +339,17 @@ SELECT (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id
     ) a");
 $sum_validation = $get_sum_validation->sum_validation;
 
+$get_sum_destruction = $wpdb->get_row("select count(id) as count_destruction
+    from wpqa_wpsc_epa_boxinfo where ticket_id = '" . $ticket_id . "' and box_destroyed = 1");
+$count_destruction = $get_sum_destruction->count_destruction;
+
+$get_sum_boxes = $wpdb->get_row("select count(id) as box_count
+    from wpqa_wpsc_epa_boxinfo where ticket_id = '" . $ticket_id . "'");
+$count_boxes = $get_sum_boxes->box_count;
+
 $validated = '';
 $assigned = '';
+$destruction = '';
 
 if($sum_total_val == $sum_validation) {
 $validated = 1;
@@ -357,6 +366,14 @@ $assigned = 0;
 }
 
 $assigned_array = array(3,4,670,5,63);
+
+if($count_boxes == $count_destruction) {
+$destruction = 1;
+} else {
+$destruction = 0;
+}
+
+$destruction_array = array(3,4,670,5,63,64,672,671,65,6,673,674,66,68);
 //PATT END
 ?>
 ```
@@ -370,6 +387,9 @@ if (in_array($status->term_id, $validated_array) && $validated == 0) {
     $disabled = 'disabled';
 }
 if (in_array($status->term_id, $assigned_array) && $assigned == 1) {
+    $disabled = 'disabled';
+}
+if (in_array($status->term_id, $destruction_array) && $destruction == 1) {
     $disabled = 'disabled';
 }
 //PATT END

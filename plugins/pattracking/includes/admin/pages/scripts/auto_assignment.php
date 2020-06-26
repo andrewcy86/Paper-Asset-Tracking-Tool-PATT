@@ -165,6 +165,24 @@ digitization_center = '" . $dc_final . "'
 				$ncss_data_where = array('shelf_id' => $nc_shelf_id_update);
 
 				$wpdb->update($ncss_table_name, $ncss_data_update, $ncss_data_where);
+				
+// Update physical location
+
+// Get count of first available position
+$get_box_id = $wpdb->get_row("
+SELECT id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE
+storage_location_id = '" . $box_id_assignment[$key] . "'
+");
+
+$bid = $get_box_id->id;
+
+//SET PHYSICAL LOCATION TO IN TRANSIT
+$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$pl_update = array('location_status_id' => '1');
+$pl_where = array('id' => $bid);
+$wpdb->update($table_pl , $pl_update, $pl_where);
 			}
 // When Continuing shelf space space is required
 
@@ -306,6 +324,21 @@ digitization_center = '" . $dc_final . "'
 				$gapss_data_where = array('shelf_id' => $gap_shelf_id_update);
 
 				$wpdb->update($gapss_table_name, $gapss_data_update, $gapss_data_where);
+// Update physical location
+// Get count of first available position
+$get_box_id = $wpdb->get_row("
+SELECT id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE
+storage_location_id = '" . $box_id_assignment[$key] . "'
+");
+
+$bid = $get_box_id->id;
+//SET PHYSICAL LOCATION TO IN TRANSIT
+$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$pl_update = array('location_status_id' => '1');
+$pl_where = array('id' => $bid);
+$wpdb->update($table_pl , $pl_update, $pl_where);
 			}
 // For every other case assign box to next available slot of available shelfs
 		} else {
@@ -462,6 +495,19 @@ digitization_center = '" . $dc_final . "'
 				$seqss_data_where = array('shelf_id' => $seq_shelf_id_update);
 
 				$wpdb->update($seqss_table_name, $seqss_data_update, $seqss_data_where);
+// Update physical location
+// Get count of first available position
+$get_box_id = $wpdb->get_row("
+SELECT id
+FROM wpqa_wpsc_epa_boxinfo
+WHERE
+storage_location_id = '" . $box_id_assignment[$key] . "'
+");
+//SET PHYSICAL LOCATION TO IN TRANSIT
+$table_pl = 'wpqa_wpsc_epa_boxinfo';
+$pl_update = array('location_status_id' => '1');
+$pl_where = array('id' => $bid);
+$wpdb->update($table_pl , $pl_update, $pl_where);
 			}
 		}
 // Display message to end user

@@ -36,7 +36,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
         
         <?php		
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
@@ -82,7 +82,7 @@ Enter one or more Document IDs:<br />
            <option value='East CUI'>East CUI</option>
            <option value='West'>West</option>
            <option value='West CUI'>West CUI</option>
-	   <option value='Not Assigned'>Not Assigned</option>
+           <option value='Not Assigned'>Not Assigned</option>
          </select>
 
 	                            </div>
@@ -163,6 +163,19 @@ jQuery(document).ready(function(){
     'processing': true,
     'serverSide': true,
     'serverMethod': 'post',
+    'stateSave': true,
+    'stateSaveParams': function(settings, data) {
+      data.sg = jQuery('#searchGeneric').val();
+      data.bid = jQuery('#searchByDocID').val();
+      data.po = jQuery('#searchByProgramOffice').val();
+      data.dc = jQuery('#searchByDigitizationCenter').val();
+    },
+    'stateLoadParams': function(settings, data) {
+      jQuery('#searchGeneric').val(data.sg);
+      jQuery('#searchByDocID').val(data.bid);
+      jQuery('#searchByProgramOffice').val(data.po);
+      jQuery('#searchByDigitizationCenter').val(data.dc);
+    },
     'searching': false, // Remove default Search Control
     'ajax': {
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/document_processing.php',
@@ -227,32 +240,48 @@ jQuery(document).ready(function(){
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
+        dataTable.state.save();
         dataTable.draw();
     }
 });
 
   jQuery("#searchByProgramOffice").change(function(){
+    dataTable.state.save();
     dataTable.draw();
 });
 
   jQuery("#searchByDigitizationCenter").change(function(){
+    dataTable.state.save();
     dataTable.draw();
 });
 
 jQuery('#searchGeneric').on('input keyup paste', function () {
     var hasValue = jQuery.trim(this.value).length;
     if(hasValue == 0) {
-            dataTable.draw();
+        dataTable.state.save();
+        dataTable.draw();
         }
 });
 
 
 		function onAddTag(tag) {
+		    dataTable.state.save();
 			dataTable.draw();
 		}
 		function onRemoveTag(tag) {
+		    dataTable.state.save();
 			dataTable.draw();
 		}
+
+jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
+    jQuery('#searchGeneric').val('');
+    jQuery('#searchByProgramOffice').val('');
+    jQuery('#searchByDigitizationCenter').val('');
+    jQuery('#searchByDocID').importTags('');
+    dataTable.column(0).checkboxes.deselectAll();
+	dataTable.state.clear();
+	dataTable.draw();
+});
 
 <?php		
 // BEGIN ADMIN BUTTONS
@@ -260,12 +289,32 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 {
 ?>
 //reprint labels button		
+
 jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
      var arr = {};
-    // Loop through array
-    [].forEach.call(rows_selected, function(inst){
+     
+     jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/documentlabels_processing.php',{
+postvarsfolderdocid : rows_selected.join(",")
+}, 
+   function (response) {
+       
+       var folderdocinfo = response.split('|')[1];
+       var folderdocinfo_array = folderdocinfo.split(',');
+       var substring_false = "false";
+       var substring_warn = "warn";
+       var substring_true = "true";
+
+       if(response.indexOf(substring_false) >= 0) {
+       alert('Cannot print folder/file labels for documents that are not assigned to a location.');
+       }
+       
+       if(response.indexOf(substring_warn) >= 0) {
+       alert('One or more documents that you selected do not have an assigned location and it\'s label will not generate.');
+           // Loop through array
+    [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);
         // Check if arr already has an index x, if yes then push
         if(arr.hasOwnProperty(x)) 
@@ -284,6 +333,34 @@ window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sh
 } else {
 alert('Please select a folder/file.');
 }
+       }
+       
+       if(response.indexOf(substring_true) >= 0) {
+       //alert('Success! All labels available.');
+           // Loop through array
+    [].forEach.call(folderdocinfo_array, function(inst){
+        var x = inst.split("-")[2].substr(1);
+        // Check if arr already has an index x, if yes then push
+        if(arr.hasOwnProperty(x)) 
+            arr[x].push(inst);
+        // Or else create a new one with inst as the first element.
+        else 
+            arr[x] = [inst];
+    });
+if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
+if (Array.isArray(arr[1]) && arr[1].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+}
+if (Array.isArray(arr[2]) && arr[2].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+} else {
+alert('Please select a folder/file.');
+}
+       }
+      
+   });
+
 });
 
 //validation button

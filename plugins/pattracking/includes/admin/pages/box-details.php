@@ -48,7 +48,7 @@ $wpsc_appearance_individual_ticket_page = get_option('wpsc_individual_ticket_pag
 		<?php
         }
         ?>
-	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
+	    <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button></button>
 
 <?php
 if (preg_match("/^[0-9]{7}-[0-9]{1,3}$/", $GLOBALS['id']) && $GLOBALS['pid'] == 'requestdetails') {
@@ -177,6 +177,13 @@ jQuery(document).ready(function(){
     'processing': true,
     'serverSide': true,
     'serverMethod': 'post',
+    'stateSave': true,
+    'stateSaveParams': function(settings, data) {
+      data.sg = jQuery('#searchGeneric').val();
+    },
+    'stateLoadParams': function(settings, data) {
+      jQuery('#searchGeneric').val(data.sg);
+    },
     'searching': false, // Remove default Search Control
     'ajax': {
        'url':'<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/box_details_processing.php',
@@ -238,6 +245,7 @@ jQuery(document).ready(function(){
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
+        dataTable.state.save();
         dataTable.draw();
     }
 });
@@ -245,17 +253,27 @@ jQuery(document).ready(function(){
 jQuery('#searchGeneric').on('input keyup paste', function () {
     var hasValue = jQuery.trim(this.value).length;
     if(hasValue == 0) {
+            dataTable.state.save();
             dataTable.draw();
         }
 });
 
 
 		function onAddTag(tag) {
+		    dataTable.state.save();
 			dataTable.draw();
 		}
 		function onRemoveTag(tag) {
-			dataTable.draw();
+		    dataTable.state.save();
+		    dataTable.draw();
 		}
+
+jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
+    jQuery('#searchGeneric').val('');
+    dataTable.column(0).checkboxes.deselectAll();
+	dataTable.state.clear();
+	dataTable.draw();
+});
 
     <?php
     // BEGIN ADMIN BUTTONS

@@ -287,6 +287,7 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchByProgramOffice').val('');
     jQuery('#searchByDigitizationCenter').val('');
     jQuery('#searchByBoxID').importTags('');
+    dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();
 	dataTable.draw();
 });
@@ -308,7 +309,7 @@ postvarsboxids : rows_selected.join(",")
 }, 
    function (response) {
        
-       
+       var boxidinfo = response.split('|')[1];
        var substring_false = "false";
        var substring_warn = "warn";
        var substring_true = "true";
@@ -320,12 +321,12 @@ postvarsboxids : rows_selected.join(",")
        
        if(response.indexOf(substring_warn) >= 0) {
        alert('One or more boxes that you selected are destroyed and it\'s label will not generate.');
-       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
+       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+boxidinfo, "_blank");
        }
        
        if(response.indexOf(substring_true) >= 0) {
        //alert('Success! All labels available.');
-       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+rows_string, "_blank");
+       window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/box_label.php?id="+boxidinfo, "_blank");
        }
       
    });

@@ -34,7 +34,7 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
   
   <div class="col-sm-12">
     	<button type="button" id="wpsc_individual_ticket_list_btn" onclick="location.href='admin.php?page=wpsc-tickets';" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="fa fa-list-ul"></i> <?php _e('Ticket List','supportcandy')?></button>
-		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" onclick="window.location.reload();" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
+		<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_refresh_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-retweet"></i> <?php _e('Reset Filters','supportcandy')?></button>
 <?php		
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
@@ -150,6 +150,19 @@ jQuery(document).ready(function(){
   var dataTable = jQuery('#tbl_templates_boxes').DataTable({
     'processing': true,
     'serverSide': true,
+    'stateSave': true,
+    'stateSaveParams': function(settings, data) {
+      data.sg = jQuery('#searchGeneric').val();
+      data.bid = jQuery('#searchByBoxID').val();
+      data.po = jQuery('#searchByProgramOffice').val();
+      data.dc = jQuery('#searchByDigitizationCenter').val();
+    },
+    'stateLoadParams': function(settings, data) {
+      jQuery('#searchGeneric').val(data.sg);
+      jQuery('#searchByBoxID').val(data.bid);
+      jQuery('#searchByProgramOffice').val(data.po);
+      jQuery('#searchByDigitizationCenter').val(data.dc);
+    },
     'serverMethod': 'post',
     'searching': false, // Remove default Search Control
     'ajax': {
@@ -207,30 +220,36 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
+        dataTable.state.save();
         dataTable.draw();
     }
 });
 
   jQuery("#searchByProgramOffice").change(function(){
+    dataTable.state.save();
     dataTable.draw();
 });
 
   jQuery("#searchByDigitizationCenter").change(function(){
+    dataTable.state.save();
     dataTable.draw();
 });
 
 jQuery('#searchGeneric').on('input keyup paste', function () {
     var hasValue = jQuery.trim(this.value).length;
     if(hasValue == 0) {
+            dataTable.state.save();
             dataTable.draw();
         }
 });
 
 
 		function onAddTag(tag) {
+		    dataTable.state.save();
 			dataTable.draw();
 		}
 		function onRemoveTag(tag) {
+		    dataTable.state.save();
 			dataTable.draw();
 		}
 
@@ -260,6 +279,16 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
                 
          }
     }, 0);
+});
+
+jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
+    jQuery('#searchGeneric').val('');
+    jQuery('#searchByBoxID').val('');
+    jQuery('#searchByProgramOffice').val('');
+    jQuery('#searchByDigitizationCenter').val('');
+      
+	dataTable.state.clear();
+	dataTable.draw();
 });
 
 <?php	

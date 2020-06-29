@@ -57,7 +57,7 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo");
+$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_boxinfo WHERE id <> -99999");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 

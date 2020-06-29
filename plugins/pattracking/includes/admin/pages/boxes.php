@@ -85,7 +85,7 @@ Enter one or more Box IDs:<br />
            <option value='East CUI'>East CUI</option>
            <option value='West'>West</option>
            <option value='West CUI'>West CUI</option>
-	   <option value='Not Assigned'>Not Assigned</option>
+           <option value='Not Assigned'>Not Assigned</option>
          </select>
 
 	                            </div>
@@ -284,10 +284,9 @@ jQuery("#searchByBoxID_tag").on('paste',function(e){
 
 jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchGeneric').val('');
-    jQuery('#searchByBoxID').val('');
     jQuery('#searchByProgramOffice').val('');
     jQuery('#searchByDigitizationCenter').val('');
-      
+    jQuery('#searchByBoxID').importTags('');
 	dataTable.state.clear();
 	dataTable.draw();
 });

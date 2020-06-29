@@ -47,7 +47,7 @@ if($method == "POST")
   ':tracking_number'    => $_POST["tracking_number"]
  );
 
- $query = "INSERT INTO wpqa_wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '0')";
+ $query = "INSERT INTO wpqa_wpsc_epa_shipping_tracking (ticket_id, company_name, status, tracking_number, recallrequest_id, return_id) VALUES (:ticket_id, :company_name, '', :tracking_number, '-99999',  '-99999')";
  $statement = $connect->prepare($query);
  $statement->execute($data);
  do_action('wpppatt_after_add_request_shipping_tracking', $_GET['ticket_id'], strtoupper($_POST["company_name"]).' - '.$_POST["tracking_number"]);

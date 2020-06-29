@@ -82,6 +82,7 @@ Enter one or more Document IDs:<br />
            <option value='East CUI'>East CUI</option>
            <option value='West'>West</option>
            <option value='West CUI'>West CUI</option>
+	   <option value='Not Assigned'>Not Assigned</option>
          </select>
 
 	                            </div>

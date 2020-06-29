@@ -15,13 +15,20 @@ $box_count = count($box_arr);
 
 $count = 0;
 
+$boxidarray = array();
+
 foreach($box_arr as $key => $value) { 
     
 $get_destroy_status = $wpdb->get_row("
-SELECT box_destroyed FROM wpqa_wpsc_epa_boxinfo 
+SELECT box_destroyed, box_id FROM wpqa_wpsc_epa_boxinfo 
 WHERE box_id = '" . $value . "'
 ");
 $destroy_status = $get_destroy_status->box_destroyed;
+$box_id = $get_destroy_status->box_id;
+
+if ($destroy_status == 0) {
+array_push($boxidarray, $box_id);
+}
 
 if ($destroy_status == 1) {
 $count++;
@@ -29,17 +36,18 @@ $count++;
 
 }
 
+$boxidarray_val = implode(',', $boxidarray);
 
 if ($box_count == $count) {
-echo 'false';
+echo 'false'.'|'.$boxidarray_val;
 }
 
 if ($count < $box_count && $count != 0) {
-echo 'warn';
+echo 'warn'.'|'.$boxidarray_val;
 }
 
 if ($count < $box_count && $count == 0) {
-echo 'true';
+echo 'true'.'|'.$boxidarray_val;
 }
 
 } else {

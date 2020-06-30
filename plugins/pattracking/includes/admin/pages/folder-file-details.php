@@ -49,41 +49,21 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			$folderfile_access_type = $folderfile_details->access_type;
 			$folderfile_source_format = $folderfile_details->source_format;
 			$folderfile_rights = $folderfile_details->rights;
-			$folderfile_contract_number = $folderfile_details->contract_number;
-			$folderfile_grant_number = $folderfile_details->grant_number;
+			//$folderfile_contract_number = $folderfile_details->contract_number;
+			//$folderfile_grant_number = $folderfile_details->grant_number;
 			$folderfile_file_location = $folderfile_details->file_location;
 			$folderfile_file_name = $folderfile_details->file_name;
 			$folderfile_folderdocinfo_id = $folderfile_details->folderdocinfo_id;
+			
 			$folderfile_essential_record = $folderfile_details->essential_record;
 			$folderfile_validation = $folderfile_details->validation;
 			$folderfile_validation_user = $folderfile_details->validation_user_id;				
 		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
-		    
+		    $folderfile_identifier = $folderfile_details->folder_identifier;
 		    $folderfile_freeze = $folderfile_details->freeze;
 
             $user = get_user_by( 'id', $folderfile_validation_user);
             
-            //split up sql statement to split program office, record schedule, and location
-			/*$box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id, wpqa_terms.name as location, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.position as position, wpqa_epa_record_schedule.Record_Schedule_Number as rsnum, wpqa_wpsc_epa_program_office.office_acronym as program_office
-
-FROM wpqa_epa_record_schedule, wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_storage_location, wpqa_wpsc_ticket, wpqa_terms
-
-WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
-AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
-
-			$box_boxid = $box_details->box_id;
-			$box_ticketid = $box_details->ticket_id;
-			$box_requestid = $box_details->request_id;
-			$box_rs = $box_details->rsnum;
-			$box_po = $box_details->program_office;
-			$request_id = substr($box_boxid, 0, 7);
-			$box_location = $box_details->location;
-			$box_aisle = $box_details->aisle;
-			$box_bay = $box_details->bay;
-			$box_shelf = $box_details->shelf;
-			$box_position = $box_details->position;*/
-			
-			//id, request_id, ticket_id, box_id
 		    $box_details = $wpdb->get_row("SELECT wpqa_wpsc_epa_boxinfo.id, wpqa_wpsc_epa_boxinfo.box_destroyed, wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_boxinfo.ticket_id as ticket_id
 FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_epa_folderdocinfo, wpqa_wpsc_ticket
 WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_folderdocinfo.box_id = wpqa_wpsc_epa_boxinfo.id AND wpqa_wpsc_epa_boxinfo.id = '" . $folderfile_boxid . "'");
@@ -290,11 +270,15 @@ echo '</div>';
 			if (!empty($folderfile_rights)) {
 				echo "<strong>Rights:</strong> " . $folderfile_rights . "<br />";
 			}
-			if (!empty($folderfile_contract_number)) {
+			/*if (!empty($folderfile_contract_number)) {
 				echo "<strong>Contract #:</strong> " . $folderfile_contract_number . "<br />";
 			}
 			if (!empty($folderfile_grant_number)) {
 				echo "<strong>Grant #:</strong> " . $folderfile_grant_number . "<br />";
+			}*/
+			
+			if(!empty($folderfile_identifier)) {
+			    echo "<strong>Folder Identifier:</strong> " . $folderfile_identifier . "<br />";
 			}
 			
 			if($folderfile_essential_record == 1) {

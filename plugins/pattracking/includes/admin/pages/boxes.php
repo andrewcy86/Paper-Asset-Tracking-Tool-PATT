@@ -219,6 +219,10 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
     ]
   });
 
+  jQuery( window ).unload(function() {
+  dataTable.column(0).checkboxes.deselectAll();
+});
+
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
         dataTable.state.save();
@@ -289,7 +293,8 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchByBoxID').importTags('');
     dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();
-	dataTable.draw();
+	dataTable.destroy();
+	location.reload();
 });
 
 <?php	

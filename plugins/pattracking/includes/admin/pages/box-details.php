@@ -133,7 +133,7 @@ width: 204px;
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
 <form id="frm-example" method="POST">
-<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
+<table id="tbl_templates_box_details" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
         <thead>
             <tr>
                     <?php		
@@ -168,7 +168,7 @@ width: 204px;
 <script>
 
 jQuery(document).ready(function(){
-  var dataTable = jQuery('#tbl_templates_boxes').DataTable({
+  var dataTable = jQuery('#tbl_templates_box_details').DataTable({
     'autoWidth': false,
     'processing': true,
     'serverSide': true,
@@ -238,6 +238,10 @@ jQuery(document).ready(function(){
        { data: 'validation' },
     ]
   });
+  
+  jQuery( window ).unload(function() {
+  dataTable.column(0).checkboxes.deselectAll();
+});
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
@@ -268,7 +272,8 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchGeneric').val('');
     dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();
-	dataTable.draw();
+	dataTable.destroy();
+	location.reload();
 });
 
     <?php

@@ -111,7 +111,7 @@ color: rgb(255, 255, 255) !important;
 <input type="text" id="searchGeneric" class="form-control" name="custom_filter[s]" value="" autocomplete="off" placeholder="Search...">
 <i class="fa fa-search wpsc_search_btn wpsc_search_btn_sarch"></i>
 <br /><br />
-<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
+<table id="tbl_templates_folderfile" class="table table-striped table-bordered" cellspacing="5" cellpadding="5" width="100%">
         <thead>
             <tr>
                 <?php		
@@ -159,7 +159,7 @@ $box_id = $convert_box_id->id;
 
 jQuery(document).ready(function(){
 
-  var dataTable = jQuery('#tbl_templates_boxes').DataTable({
+  var dataTable = jQuery('#tbl_templates_folderfile').DataTable({
     'processing': true,
     'serverSide': true,
     'serverMethod': 'post',
@@ -237,6 +237,10 @@ jQuery(document).ready(function(){
        { data: 'validation' },
     ]
   });
+  
+  jQuery( window ).unload(function() {
+  dataTable.column(0).checkboxes.deselectAll();
+});
 
   jQuery(document).on('keypress',function(e) {
     if(e.which == 13) {
@@ -280,7 +284,8 @@ jQuery('#wpsc_individual_refresh_btn').on('click', function(e){
     jQuery('#searchByDocID').importTags('');
     dataTable.column(0).checkboxes.deselectAll();
 	dataTable.state.clear();
-	dataTable.draw();
+	dataTable.destroy();
+	location.reload();
 });
 
 <?php		

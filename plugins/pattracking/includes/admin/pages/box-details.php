@@ -13,10 +13,6 @@ $GLOBALS['page'] = $_GET['page'];
 
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
 
-//include_once WPPATT_ABSPATH . 'includes/class-wppatt-functions.php';
-//$load_styles = new wppatt_Functions();
-//$load_styles->addStyles();
-
 $general_appearance = get_option('wpsc_appearance_general_settings');
 
 $action_default_btn_css = 'background-color:'.$general_appearance['wpsc_default_btn_action_bar_bg_color'].' !important;color:'.$general_appearance['wpsc_default_btn_action_bar_text_color'].' !important;';
@@ -353,8 +349,27 @@ jQuery('#wpsc_individual_label_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
      var arr = {};
-    // Loop through array
-    [].forEach.call(rows_selected, function(inst){
+     
+     jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/documentlabels_processing.php',{
+postvarsfolderdocid : rows_selected.join(",")
+}, 
+   function (response) {
+       
+       var folderdocinfo = response.split('|')[1];
+       var folderdocinfo_array = folderdocinfo.split(',');
+       var substring_false = "false";
+       var substring_warn = "warn";
+       var substring_true = "true";
+
+       if(response.indexOf(substring_false) >= 0) {
+       alert('Cannot print folder/file labels for documents that are not assigned to a location.');
+       }
+       
+       if(response.indexOf(substring_warn) >= 0) {
+       alert('One or more documents that you selected do not have an assigned location and it\'s label will not generate.');
+           // Loop through array
+    [].forEach.call(folderdocinfo_array, function(inst){
         var x = inst.split("-")[2].substr(1);
         // Check if arr already has an index x, if yes then push
         if(arr.hasOwnProperty(x)) 
@@ -373,6 +388,34 @@ window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sh
 } else {
 alert('Please select a folder/file.');
 }
+       }
+       
+       if(response.indexOf(substring_true) >= 0) {
+       //alert('Success! All labels available.');
+           // Loop through array
+    [].forEach.call(folderdocinfo_array, function(inst){
+        var x = inst.split("-")[2].substr(1);
+        // Check if arr already has an index x, if yes then push
+        if(arr.hasOwnProperty(x)) 
+            arr[x].push(inst);
+        // Or else create a new one with inst as the first element.
+        else 
+            arr[x] = [inst];
+    });
+if(Array.isArray(arr[1]) || Array.isArray(arr[2]) ) {
+if (Array.isArray(arr[1]) && arr[1].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/folder_separator_sheet.php?id="+arr[1].toString(), "_blank");
+}
+if (Array.isArray(arr[2]) && arr[2].length) {
+window.open("<?php echo WPPATT_PLUGIN_URL; ?>includes/ajax/pdf/file_separator_sheet.php?id="+arr[2].toString(), "_blank");
+}
+} else {
+alert('Please select a folder/file.');
+}
+       }
+      
+   });
+
 });
 
 <?php
@@ -453,23 +496,6 @@ jQuery('#freeze_alert').hide();
   </div>
  
  <?php
-    //get widget fields
-    //$location_details = $wpdb->get_row("SELECT acronym, location, shelf, bay, record_schedule_number FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule WHERE wpqa_wpsc_epa_program_office.id = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
-    /*$location_details = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id as request_id, wpqa_wpsc_epa_program_office.office_acronym as acronym, wpqa_terms.name as digitization_center, locations, wpqa_wpsc_epa_storage_location.shelf as shelf, wpqa_wpsc_epa_storage_location.bay as bay, wpqa_wpsc_epa_storage_location.aisle as aisle, wpqa_wpsc_epa_storage_location.position as position, record_schedule_number 
-FROM wpqa_wpsc_epa_program_office, wpqa_wpsc_epa_boxinfo, wpqa_epa_record_schedule, wpqa_wpsc_epa_location_status, wpqa_wpsc_epa_storage_location, wpqa_terms, wpqa_wpsc_ticket
-WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AND wpqa_wpsc_epa_program_office.office_code = wpqa_wpsc_epa_boxinfo.program_office_id AND wpqa_epa_record_schedule.id = wpqa_wpsc_epa_boxinfo.record_schedule_id AND wpqa_wpsc_epa_location_status.id = wpqa_wpsc_epa_boxinfo.location_status_id AND wpqa_wpsc_epa_storage_location.id = wpqa_wpsc_epa_boxinfo.storage_location_id
-AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'");
-
-    $location_request_id = $location_details->request_id;
-    $location_program_office = $location_details->acronym;
-    $location_digitization_center = $location_details->digitization_center;
-    $location_general = $location_details->locations;
-    $location_aisle = $location_details->aisle;
-    $location_bay = $location_details->bay;
-    $location_shelf = $location_details->shelf;
-    $location_position = $location_details->position;
-    $location_record_schedule = $location_details->record_schedule_number;*/
-    
     $request_id = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_ticket.id = wpqa_wpsc_epa_boxinfo.ticket_id AND wpqa_wpsc_epa_boxinfo.box_id = '" . $GLOBALS['id'] . "'"); 
     $location_request_id = $request_id->request_id;
     

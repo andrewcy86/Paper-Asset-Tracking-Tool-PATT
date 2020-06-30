@@ -18,9 +18,10 @@ if(
 !empty($_POST['postvarsat']) ||
 !empty($_POST['postvarssf']) ||
 !empty($_POST['postvarsrights']) ||
-!empty($_POST['postvarscn']) ||
-!empty($_POST['postvarsgn']) ||
-!empty($_POST['postvarser'])
+//!empty($_POST['postvarscn']) ||
+//!empty($_POST['postvarsgn']) ||
+!empty($_POST['postvarser']) ||
+!empty($_POST['postvarsfi'])
 ){
    $folderfileid = $_POST['postvarsffid'];
    $pattdocid = $_POST['postvarspdid'];
@@ -36,9 +37,10 @@ if(
    $access_type = $_POST['postvarsat']; 
    $source_format = $_POST['postvarssf'];
    $rights = $_POST['postvarsrights']; 
-   $contract_number = $_POST['postvarscn']; 
-   $grant_number = $_POST['postvarsgn'];
+   //$contract_number = $_POST['postvarscn']; 
+   //$grant_number = $_POST['postvarsgn'];
    $essential_record = $_POST['postvarser'];
+   $folder_identifier = $_POST['postvarsfi'];
 
 $request_id = substr($pattdocid, 0, 7);
 $get_ticket_id = $wpdb->get_row("
@@ -69,8 +71,9 @@ folderdocinfo_id = '" . $pattdocid . "'
    if ($get_folderdocinfo->access_type == '' ) { $old_access_type = 'None'; } else { $old_access_type = $get_folderdocinfo->access_type; }
    if ($get_folderdocinfo->source_format == '' ) { $old_source_format = 'None'; } else { $old_source_format = $get_folderdocinfo->source_format; }
    if ($get_folderdocinfo->rights == '' ) { $old_rights = 'None'; } else { $old_rights = $get_folderdocinfo->rights; }
-   if ($get_folderdocinfo->contract_number == '' ) { $old_contract_number = 'None'; } else { $old_contract_number = $get_folderdocinfo->contract_number; }
-   if ($get_folderdocinfo->grant_number == '' ) { $old_grant_number = 'None'; } else { $old_grant_number = $get_folderdocinfo->grant_number; }
+   //if ($get_folderdocinfo->contract_number == '' ) { $old_contract_number = 'None'; } else { $old_contract_number = $get_folderdocinfo->contract_number; }
+   //if ($get_folderdocinfo->grant_number == '' ) { $old_grant_number = 'None'; } else { $old_grant_number = $get_folderdocinfo->grant_number; }
+   if ($get_folderdocinfo->folder_identifier == '' ) { $old_folder_identifier = 'None'; } else { $old_folder_identifier = $get_folderdocinfo->folder_identifier; }
    $old_erval = $get_folderdocinfo->essential_record;
    
 $metadata_array = array();
@@ -202,7 +205,7 @@ array_push($metadata_array,'Rights: '.$old_rights.' > '.$rights);
 $wpdb->update($table_name, $data_update, $data_where);
 }
 
-if(!empty($contract_number)) {
+/*if(!empty($contract_number)) {
 $data_update = array('contract_number' => $contract_number);
 $data_where = array('id' => $folderfileid);
 array_push($metadata_array,'Contract Number: '.$old_contract_number.' > '.$contract_number);
@@ -213,6 +216,13 @@ if(!empty($grant_number)) {
 $data_update = array('grant_number' => $grant_number);
 $data_where = array('id' => $folderfileid);
 array_push($metadata_array,'Grant Number: '.$old_grant_number.' > '.$grant_number);
+$wpdb->update($table_name, $data_update, $data_where);
+}*/
+
+if(!empty($folder_identifier)) {
+$data_update = array('folder_identifier' => $folder_identifier);
+$data_where = array('id' => $folderfileid);
+array_push($metadata_array,'Folder Identifier: '.$old_folder_identifier.' > '.$folder_identifier);
 $wpdb->update($table_name, $data_update, $data_where);
 }
 

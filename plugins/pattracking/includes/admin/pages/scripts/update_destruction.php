@@ -92,10 +92,12 @@ $ticket_id = $get_ticket_id->id;
 
 if ($get_destruction_val == 1){
 $destruction_reversal = 1;
-$box_data_update = array('box_destroyed' => 0);
+$box_data_update = array('box_destroyed' => 0, 'location_status_id' => '-99999');
 $box_data_where = array('box_id' => $key);
 $wpdb->update($box_table_name , $box_data_update, $box_data_where);
+
 do_action('wpppatt_after_box_destruction_unflag', $ticket_id, $key);
+
 }
 
 if ($get_destruction_val == 0){

@@ -847,9 +847,30 @@ ADD ABOVE
 ```
 $filter = apply_filters('ticket_filter_the_filter',$filter, $order_key, $order); // PATT BEGIN - Location Filtering, allows sidebar filters - PATT END	
 ```
+
 ##### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
 FIND ALL INSTANCES OF
 ```
 <?php if($current_user->has_cap('wpsc_agent')): ?>
 ```
 REMOVE LINE DIRECTLY BELOW
+
+##### /wpsc-canned-reply/includes/admin/wpsc_submit_canned_reply_post.php
+FIND
+```
+<button type="button" onclick="javascript:wpsc_submit_canned_reply_post();" class="btn" style="<?php echo $canned_reply_btn_css?>">
+```
+ADD ABOVE
+```
+<?php
+$agent_permissions = $wpscfunction->get_current_agent_permissions();
+if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
+{
+?>
+```
+ADD TO LAST LINE
+```
+<?php
+}
+?>
+```

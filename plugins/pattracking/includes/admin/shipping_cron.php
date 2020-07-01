@@ -32,7 +32,7 @@ $url = "http://production.shippingapis.com/shippingAPI.dll";
 $service = "TrackV2";
 
 $xml = rawurlencode("
-<TrackRequest USERID='214USENV8049'>
+<TrackRequest USERID='********'>
     <TrackID ID=\"".$trackingNumber."\"></TrackID>
     </TrackRequest>");
 

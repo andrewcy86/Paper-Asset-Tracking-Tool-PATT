@@ -74,12 +74,12 @@ $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
 
 if(($sum_total_val != $sum_validation) || ($request_status != 68)) {
-    echo $key.' : ';
+    echo '<strong>'.$key.'</strong> : ';
     echo 'Please ensure all documents are validated and the request status is approved for destruction before destroying the box.';
     
 if ($counter > 0) {
-echo PHP_EOL;
-echo PHP_EOL;
+echo '<br />';
+echo '<br />';
 }
 
 } else {
@@ -134,19 +134,19 @@ do_action('wpppatt_after_box_destruction', $ticket_id, $key);
 }
 
 if ($destruction_reversal == 1) {
-echo $key.' : ';
+echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated. A box destruction has been reversed.";
 if ($counter > 0) {
-echo PHP_EOL;
-echo PHP_EOL;
+echo '<br />';
+echo '<br />';
 }
 
 } else {
-echo $key.' : ';
+echo '<strong>'.$key.'</strong> : ';
 echo "Box destruction has been updated";
 if ($counter > 0) {
-echo PHP_EOL;
-echo PHP_EOL;
+echo '<br />';
+echo '<br />';
 }
 }
 

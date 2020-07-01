@@ -142,8 +142,8 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 
 <link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/css/dataTables.checkboxes.css" rel="stylesheet" />
 <script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.11/js/dataTables.checkboxes.min.js"></script>
-    
-  
+
+ 
 <script>
 
 jQuery(document).ready(function(){
@@ -337,6 +337,25 @@ postvarsboxids : rows_selected.join(",")
    });
 
 });
+
+function custom_alert( message, title ) {
+    if ( !title )
+        title = 'Alert';
+
+    if ( !message )
+        message = 'No Message to Display.';
+
+    jQuery('<div></div>').html( message ).dialog({
+        title: title,
+        resizable: false,
+        modal: true,
+        buttons: {
+            'Ok': function()  {
+                jQuery( this ).dialog( 'close' );
+            }
+        }
+    });
+}
 jQuery('#wpsc_box_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -345,7 +364,22 @@ jQuery('#wpsc_box_destruction_btn').on('click', function(e){
 postvarsboxid : rows_selected.join(",")
 }, 
    function (response) {
-      if(!alert(response)){dataTable.ajax.reload( null, false );}
+      //if(!alert(response)){
+      
+      wpsc_modal_open('Destruction Completed');
+		  var data = {
+		    action: 'wpsc_get_destruction_completed',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
+          dataTable.ajax.reload( null, false );
+      //}
    });
 });
 
@@ -365,3 +399,21 @@ postvarsboxid : rows_selected.join(",")
 </div>
 </div>
 </div>
+
+<!-- Pop-up snippet start -->
+<div id="wpsc_popup_background" style="display:none;"></div>
+<div id="wpsc_popup_container" style="display:none;">
+  <div class="bootstrap-iso">
+    <div class="row">
+      <div id="wpsc_popup" class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        <div id="wpsc_popup_title" class="row"><h3>Modal Title</h3></div>
+        <div id="wpsc_popup_body" class="row">I am body!</div>
+        <div id="wpsc_popup_footer" class="row">
+          <button type="button" class="btn wpsc_popup_close"><?php _e('Close','supportcandy');?></button>
+          <button type="button" class="btn wpsc_popup_action"><?php _e('Save Changes','supportcandy');?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Pop-up snippet end -->

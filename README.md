@@ -612,7 +612,7 @@ array_push($dc_array, $dc_details);
 array_push($pl_array, $physical_location);
 }
 
-if (count(array_keys($dc_array, '666')) == count($dc_array) && !in_array(6, $pl_array)) {
+if (count(array_keys($dc_array, '666')) == count($dc_array) && !in_array('-99999', $pl_array) && !in_array(6, $pl_array)) {
 //PATT END
 ?>
 ```

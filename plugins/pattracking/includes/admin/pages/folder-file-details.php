@@ -333,8 +333,19 @@ postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+      //if(!alert(response)){window.location.reload();}
+      wpsc_modal_open('Validation');
+		  var data = {
+		    action: 'wpsc_get_validate_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
    });
 });
 
@@ -345,8 +356,18 @@ postvarsfolderdocid : jQuery('#doc_id').val(),
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+       wpsc_modal_open('Unauthorized Destruction');
+		  var data = {
+		    action: 'wpsc_unauthorized_destruction_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
    });
 });
 
@@ -357,8 +378,20 @@ postvarsfolderdocid : jQuery('#doc_id').val(),
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){window.location.reload();}
-      window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+      //if(!alert(response)){window.location.reload();}
+      //window.location.replace("<?php echo $subfolder_path; ?>/wp-admin/admin.php?pid=<?php echo $GLOBALS['pid']; ?>&page=filedetails&id=<?php echo $GLOBALS['id']; ?>");
+      wpsc_modal_open('Freeze');
+		  var data = {
+		    action: 'wpsc_get_freeze_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
    });
 });
 <?php

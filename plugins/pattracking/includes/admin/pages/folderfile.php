@@ -379,7 +379,22 @@ postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){dataTable.ajax.reload( null, false );}
+      //if(!alert(response)){
+      
+       wpsc_modal_open('Validation');
+		  var data = {
+		    action: 'wpsc_get_validate_ff',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
+          dataTable.ajax.reload( null, false );
+      //}
    });
 });
 
@@ -394,7 +409,20 @@ postvarpage : jQuery('#page').val(),
 boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){
+      //if(!alert(response)){
+      
+             wpsc_modal_open('Freeze');
+		  var data = {
+		    action: 'wpsc_get_freeze_ff',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
        var substring = "removed";
        dataTable.ajax.reload( null, false );
        
@@ -404,7 +432,7 @@ boxid : jQuery('#box_id').val()
        jQuery('#ud_alert').show(); 
        }
        
-      }
+      //}
    });
 });
 
@@ -419,7 +447,20 @@ postvarpage : jQuery('#page').val(),
 boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){
+      //if(!alert(response)){
+      
+       wpsc_modal_open('Unauthorized Destruction');
+		  var data = {
+		    action: 'wpsc_unauthorized_destruction_ff',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
        var substring = "removed";
        dataTable.ajax.reload( null, false );
        
@@ -429,7 +470,7 @@ boxid : jQuery('#box_id').val()
        jQuery('#ud_alert').show(); 
        }
        
-      }
+      //}
    });
 });
 <?php
@@ -476,3 +517,20 @@ jQuery("#searchByDocID_tag").on('paste',function(e){
 </div>
 </div>
 </div>
+<!-- Pop-up snippet start -->
+<div id="wpsc_popup_background" style="display:none;"></div>
+<div id="wpsc_popup_container" style="display:none;">
+  <div class="bootstrap-iso">
+    <div class="row">
+      <div id="wpsc_popup" class="col-xs-10 col-xs-offset-1 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+        <div id="wpsc_popup_title" class="row"><h3>Modal Title</h3></div>
+        <div id="wpsc_popup_body" class="row">I am body!</div>
+        <div id="wpsc_popup_footer" class="row">
+          <button type="button" class="btn wpsc_popup_close"><?php _e('Close','supportcandy');?></button>
+          <button type="button" class="btn wpsc_popup_action"><?php _e('Save Changes','supportcandy');?></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Pop-up snippet end -->

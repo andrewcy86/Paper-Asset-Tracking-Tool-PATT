@@ -129,12 +129,36 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           // Add RFID Reader Modal
           add_action('wp_ajax_wpsc_get_clear_rfid', array($backend, 'get_clear_rfid'));
           add_action('wp_ajax_wpsc_get_rfid_box_editor', array($backend, 'get_rfid_box_editor'));
+        
+          // Add Destruction Completed Modal to Box Dashboard
+          add_action('wp_ajax_wpsc_get_destruction_completed_b', array($backend, 'get_alert_replacement'));
           
-          // Add Unathorized Destruction Modal
-          add_action('wp_ajax_wpsc_get_unauthorized_destruction', array($backend, 'get_alert_replacement'));
- 
-          // Add Destruction Completed Modal
-          add_action('wp_ajax_wpsc_get_destruction_completed', array($backend, 'get_alert_replacement'));
+          // Add Unathorized Destruction Modal to Box Details
+          add_action('wp_ajax_wpsc_get_unauthorized_destruction_bd', array($backend, 'get_alert_replacement'));
+          
+          // Add Freeze Modal to Box Details
+          add_action('wp_ajax_wpsc_get_freeze_bd', array($backend, 'get_alert_replacement'));
+          
+          // Add Validate Modal to Box Details
+          add_action('wp_ajax_wpsc_get_validate_bd', array($backend, 'get_alert_replacement'));
+            
+          // Add Validate Modal on Folder File Dashboard
+          add_action('wp_ajax_wpsc_get_validate_ff', array($backend, 'get_alert_replacement'));
+    
+          // Add Freeze Modal on Folder File Dashboard
+          add_action('wp_ajax_wpsc_get_freeze_ff', array($backend, 'get_alert_replacement'));
+          
+          // Add Unauthorized Destruction Modal on Folder File Dashboard
+          add_action('wp_ajax_wpsc_unauthorized_destruction_ff', array($backend, 'get_alert_replacement'));
+          
+          // Add Validation Modal to Folder File Details
+          add_action('wp_ajax_wpsc_get_validate_ffd', array($backend, 'get_alert_replacement'));
+          
+          // Add Unauthorized Destruction to Folder File Details
+          add_action('wp_ajax_wpsc_unauthorized_destruction_ffd', array($backend, 'get_alert_replacement'));
+          
+          // Add Freeze to Folder File Details
+          add_action('wp_ajax_wpsc_get_freeze_ffd', array($backend, 'get_alert_replacement'));
           
           // Disable Show Agent Settings Button
           add_action('wpsc_show_agent_setting_button',false);

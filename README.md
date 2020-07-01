@@ -848,7 +848,7 @@ ADD ABOVE
 $filter = apply_filters('ticket_filter_the_filter',$filter, $order_key, $order); // PATT BEGIN - Location Filtering, allows sidebar filters - PATT END	
 ```
 ##### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
-FIND
+FIND ALL INSTANCES OF
 ```
 <?php if($current_user->has_cap('wpsc_agent')): ?>
 ```

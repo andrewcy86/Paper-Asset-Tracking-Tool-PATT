@@ -358,7 +358,7 @@ $validated = 1;
 $validated = 0;
 }
 
-$validated_array = array(673,674,66,68,67,69);
+$validated_array = array(66,68,67,69);
 
 if($assigned_val > 0) {
 $assigned = 1;

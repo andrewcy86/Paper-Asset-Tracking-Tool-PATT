@@ -21,8 +21,11 @@ $destruction_reversal = 0;
 $destruction_violation = 0;
 // Determine if violation occured
 
+$return_array = array();
+$recall_array = array();
 foreach($folderdocid_arr as $key) {    
-    $getfolderdocinfo_db_id = $wpdb->get_row(
+
+$getfolderdocinfo_db_id = $wpdb->get_row(
 "SELECT 
 id
 FROM wpqa_wpsc_epa_folderdocinfo
@@ -32,22 +35,24 @@ WHERE folderdocinfo_id = '" . $key . "'"
 $folderdocinfo_db_id = $getfolderdocinfo_db_id->id;
 
 $getrecall_violation_count = $wpdb->get_row(
-"SELECT 
-count(id) as count
-FROM wpqa_wpsc_epa_recallrequest
-WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'"
+"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_recallrequest WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $recall_violation_count = $getrecall_violation_count->count;
 
+if($recall_violation_count == 1) {
+array_push($recall_array,$folderdocinfo_db_id);
+}
+
 $getreturn_violation_count = $wpdb->get_row(
-"SELECT 
-count(id) as count
-FROM wpqa_wpsc_epa_recallrequest
-WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'"
+"SELECT IF( EXISTS( SELECT * FROM wpqa_wpsc_epa_return WHERE folderdoc_id = '" . $folderdocinfo_db_id . "'), 1, 0) as count"
 			);
 
 $return_violation_count = $getreturn_violation_count->count;
+
+if($return_violation_count == 1) {
+array_push($return_array,$folderdocinfo_db_id);
+}
 
 if ($recall_violation_count > 0 || $return_violation_count > 0) {
 $destruction_violation = 1;
@@ -109,19 +114,6 @@ $box_storage_status_occupied = $box_storage_status->occupied;
 $box_storage_status_remaining = $box_storage_status->remaining;
 $box_storage_status_remaining_added = $box_storage_status->remaining + 1;
 
-if ($get_destruction_val == 1 && $destruction_violation == 0){
-$destruction_reversal = 1;
-$data_update = array('unauthorized_destruction' => 0);
-$data_where = array('folderdocinfo_id' => $key);
-$wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $key);
-}
-
-if ($get_destruction_val == 0 && $destruction_violation == 0){
-$data_update = array('unauthorized_destruction' => 1);
-$data_where = array('folderdocinfo_id' => $key);
-$wpdb->update($table_name , $data_update, $data_where);
-
 $folder_file_count = $wpdb->get_row(
 "SELECT 
 count(id) as sum
@@ -139,6 +131,27 @@ WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 			);
 
 $destruction_count_sum = $destruction_count->sum;
+
+if ($get_destruction_val == 1 && $destruction_violation == 0){
+$destruction_reversal = 1;
+
+if($folder_file_count_sum == $destruction_count_sum) {
+$data_update = array('unauthorized_destruction' => 0, 'location_status_id' => '-99999');
+$data_where = array('folderdocinfo_id' => $key);
+$wpdb->update($table_name , $data_update, $data_where);
+} else {
+$data_update = array('unauthorized_destruction' => 0);
+$data_where = array('folderdocinfo_id' => $key);
+$wpdb->update($table_name , $data_update, $data_where);
+}
+
+do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $key);
+}
+
+if ($get_destruction_val == 0 && $destruction_violation == 0){
+$data_update = array('unauthorized_destruction' => 1);
+$data_where = array('folderdocinfo_id' => $key);
+$wpdb->update($table_name , $data_update, $data_where);
 
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
@@ -185,19 +198,6 @@ $get_request_id = substr($folderdocid_string, 0, 7);
 $get_ticket_id = $wpdb->get_row("SELECT id FROM wpqa_wpsc_ticket WHERE request_id = '".$get_request_id."'");
 $ticket_id = $get_ticket_id->id;
 
-if ($get_destruction_val == 1 && $destruction_violation == 0){
-$destruction_reversal = 1;
-$data_update = array('unauthorized_destruction' => 0);
-$data_where = array('folderdocinfo_id' => $folderdocid_string);
-$wpdb->update($table_name , $data_update, $data_where);
-do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $folderdocid_string);
-}
-
-if ($get_destruction_val == 0 && $destruction_violation == 0){
-$data_update = array('unauthorized_destruction' => 1);
-$data_where = array('folderdocinfo_id' => $folderdocid_string);
-$wpdb->update($table_name , $data_update, $data_where);
-
 $folder_file_count = $wpdb->get_row(
 "SELECT 
 count(id) as sum
@@ -215,6 +215,27 @@ WHERE unauthorized_destruction = 1 AND box_id = '" . $box_id . "'"
 			);
 
 $destruction_count_sum = $destruction_count->sum;
+
+if ($get_destruction_val == 1 && $destruction_violation == 0){
+$destruction_reversal = 1;
+
+if($folder_file_count_sum == $destruction_count_sum) {
+$data_update = array('unauthorized_destruction' => 0, 'location_status_id' => '-99999');
+$data_where = array('folderdocinfo_id' => $folderdocid_string);
+$wpdb->update($table_name , $data_update, $data_where);
+} else {
+$data_update = array('unauthorized_destruction' => 0);
+$data_where = array('folderdocinfo_id' => $folderdocid_string);
+$wpdb->update($table_name , $data_update, $data_where);
+}
+
+do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $folderdocid_string);
+}
+
+if ($get_destruction_val == 0 && $destruction_violation == 0){
+$data_update = array('unauthorized_destruction' => 1);
+$data_where = array('folderdocinfo_id' => $folderdocid_string);
+$wpdb->update($table_name , $data_update, $data_where);
 
 if($folder_file_count_sum == $destruction_count_sum) {
 //SET PHYSICAL LOCATION TO DESTROYED
@@ -258,29 +279,42 @@ if ($page_id == 'boxdetails') {
 if ($get_destruction_sum_val > 0) {
 
 if ($destruction_violation == 1) {
-echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction.". PHP_EOL ."Please check your selection.";
+    print_r($recall_array);
+    print_r($return_array);
+echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
+    //print_r($recall_array);
+    //print_r($return_array);
 echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
 } else {
+    //print_r($recall_array);
+    //print_r($return_array);
 echo "Unauthorized destruction has been updated";
 }
 }
 
 } else {
+    //print_r($recall_array);
+    //print_r($return_array);
 echo "All unathorized destruction flags removed";
 }
 }
 
 if ($page_id == 'filedetails' || $page_id == 'folderfile') {
 if ($destruction_violation == 1) {
-echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction.". PHP_EOL ."Please check your selection.";
+    //print_r($recall_array);
+    //print_r($return_array);
+echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
+    //print_r($recall_array);
+    //print_r($return_array);
 echo "Unauthorized destruction has been updated. A unauthorized destruction has been reversed.";
 } else {
+
 echo "Unauthorized destruction has been updated";
 }
 }

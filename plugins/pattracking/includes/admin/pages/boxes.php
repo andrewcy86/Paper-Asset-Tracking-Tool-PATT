@@ -338,24 +338,6 @@ postvarsboxids : rows_selected.join(",")
 
 });
 
-function custom_alert( message, title ) {
-    if ( !title )
-        title = 'Alert';
-
-    if ( !message )
-        message = 'No Message to Display.';
-
-    jQuery('<div></div>').html( message ).dialog({
-        title: title,
-        resizable: false,
-        modal: true,
-        buttons: {
-            'Ok': function()  {
-                jQuery( this ).dialog( 'close' );
-            }
-        }
-    });
-}
 jQuery('#wpsc_box_destruction_btn').on('click', function(e){
      var form = this;
      var rows_selected = dataTable.column(0).checkboxes.selected();
@@ -368,7 +350,7 @@ postvarsboxid : rows_selected.join(",")
       
       wpsc_modal_open('Destruction Completed');
 		  var data = {
-		    action: 'wpsc_get_destruction_completed',
+		    action: 'wpsc_get_destruction_completed_b',
 		    response_data: response
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {

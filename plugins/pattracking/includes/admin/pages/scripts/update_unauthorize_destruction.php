@@ -279,9 +279,9 @@ if ($page_id == 'boxdetails') {
 if ($get_destruction_sum_val > 0) {
 
 if ($destruction_violation == 1) {
-    print_r($recall_array);
-    print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
+    //print_r($recall_array);
+    //print_r($return_array);
+echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
@@ -298,7 +298,7 @@ echo "Unauthorized destruction has been updated";
 } else {
     //print_r($recall_array);
     //print_r($return_array);
-echo "All unathorized destruction flags removed";
+echo "All unauthorized destruction flags removed";
 }
 }
 
@@ -306,7 +306,7 @@ if ($page_id == 'filedetails' || $page_id == 'folderfile') {
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unathorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
+echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {

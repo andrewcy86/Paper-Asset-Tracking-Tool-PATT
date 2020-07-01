@@ -219,15 +219,10 @@ $destruction_count_sum = $destruction_count->sum;
 if ($get_destruction_val == 1 && $destruction_violation == 0){
 $destruction_reversal = 1;
 
-if($folder_file_count_sum == $destruction_count_sum) {
-$data_update = array('unauthorized_destruction' => 0, 'location_status_id' => '-99999');
-$data_where = array('folderdocinfo_id' => $folderdocid_string);
-$wpdb->update($table_name , $data_update, $data_where);
-} else {
 $data_update = array('unauthorized_destruction' => 0);
 $data_where = array('folderdocinfo_id' => $folderdocid_string);
 $wpdb->update($table_name , $data_update, $data_where);
-}
+
 
 do_action('wpppatt_after_unauthorized_destruction_unflag', $ticket_id, $folderdocid_string);
 }

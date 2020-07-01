@@ -581,7 +581,7 @@ REPLACE
 //PATT
 $selected = Patt_Custom_Func::get_default_digitization_center($ticket_id) == $category->term_id ? 'selected="selected"' : '';
 ```
-### Only display digitization center selector when nothing has been initial assigned.
+### Only display digitization center selector when nothing has been initialy assigned.
 ###### /supportcandy/includes/admin/tickets/individual_ticket/get_change_ticket_status.php
 ADD $wpdb to global
 ```
@@ -597,19 +597,22 @@ ADD ABOVE
 <?php
 //PATT BEGIN
 $box_details = $wpdb->get_results(
-"SELECT wpqa_terms.term_id as digitization_center
+"SELECT wpqa_terms.term_id as digitization_center, location_status_id as location
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
 INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
 $dc_array = array();
+$pl_array = array();
 foreach ($box_details as $info) {
 $dc_details = $info->digitization_center;
+$physical_location = $info->location;
 array_push($dc_array, $dc_details);
+array_push($pl_array, $physical_location);
 }
 
-if (count(array_keys($dc_array, '666')) == count($dc_array)) {
+if (count(array_keys($dc_array, '666')) == count($dc_array) && !in_array(6, $pl_array)) {
 //PATT END
 ?>
 ```

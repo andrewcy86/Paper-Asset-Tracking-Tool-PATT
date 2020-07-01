@@ -307,7 +307,20 @@ postvarpage : jQuery('#page').val(),
 boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){
+      //if(!alert(response)){
+      
+      	  wpsc_modal_open('Unathorized Destruction');
+		  var data = {
+		    action: 'wpsc_get_unauthorized_destruction',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+		  
        var substring_removed = "removed";
        var substring_select = "select";
        dataTable.ajax.reload( null, false );
@@ -318,7 +331,7 @@ boxid : jQuery('#box_id').val()
        jQuery('#ud_alert').show(); 
        }
        
-      }
+      //}
    });
 });
 

@@ -292,7 +292,20 @@ postvarsuserid : <?php $user_ID = get_current_user_id(); echo $user_ID; ?>,
 postvarpage : jQuery('#page').val()
 }, 
    function (response) {
-      if(!alert(response)){dataTable.ajax.reload( null, false );}
+      //if(!alert(response)){
+          wpsc_modal_open('Validation');
+		  var data = {
+		    action: 'wpsc_get_validate_bd',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+          dataTable.ajax.reload( null, false );
+      //}
    });
 });
 
@@ -309,9 +322,9 @@ boxid : jQuery('#box_id').val()
    function (response) {
       //if(!alert(response)){
       
-      	  wpsc_modal_open('Unathorized Destruction');
+      	  wpsc_modal_open('Unauthorized Destruction');
 		  var data = {
-		    action: 'wpsc_get_unauthorized_destruction',
+		    action: 'wpsc_get_unauthorized_destruction_bd',
 		    response_data: response
 		  };
 		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
@@ -347,7 +360,19 @@ postvarpage : jQuery('#page').val(),
 boxid : jQuery('#box_id').val()
 }, 
    function (response) {
-      if(!alert(response)){
+      //if(!alert(response)){
+      wpsc_modal_open('Freeze');
+		  var data = {
+		    action: 'wpsc_get_freeze_bd',
+		    response_data: response
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+      
        var substring_removed = "removed";
        var substring_select = "select";
        dataTable.ajax.reload( null, false );
@@ -358,7 +383,7 @@ boxid : jQuery('#box_id').val()
        jQuery('#freeze_alert').show(); 
        }
        
-      }
+      //}
    });
 });
 

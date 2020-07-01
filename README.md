@@ -403,7 +403,7 @@ $destruction = 1;
 $destruction = 0;
 }
 
-$destruction_array = array(3,4,670,5,63,64,672,671,65,6,673,674,66,68);
+$destruction_array = array(3,4,670,5,63,64,672,671,65,6,673,674,66);
 //PATT END
 ?>
 ```

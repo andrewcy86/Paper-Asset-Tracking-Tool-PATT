@@ -10,35 +10,6 @@ REMOVE
 <button type="button" id="wpsc_individual_clone_btn" onclick="wpsc_get_clone_ticket(<?php echo $ticket_id ?>)" class="btn btn-sm wpsc_action_btn" style="<?php echo $action_default_btn_css?>"><i class="far fa-clone"></i> <?php _e('Clone','supportcandy')?></button>
 <?php endif;?>
 ```
-
-### Remove unused Request Fields Widget
-###### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
-FIND
-```
-				<?php 
-					if ( $ticket_widget->slug == "ticket-fields" && $flag ):
-							
-							?>
-```
-REPLACE WITH
-```
-				<?php 
-					if ( $ticket_widget->slug == "ticket-fields" && $flag ):
-							
-							?>
-							<!--
-```
-							
-FIND
-```
-<?php do_action( 'wpsc_after_ticket_fields_widget', $ticket_id,$fields)?>
-</div>
-```
-REPLACE WITH
-```
-<?php do_action( 'wpsc_after_ticket_fields_widget', $ticket_id,$fields)?>
-</div> --!>
-```
 					    
 ### Format the request id on the ticket page. 
 ###### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php

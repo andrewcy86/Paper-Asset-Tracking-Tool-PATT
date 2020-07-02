@@ -32,7 +32,7 @@ $url = "http://production.shippingapis.com/shippingAPI.dll";
 $service = "TrackV2";
 
 $xml = rawurlencode("
-<TrackRequest USERID='********'>
+<TrackRequest USERID='558ENVIR2685'>
     <TrackID ID=\"".$trackingNumber."\"></TrackID>
     </TrackRequest>");
 
@@ -77,7 +77,7 @@ $shipped_array = array();
 
 $get_unique_tickets = $wpdb->get_results(
 	"SELECT DISTINCT ticket_id
-FROM wpqa_wpsc_epa_shipping_tracking"
+FROM wpqa_wpsc_epa_shipping_tracking WHERE id <> '-99999'"
 );
 
 foreach ($get_unique_tickets as $item) {
@@ -86,20 +86,11 @@ $ticket_id = $item->ticket_id ;
 $ticket_data = $wpscfunction->get_ticket($ticket_id);
 $status_id   	= $ticket_data['ticket_status'];
 
-// $get_shipped_status = $wpdb->get_results(
-// 	"SELECT shipped
-// FROM wpqa_wpsc_epa_shipping_tracking
-// WHERE ticket_id = " . $item->ticket_id
-// );
-
-
-$args = [
-    'select' => 'shipped',
-    'where' => ['ticket_id', $item->ticket_id]
-];
-$wpqa_wpsc_epa_shipping_tracking = new WP_CUST_QUERY('wpqa_wpsc_epa_shipping_tracking');
-$get_shipped_status = $wpqa_wpsc_epa_shipping_tracking->get_results($args, false);
-
+$get_shipped_status = $wpdb->get_results(
+ 	"SELECT shipped
+ FROM wpqa_wpsc_epa_shipping_tracking
+ WHERE ticket_id = " . $item->ticket_id
+ );
 
 foreach ($get_shipped_status as $shipped) {
 	array_push($shipped_array, $shipped->shipped);
@@ -109,4 +100,6 @@ if (($status_id == 4) && (!in_array(0, $shipped_array))) {
 $wpscfunction->change_status($item->ticket_id, 5);   
 }
 	}
+	
+	print_r($shipped_array);
 ?>

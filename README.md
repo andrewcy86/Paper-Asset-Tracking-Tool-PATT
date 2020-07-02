@@ -874,3 +874,8 @@ ADD TO LAST LINE
 }
 ?>
 ```
+
+##### Reset counts in DB
+UPDATE wpqa_usermeta
+SET meta_value = 'a:1:{s:16:"unresolved_agent";i:0;}'
+WHERE meta_key LIKE '%%_label_counts%%'

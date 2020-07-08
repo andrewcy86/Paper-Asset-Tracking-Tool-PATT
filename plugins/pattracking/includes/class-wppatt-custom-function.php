@@ -30,7 +30,7 @@ if (!class_exists('Patt_Custom_Func')) {
             global $wpdb; 
             $box_details = [];
             $args = [
-                'select' => "box_id, {$wpdb->prefix}wpsc_epa_boxinfo.id as Box_id_FK, program_office_id as box_prog_office_code, 
+                'select' => "box_id, {$wpdb->prefix}wpsc_epa_boxinfo.id as Box_id_FK, program_office_id as box_prog_office_code, box_destroyed,
                 {$wpdb->prefix}wpsc_epa_program_office.id as Program_Office_id_FK, 
                 {$wpdb->prefix}wpsc_epa_program_office.office_acronym,
                 {$wpdb->prefix}wpsc_epa_program_office.office_name,
@@ -64,6 +64,7 @@ if (!class_exists('Patt_Custom_Func')) {
                     'select' => "{$wpdb->prefix}wpsc_epa_folderdocinfo.box_id as Box_id_FK, 
                     {$wpdb->prefix}wpsc_epa_folderdocinfo.id as Folderdoc_Info_id_FK,
                     {$wpdb->prefix}wpsc_epa_folderdocinfo.folderdocinfo_id as Folderdoc_Info_id,
+                    {$wpdb->prefix}wpsc_epa_folderdocinfo.freeze,
                     {$wpdb->prefix}wpsc_epa_boxinfo.program_office_id,  
                     index_level,
                     title, 
@@ -116,6 +117,50 @@ if (!class_exists('Patt_Custom_Func')) {
             return $box_details;
         }
 
+
+        /**
+         * Update recall user data by recall id
+         * @return Id
+         */
+        public static function update_recall_user_by_id( $data ){
+
+            if(!isset($data['recall_id']) || !isset($data['user_id'])) {
+                return false;
+            }
+
+            global $wpdb;
+
+            $args = [
+                'select' => 'id',
+                'where' => ['recallrequest_id', $data['recall_id']]
+            ];
+
+            $wpsc_recall_users = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_recallrequest_users");
+            $wpsc_recall_user_data = $wpsc_recall_users->get_results($args);
+            if(count($wpsc_recall_user_data) > 0){
+                foreach($wpsc_recall_user_data as $row_id){
+                     $wpsc_recall_users->delete($row_id->id);
+                }
+            }
+
+            if(is_array($data['user_id']) && count($data['user_id']) > 0){
+                foreach($data['user_id'] as $user_id){
+                    $data_req = [
+                        'recallrequest_id' => $data['recall_id'],
+                        'user_id'   => $user_id
+                    ];
+                   $insert_id = $wpsc_recall_users->insert($data_req); 
+                }
+            } else {
+                $data_req = [
+                    'recallrequest_id' => $data['recall_id'],
+                    'user_id'   => $data['user_id']
+                ];
+               $insert_id =  $wpsc_recall_users->insert($data_req); 
+            }
+            return true;
+        }
+
         /**
          * Insert recall data
          * @return Id
@@ -163,7 +208,7 @@ if (!class_exists('Patt_Custom_Func')) {
 				'status' => '',
 				'shipped' => 0,
 				'recallrequest_id' => $recall_insert_id, 
-				'return_id' => NULL
+				'return_id' => -99999
 			];
             
             $wpsc_shipping_method = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_shipping_tracking");
@@ -175,7 +220,8 @@ if (!class_exists('Patt_Custom_Func')) {
             // Return recall_id
             $num = $box_details;
             $str_length = 7;
-            $recall_id = substr("000000{$num}", -$str_length);
+            //$recall_id = substr("000000{$num}", -$str_length);
+            $recall_id = substr("000000{$recall_insert_id}", -$str_length);
 
             //return $box_details;           
             return $recall_id;
@@ -230,25 +276,44 @@ if (!class_exists('Patt_Custom_Func')) {
 
             if(is_array($where) && count($where) > 0){
                 foreach($where as $key => $whr) {
-                    if($key == 'filter') {
+                    if($key == 'custom') {
+                       $args['where']['custom'] = $whr;
+                    } elseif($key == 'filter') {
                         
-                        $ordeerby = isset($whr['orderby']) ? $whr['orderby'] : 'id';
+                        $orderby = isset($whr['orderby']) ? $whr['orderby'] : 'id';
                         $order = isset($whr['order']) ? $whr['order'] : 'DESC';
-                        $args['order'] = [$ordeerby, $order];
-                        if(isset($whr['records_per_page']) || isset($whr['paged'])){  
-                            $number_of_records =  isset($whr['records_per_page']) ? $whr['records_per_page'] : 20;
-                            $start = isset($whr['paged']) ? (($whr['paged']-1)*$whr['records_per_page']) : 0;
-                            $args['limit'] = [$start, $number_of_records];
+                        if($orderby == 'status') {
+                            $orderby = "{$wpdb->prefix}terms.name";
                         }
+                        $args['order'] = [$orderby, $order];
+                        if(isset($whr['records_per_page']) && $whr['records_per_page'] > 0){  
+                            $number_of_records =  isset($whr['records_per_page']) ? $whr['records_per_page'] : 20;
+                            $start = isset($whr['paged']) ? $whr['paged'] : 0;
+                            $args['limit'] = [$start, $number_of_records];        
+                        }
+                    } elseif($key == 'program_office_id') {
+                        // $storage_location_id = self::get_storage_location_id_by_dc($whr);
+                        // if(is_array($storage_location_id) && count($storage_location_id) > 0) {
+                        //     foreach($storage_location_id as $val){
+                        //         $dc_ids[] = $val->id;
+                        //     }
+                            $args['where'][] = [
+                                "{$wpdb->prefix}wpsc_epa_program_office.office_acronym", 
+                                $whr
+                            ];
+                        // }
                     } elseif($key == 'digitization_center') {
                         $storage_location_id = self::get_storage_location_id_by_dc($whr);
                         if(is_array($storage_location_id) && count($storage_location_id) > 0) {
                             foreach($storage_location_id as $val){
-                                $dc_ids[] = $val->id;
+                                if($val->id) {
+                                    $dc_ids[] = $val->id;
+                                }
                             }
+                            $dc_ids = implode(', ', $dc_ids);
                             $args['where'][] = [
                                 "{$wpdb->prefix}wpsc_epa_boxinfo.storage_location_id", 
-                                "(".implode(',', $dc_ids).")",
+                                "($dc_ids)",
                                 "AND",
                                 ' IN '
                             ];
@@ -273,6 +338,23 @@ if (!class_exists('Patt_Custom_Func')) {
                 }   
             }
 
+               $args['where'][] = [
+                                "{$wpdb->prefix}wpsc_epa_recallrequest.recall_id", 
+                                "0",
+                                "AND",
+                                ' > '
+                            ];
+
+                            // print_r($args['where']);
+            // $args['where']['custom'] =  isset($args['where']['custom']) ? $args['where']['custom'] . " AND {$wpdb->prefix}wpsc_epa_recallrequest.recall_id > 0" : " {$wpdb->prefix}wpsc_epa_recallrequest.recall_id > 0";
+
+
+            // $args['where'][] = ["{$wpdb->prefix}wpsc_epa_recallrequest.recall_id", 0, 'AND', '>'];
+
+
+            // print_r($where);  
+            // print_r($args);  
+
             $select_fields = [
                 "{$wpdb->prefix}wpsc_epa_recallrequest" => ['id', 'recall_id', 'expiration_date','request_date', 'request_receipt_date', 'return_date', 'updated_date', 'comments', 'recall_status_id'],
                 "{$wpdb->prefix}wpsc_epa_boxinfo" => ['ticket_id', 'box_id', 'storage_location_id', 'location_status_id', 'box_destroyed', 'date_created', 'date_updated'],
@@ -286,7 +368,9 @@ if (!class_exists('Patt_Custom_Func')) {
 
             foreach($select_fields as $key => $fields_array){
                 foreach($fields_array as $field) {
-                    if($key == "{$wpdb->prefix}epa_record_schedule"){
+                    if($key == "{$wpdb->prefix}wpsc_epa_recallrequest_users"){
+                        $select[] = "GROUP_CONCAT($key.user_id) as $field";
+                    } elseif($key == "{$wpdb->prefix}epa_record_schedule"){
                         $select[] = "CONCAT($key.Record_Schedule_Number, ': ' , $key.Schedule_Title) as $field";
                     } else {
                         $select[] = $key . '.' . $field;
@@ -294,6 +378,7 @@ if (!class_exists('Patt_Custom_Func')) {
                 }
             }
 
+            $args['groupby']  = "{$wpdb->prefix}wpsc_epa_recallrequest.recall_id";
             $args['select']  = implode(', ', $select);
             $args['join']  = [
                         [
@@ -351,23 +436,31 @@ if (!class_exists('Patt_Custom_Func')) {
             $box_details = $wpsc_epa_box->get_results($args);
 
             if(count($box_details) > 0 ){
-                $record_id = 0;
-                $count = 0;
                 foreach($box_details as $key => $record){
-                    if($record->id == $record_id) {
-                        unset($box_details[$key-1]);
-                        if(is_array($user_id)) {
-                            $user_id[] = $record->user_id;
-                            $box_details[$key]->user_id = $user_id;
-                        } else {
-                            $box_details[$key]->user_id = [$user_id, $record->user_id];
-                        }
+                    if(!empty($record->user_id)) {
+                        $record->user_id = explode(',', $record->user_id );
                     }
-                    $record_id = $record->id;
-                    $user_id = $record->user_id;
-                    $count++;
                 }
             }
+            
+            // if(count($box_details) > 0 ){
+            //     $record_id = 0;
+            //     $count = 0;
+            //     foreach($box_details as $key => $record){
+            //         if($record->id == $record_id) {
+            //             unset($box_details[$key-1]);
+            //             if(is_array($user_id)) {
+            //                 $user_id[] = $record->user_id;
+            //                 $box_details[$key]->user_id = $user_id;
+            //             } else {
+            //                 $box_details[$key]->user_id = [$user_id, $record->user_id];
+            //             }
+            //         }
+            //         $record_id = $record->id;
+            //         $user_id = $record->user_id;
+            //         $count++;
+            //     }
+            // }
             return $box_details;
         }
 
@@ -388,7 +481,7 @@ if (!class_exists('Patt_Custom_Func')) {
                         ]
             ];
             $args['where'] = [
-                ["{$wpdb->prefix}terms." . 'name', "'$location'"]
+                ["{$wpdb->prefix}terms.name", "$location"]
             ];
             $recall_req = new WP_CUST_QUERY("{$wpdb->prefix}terms");
             $storage_location_id = $recall_req->get_results( $args );
@@ -742,19 +835,12 @@ if (!class_exists('Patt_Custom_Func')) {
         public static function convert_box_request_id( $id )
         {
             global $wpdb;
-            $id = '"'.$id.'"';
-            $args = [
-                'select' => 'request_id',
-                'where' => [
-                    ['box_id',  $id],
-                    ['wpqa_wpsc_epa_boxinfo.ticket_id', 'wpqa_wpsc_ticket.id', 'AND'],
-                ]
-            ];
-            $wpqa_wpsc_box = new WP_CUST_QUERY("{$wpdb->prefix}wpsc_epa_boxinfo, {$wpdb->prefix}wpsc_ticket");
-            $request_key = $wpqa_wpsc_box->get_row($args, false);
 
-            $key = $request_key->request_id;
-            return $key;
+            $request_id_get = $wpdb->get_row("SELECT wpqa_wpsc_ticket.request_id as request_id FROM wpqa_wpsc_epa_boxinfo, wpqa_wpsc_ticket WHERE wpqa_wpsc_epa_boxinfo.box_id = '" . $id . "' AND wpqa_wpsc_epa_boxinfo.ticket_id = wpqa_wpsc_ticket.id");
+            
+            $request_id_val = $request_id_get->request_id;
+            
+            return $request_id_val;
         }
         
         //Convert patt request id to id

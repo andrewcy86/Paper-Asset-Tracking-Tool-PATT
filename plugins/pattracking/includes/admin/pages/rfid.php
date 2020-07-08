@@ -152,6 +152,7 @@ jQuery(document).ready(function(){
           data.searchByReaderID = readerid;
        }
     },
+    'lengthMenu': [[10, 25, 50, 100, 500, 1000], [10, 25, 50, 100, 500, 1000]],
     'columnDefs': [
          {
             'targets': 0,

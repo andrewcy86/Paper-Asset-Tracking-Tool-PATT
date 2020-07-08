@@ -36,8 +36,17 @@ SELECT (SELECT sum(validation = 1) FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id
     ) a");
 $sum_validation = $get_sum_validation->sum_validation;
 
+$get_sum_destruction = $wpdb->get_row("select count(id) as count_destruction
+    from wpqa_wpsc_epa_boxinfo where ticket_id = '" . $ticket_id . "' and box_destroyed = 1");
+$count_destruction = $get_sum_destruction->count_destruction;
+
+$get_sum_boxes = $wpdb->get_row("select count(id) as box_count
+    from wpqa_wpsc_epa_boxinfo where ticket_id = '" . $ticket_id . "'");
+$count_boxes = $get_sum_boxes->box_count;
+
 $validated = '';
 $assigned = '';
+$destruction = '';
 
 if($sum_total_val == $sum_validation) {
 $validated = 1;
@@ -45,7 +54,7 @@ $validated = 1;
 $validated = 0;
 }
 
-$validated_array = array(673,674,66,68,67,69);
+$validated_array = array(66,68,67,69);
 
 if($assigned_val > 0) {
 $assigned = 1;
@@ -54,6 +63,14 @@ $assigned = 0;
 }
 
 $assigned_array = array(3,4,670,5,63);
+
+if($count_boxes == $count_destruction) {
+$destruction = 1;
+} else {
+$destruction = 0;
+}
+
+$destruction_array = array(3,4,670,5,63,64,672,671,65,6,673,674,66);
 //PATT END
 ?>
 	<div class="form-group">
@@ -78,6 +95,9 @@ if (in_array($status->term_id, $validated_array) && $validated == 0) {
 if (in_array($status->term_id, $assigned_array) && $assigned == 1) {
     $disabled = 'disabled';
 }
+if (in_array($status->term_id, $destruction_array) && $destruction == 1) {
+    $disabled = 'disabled';
+}
 //PATT END
 
 echo '<option '.$selected.' value="'.$status->term_id.'" '.$disabled.'>'.$wpsc_custom_status_localize['custom_status_'.$status->term_id].'</option>';
@@ -89,19 +109,22 @@ echo '<option '.$selected.' value="'.$status->term_id.'" '.$disabled.'>'.$wpsc_c
 <?php
 //PATT BEGIN
 $box_details = $wpdb->get_results(
-"SELECT wpqa_terms.term_id as digitization_center
+"SELECT wpqa_terms.term_id as digitization_center, location_status_id as location
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_wpsc_epa_storage_location ON wpqa_wpsc_epa_boxinfo.storage_location_id = wpqa_wpsc_epa_storage_location.id
 INNER JOIN wpqa_terms ON  wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center
 WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 			);
 $dc_array = array();
+$pl_array = array();
 foreach ($box_details as $info) {
 $dc_details = $info->digitization_center;
+$physical_location = $info->location;
 array_push($dc_array, $dc_details);
+array_push($pl_array, $physical_location);
 }
 
-if (count(array_keys($dc_array, '666')) == count($dc_array)) {
+if (count(array_keys($dc_array, '666')) == count($dc_array) && !in_array('-99999', $pl_array) && !in_array(6, $pl_array)) {
 //PATT END
 ?>
 	<div class="form-group">

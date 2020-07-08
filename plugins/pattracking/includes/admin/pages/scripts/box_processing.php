@@ -157,7 +157,6 @@ while ($row = mysqli_fetch_assoc($boxRecords)) {
      "validation"=>$row['validation'],     
    );
 }
-
 ## Response
 $response = array(
   "draw" => intval($draw),

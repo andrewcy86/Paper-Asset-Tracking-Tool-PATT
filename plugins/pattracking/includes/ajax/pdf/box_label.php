@@ -3,6 +3,7 @@
 $path = preg_replace('/wp-content.*$/','',__DIR__);
 include($path.'wp-load.php');
 include($path . 'wp-content/plugins/pattracking/includes/class-wppatt-custom-function.php');
+$subfolder_path = site_url( '', 'relative'); 
 
 global $wpdb;
 
@@ -603,7 +604,7 @@ $url_id = $asset_id;
 }
             //$url_key = fetch_request_key();
             //QR Code of Request
-            $url = 'http://' . $_SERVER['SERVER_NAME'] . '/wordpress3/data/?id=' . $num;
+            $url = 'http://' . $_SERVER['SERVER_NAME'] . $subfolder_path .'/index.php/data/?id=' . $num;
             //$obj_pdf->writeHTML($url);
             $obj_pdf->write2DBarcode($url, 'QRCODE,H', $x_loc_2d, $y_loc_2d, '', 50, $style_barcode, 'N');
             //$obj_pdf->Cell(150, 50, $url, 0, 1);

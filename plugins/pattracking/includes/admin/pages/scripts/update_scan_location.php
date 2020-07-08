@@ -112,7 +112,7 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                 $new_A_B_S_only_storage_location = $aisle.'_'.$bay.'_'.$shelf;
 
                 /* 6/25/2020 - JM - Add logic to determine if a location is occupied. 
-                    Assign location change - Generate a message of the location is already taken.*/
+                    Assign location change - Generate a message stating that the location is already taken.*/
                     
                 $box_id_new_scan = $key;
                 

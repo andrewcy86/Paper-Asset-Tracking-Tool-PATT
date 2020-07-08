@@ -33,6 +33,15 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       
       add_action( 'wpppatt_after_box_metadata', array($this,'box_metadata'), 10, 3 );
       add_action( 'wpppatt_after_folder_doc_metadata', array($this,'folder_doc_metadata'), 10, 3 );
+      
+      add_action( 'wpppatt_after_recall_request_date', array( $this, 'recall_request_date' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_received_date', array( $this, 'recall_received_date' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_returned_date', array( $this, 'recall_returned_date' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_requestor', array( $this, 'recall_requestor' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_details_shipping', array( $this, 'recall_details_shipping' ), 10, 3); 
+      add_action( 'wpppatt_after_recall_cancelled', array( $this, 'recall_cancelled' ), 10, 2); 
+      add_action( 'wpppatt_after_recall_created', array( $this, 'recall_created' ), 10, 3); 
+      
     }
     
     // Freeze document
@@ -286,6 +295,131 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $args = apply_filters( 'wpsc_thread_args', $args );
       $wpscfunction->submit_ticket_thread($args);
     }
+    
+    // Recall Request Date Changed 
+    function recall_request_date ( $ticket_id, $recall_id, $request_date ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed Recall Request Date of Recall ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>','<strong>'. $request_date .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has changed Request Date to %2$s ','supportcandy'), '<strong>'.$recall_id.'</strong>','<strong>'. $request_date .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // NEW recall_received_date
+    function recall_received_date ( $ticket_id, $recall_id, $received_date ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed Recall Received Date of Recall ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>','<strong>'. $received_date .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has changed Received Date to %2$s ','supportcandy'), '<strong>'.$recall_id.'</strong>','<strong>'. $received_date .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // NEW recall_returned_date
+    function recall_returned_date ( $ticket_id, $recall_id, $returned_date ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed Recall Returned Date of Recall ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>','<strong>'. $returned_date .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has changed Returned Date to %2$s ','supportcandy'), '<strong>'.$recall_id.'</strong>','<strong>'. $returned_date .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // NEW recall_requestor
+    function recall_requestor ( $ticket_id, $recall_id, $recall_requestors ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed Recall Requestor of Recall ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>','<strong>'. $recall_requestors .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has changed Requestor to %2$s ','supportcandy'), '<strong>'.$recall_id.'</strong>','<strong>'. $recall_requestors .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // NEW recall_details_shipping
+    function recall_details_shipping ( $ticket_id, $recall_id, $new_shipping_tracking_carrier_string ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s changed Recall Shipping Details of Recall ID: %2$s to %3$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>','<strong>'. $new_shipping_tracking_carrier_string .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has changed Recall Shipping Details to %2$s ','supportcandy'), '<strong>'.$recall_id.'</strong>','<strong>'. $new_shipping_tracking_carrier_string .'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+        
+    // NEW Recall Cancelled - 
+    function recall_cancelled ( $ticket_id, $recall_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s cancelled the Recall of: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Recall ID: %1$s has been cancelled.','supportcandy'), '<strong>'.$recall_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    // NEW Recall Created - 
+    function recall_created ( $ticket_id, $recall_id, $item_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s has recalled %3$s. Recall ID: %2$s','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $recall_id .'</strong>', '<strong>'.$item_id.'</strong>' );
+      } else {
+        $log_str = sprintf( __('%1$s has been recalled. Recall ID: %2$s ','supportcandy'), '<strong>'.$item_id.'</strong>', '<strong>'.$recall_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+    
+    
+    
+    
+    //Podbelski - END - Recall Tickets
+    
 }
   
 endif;

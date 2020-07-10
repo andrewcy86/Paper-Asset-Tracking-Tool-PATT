@@ -128,6 +128,7 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         WPSC_PLUGIN_URL.'asset/images/admin_icon.png',
         25
       );
+
       add_submenu_page(
         'wpsc-tickets',
         __( 'Ticket List', 'supportcandy' ),
@@ -136,6 +137,7 @@ if ( ! class_exists( 'WPSC_Admin' ) ) :
         'wpsc-tickets',
         array($this,'tickets')
       );
+      
 // PATT Menu Items
 do_action('wpsc_add_submenu_page');
 $agent_permissions = $wpscfunction->get_current_agent_permissions();
@@ -144,6 +146,7 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 do_action('wpsc_add_admin_page');
 }
 // END PATT Menu Items
+
       add_submenu_page(
         'wpsc-tickets',
         __( 'Support Agents', 'supportcandy' ),

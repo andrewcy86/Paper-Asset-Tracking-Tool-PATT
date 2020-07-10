@@ -41,9 +41,10 @@
 
     const reg_scanning = /^\b(SCN-\d\d-e|SCN-\d\d-w)\b$/i; 
     
-    var physicalLocation_count = 0;
+    var POST_count = 0;
     
     jQuery(document).ready(function() {
+
         
           jQuery("textarea#boxid-textarea").focus();
  
@@ -148,7 +149,6 @@
 
                             }else if(reg_physicalLocation.test(last_scan_val)){
                                 
-                                physicalLocation_count = physicalLocation_count + 1;
                                 scanid_values.push(last_scan_val);
 
                             }else{                 
@@ -208,73 +208,62 @@
         		boxid_uniq = new Array(); 
         		
         		jQuery.each(lines,function(index, last_boxid_val){
-        
             			if (jQuery.inArray(last_boxid_val, boxid_uniq) ==-1)
             				boxid_uniq.push(last_boxid_val)
-
         		});  
         		
         		/* Remove empty array elements */
                 boxid_uniq = boxid_uniq.filter(item => item);
 
                     if(boxid_uniq.length > 0 && scanid_uniq.length > 0){
-                        if(physicalLocation_count > 0){
-                            
-                                var response = "The change was not submitted. The <strong>Location Scan</strong> cannot be applied to multiple Box ID's.";
-                                var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
-                                jQuery('.confirmation').append(confmessage);
-                                jQuery('.confirmation').css('display', 'inline'); 
-                            
-                        }else{
 
-                                       jQuery.post(
-                                        '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_scan_location.php',{ 
-                                            postvarsboxid: boxid_uniq,
-                                            postvarslocation: scanid_uniq
-                                            }, 
-                                            function (data) {
-                                                if(!alert(data)){
-                                                    jQuery.each(boxid_uniq, function(index, boxid_value) {
+                        POST_count++;
 
+                        if(POST_count >= 1){
+                            
+                         var islocation = 0;
+
+                            jQuery.each(scanid_uniq, function(index, scan_val) {
+
+                                    if(reg_physicalLocation.test(scan_val)){
+                                        islocation = 1;
+                                    }
+                            });
+                            
+                            alert( "\n" + islocation + "\n");
+                            
+                            if(islocation > 1 && boxid_uniq.length > 1){
+                                
+                                    var response = "The <strong>Location Scan</strong> cannot be assigned to multiple Box ID's.";
+                                    var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
+                                    jQuery('.confirmation').append(confmessage);
+                                    jQuery('.confirmation').css('display', 'inline'); 
+                                
+                            }else{
+    
+                                           jQuery.post(
+                                            '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_scan_location.php',{ 
+                                                postvarsboxid: boxid_uniq,
+                                                postvarslocation: scanid_uniq
+                                                }, 
+                                                function (data) {
+                                                    if(!alert(data)){
+        
                                                         var response = data;
                                                         var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;">' + response + '</small></i></div>';
                                                         jQuery('.confirmation').append(confmessage);
                                                         jQuery('.confirmation').css('display', 'inline');  
-                                                    });
-                                                }else{
-                                                    var response = "<strong>Not Updated</strong>. There was problem updating the database. Please try again.";
-                                                    var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
-                                                    jQuery('.confirmation').append(confmessage);
-                                                    jQuery('.confirmation').css('display', 'inline'); 
-                                                    
-                                                }
-                                    });
-                                    
-                                    /*
-                                        jQuery.ajax({
-                                            type: "POST",
-                                            url: 'includes/admin/pages/scripts/update_scan_location.php', 
-                                            data: { postvarsboxid: boxid_uniq, postvarslocation: scanid_uniq },
-                                            type: 'get',
-                                            dataType:'JSON',
-                                            success: function(data) {
-                                                
-                                                    jQuery.each(boxid_uniq, function(index, boxid_value) {
-                                                       
-                                                        var response = data;
-                                                        var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Updated ' + response + '</small></i></div>';
+    
+                                                    }else{
+                                                        var response = "<strong>Not Updated</strong>. There was problem updating the database. Please try again.";
+                                                        var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
                                                         jQuery('.confirmation').append(confmessage);
-                                                        jQuery('.confirmation').css('display', 'inline');  
-
-                                                    });
-                                            },
-                                            error: function(data) {
-                                                var response = data;
-                                                var confmessage = '<div class="col-md-8 col-md-offset-2 wpsc_thread_log" style="background-color:#D6EAF8 !important;color:#000000 !important;border-color:#C3C3C3 !important;"><strong>Please try again. </strong>' + response + '</small></i></div>';
-                                                jQuery('.confirmation').append(confmessage);
-                                                jQuery('.confirmation').css('display', 'inline'); 
-                                            }
-                                        });*/
+                                                        jQuery('.confirmation').css('display', 'inline'); 
+                                                        
+                                                    }
+                                        });
+                                        
+                            }
                         }
                     }else{
                                     var response = "The <strong>BoxID</strong> is missing or there are no <strong>Location Scan(s)</strong> to submit.";

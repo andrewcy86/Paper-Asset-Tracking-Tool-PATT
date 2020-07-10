@@ -2,6 +2,7 @@
 ## Support Candy Core Modification Documentation
 ### Determine database modifications by doing a diff merge on /supportcandy/includes/class-wpsc-install.php
 ### Copy over language .pot, .po and .mo files
+### Global find and replace: manage_options and edit_published_posts
 ### Remove the clone ticket button. 
 ###### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
 REMOVE
@@ -302,7 +303,7 @@ BELOW
         array($this,'tickets')
       );
 ```
-ADD
+REPLACE
 ```
 // PATT Menu Items
 do_action('wpsc_add_submenu_page');
@@ -312,6 +313,76 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 do_action('wpsc_add_admin_page');
 }
 // END PATT Menu Items
+
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Support Agents', 'supportcandy' ),
+        __( 'Support Agents', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-support-agents',
+        array($this,'support_agents')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Custom Fields', 'supportcandy' ),
+        __( 'Custom Fields', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-custom-fields',
+        array($this,'custom_fields')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Ticket List', 'supportcandy' ),
+        __( 'Ticket List', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-ticket-list',
+        array($this,'ticket_list')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Email Notifications', 'supportcandy' ),
+        __( 'Email Notifications', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-email-notifications',
+        array($this,'email_notifications')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Appearance', 'supportcandy' ),
+        __( 'Appearance', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-appearance',
+        array($this,'appearance_settings')
+      );
+      
+      //PATT do_action('wpsc_add_submenu_page');
+      
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Settings', 'supportcandy' ),
+        __( 'Settings', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-settings',
+        array($this,'settings')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'License', 'supportcandy' ),
+        __( 'License', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-license',
+        array($this,'licenses')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Addons', 'supportcandy' ),
+        __( 'Addons', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-add-ons',
+        array($this,'addons')
+      );
+    }
+  // PATT  
 ```
 COMMENT OUT
 ```
@@ -879,3 +950,7 @@ ADD TO LAST LINE
 UPDATE wpqa_usermeta
 SET meta_value = 'a:1:{s:16:"unresolved_agent";i:0;}'
 WHERE meta_key LIKE '%%_label_counts%%'
+
+##### Allow users with the Author role in Wordpress edit access
+Download "Multifind", a program that allows multiple files to be edited at once. Zip supportcandy folder in wordpress3 and extract in Multifind. Find "manage_options" and replace with "edit_published_posts". Zip the supportcandy folder you have just edited and upload to wordpress3 and extract into wordpress3.  
+**Note:** manage_options is a Wordpress function that restricts access to Wordpress admins, Supportcandy has restricted most pages to Wordpress admins.

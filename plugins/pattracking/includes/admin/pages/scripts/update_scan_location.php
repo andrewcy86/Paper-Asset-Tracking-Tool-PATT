@@ -126,7 +126,40 @@ if(isset($_POST['postvarsboxid']) && isset($_POST['postvarslocation'])){
                     $evaluated = true;
                 }
                 
+<<<<<<< HEAD
                 if(preg_match('/(\bcid-\d\d-e\b|\bcid-\d\d-w\b)|(\bcid-\d\d-east\scui\b|\bcid-\d\d-west\scui\b)|(\bcid-\d\d-east\b|\bcid-\d\d-west\b)|(\bcid-\d\d-eastcui\b|\bcid-\d\d-westcui\b)/gim', $value)) {
+=======
+                $scan_table_name = 'wpqa_wpsc_epa_scan_list';
+                $wpdb->insert($scan_table_name, array(
+                                'box_id' => esc_sql($key),
+                                $column_name => esc_sql(strtoupper($value)),
+                                'date_modified' => $date,
+                            ));
+
+                    $message = "Updated: Box ID " . $key . " with the following Cart ID: " . $value;
+                    do_action('wpppatt_after_shelf_location', $ticket_id, $box_id, $message);
+                    echo $message; 
+
+            } 
+            
+            if(preg_match('/^\d{1,3}A_\d{1,3}B_\d{1,3}S_\d{1,3}P_(E|W|ECUI|WCUI)$/i', $value)) {
+               
+                $column_name = 'shelf_location';
+                $position_array = explode('_', $value);
+
+                $aisle = substr($position_array[0], 0, -1);
+                $bay = substr($position_array[1], 0, -1);
+                $shelf = substr($position_array[2], 0, -1);
+                $position = substr($position_array[3], 0, -1);
+                $dc = $position_array[4];
+                $center_term_id = term_exists($dc);
+                $new_term_object = get_term( $center_term_id );
+                $new_position_id_storage_location = $aisle.'A_'.$bay.'B_'.$shelf.'S_'.$position.'P_'.$dc; 
+                $new_A_B_S_only_storage_location = $aisle.'_'.$bay.'_'.$shelf;
+
+                /* 6/25/2020 - JM - Add logic to determine if a location is occupied. 
+                    Assign location change - Generate a message stating that the location is already taken.*/
+>>>>>>> a268656d38a4c148e5ed01ee3cfffc4c1afecff6
                     
                     $column_name = 'cart_id';
                     

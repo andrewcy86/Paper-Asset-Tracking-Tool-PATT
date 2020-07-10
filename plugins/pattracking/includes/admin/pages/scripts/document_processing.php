@@ -57,7 +57,7 @@ if($searchValue != ''){
 }
 
 ## Total number of records without filtering
-$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_folderdocinfo");
+$sel = mysqli_query($con,"select count(*) as allcount from wpqa_wpsc_epa_folderdocinfo WHERE id <> -99999");
 $records = mysqli_fetch_assoc($sel);
 $totalRecords = $records['allcount'];
 
@@ -93,6 +93,7 @@ CONCAT('<a href=admin.php?page=wpsc-tickets&id=',b.request_id,'>',b.request_id,'
 CONCAT(
 CASE 
 WHEN validation = 1 THEN CONCAT('<span style=\"font-size: 1.3em; color: #008000;\"><i class=\"fas fa-check-circle\" title=\"Validated\"></i></span> ',' (',(user_nicename),')')
+WHEN rescan = 1 THEN CONCAT('<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> ',' <span style=\"color: #FF0000;\"><strong>[Re-scan]</strong></span>')
 ELSE '<span style=\"font-size: 1.3em; color: #8b0000;\"><i class=\"fas fa-times-circle\" title=\"Not Validated\"></i></span> '
 END) as validation
 

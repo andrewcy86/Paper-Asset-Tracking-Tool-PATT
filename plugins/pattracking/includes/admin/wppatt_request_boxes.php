@@ -134,6 +134,66 @@ if($freeze_count > 0) {
 }
 ?>
 
+<?php
+//Rescan
+$ticket_data = $wpscfunction->get_ticket($ticket_id);
+$status_id   	= $ticket_data['ticket_status'];
+
+$get_request_id = $wpdb->get_row("SELECT request_id FROM wpqa_wpsc_ticket WHERE id = '".$ticket_id."'");
+$get_request_id_val = $get_request_id->request_id;
+
+$get_rescan_total = $wpdb->get_row("SELECT count(id) as totalcount FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id LIKE '".$get_request_id_val."%'");
+$get_rescan_total_val = $get_rescan_total->totalcount;
+
+$get_rescan_count = $wpdb->get_row("SELECT count(id) as count FROM wpqa_wpsc_epa_folderdocinfo WHERE rescan = 0 AND folderdocinfo_id LIKE '".$get_request_id_val."%'");
+$get_rescan_count_val = $get_rescan_count->count;
+
+if ($status_id == 743 && ($get_rescan_total_val == $get_rescan_count_val)) {
+$wpscfunction->change_status($ticket_id, 674);   
+}
+
+$box_rescan = $wpdb->get_row("SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.rescan = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+$rescan_count = $box_rescan->count;
+
+if($rescan_count > 0) {
+?>
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1em; color: #8b0000;"><i class="fas fa-times-circle" title="Re-Scan"></i></span> <strong>The following folder/files require re-scanning</strong>
+</div>
+<table class="table table-striped table-bordered dataTable no-footer">
+  <tr>
+    <th class="datatable_header">Box ID</th>
+    <th class="datatable_header">Folder/File ID</th>
+    <th class="datatable_header">Title</th>
+  </tr>
+<?php
+$rescan_details = $wpdb->get_results("SELECT wpqa_wpsc_epa_boxinfo.box_id as box_id, wpqa_wpsc_epa_folderdocinfo.title as title, wpqa_wpsc_epa_folderdocinfo.folderdocinfo_id as folderdocinfo_id 
+FROM wpqa_wpsc_epa_boxinfo
+INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id
+WHERE wpqa_wpsc_epa_folderdocinfo.rescan = 1 AND wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'");
+
+foreach ($rescan_details as $info) {
+
+$tbl = '<tr>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=boxdetails&pid=requestdetails&id=' . $info->box_id . '">'.$info->box_id.'</a></td>';
+$tbl .= '<td><a href="' . $subfolder_path . '/wp-admin/admin.php?page=filedetails&pid=requestdetails&id=' . $info->folderdocinfo_id . '">'.$info->folderdocinfo_id.'</a></td>';
+$tbl .= '<td>'.$info->title.'</td>';
+$tbl .= '</tr>';
+
+echo $tbl;
+
+}
+?>
+</table>
+<?php
+}
+?>
+
+
+
 <h4>Boxes Related to Request</h4>
 
 <?php
@@ -167,7 +227,7 @@ WHERE wpqa_wpsc_epa_boxinfo.ticket_id = '" . $ticket_id . "'"
 	<table id="tbl_templates_boxes" class="table table-striped table-bordered" cellspacing="5" cellpadding="5">
 <thead>
   <tr>
-    	  			<th class="datatable_header">ID</th>
+    	  			<th class="datatable_header">Box ID</th>
     	  			<th class="datatable_header">Physical Location</th>
     	  			<th class="datatable_header">Assigned Location</th>
     	  			<th class="datatable_header">Digitization Center</th>

@@ -2,6 +2,7 @@
 ## Support Candy Core Modification Documentation
 ### Determine database modifications by doing a diff merge on /supportcandy/includes/class-wpsc-install.php
 ### Copy over language .pot, .po and .mo files
+### Global find and replace: manage_options and edit_published_posts
 ### Remove the clone ticket button. 
 ###### /supportcandy/includes/admin/tickets/individual_ticket/load_individual_ticket.php
 REMOVE

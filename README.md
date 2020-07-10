@@ -303,7 +303,7 @@ BELOW
         array($this,'tickets')
       );
 ```
-ADD
+REPLACE
 ```
 // PATT Menu Items
 do_action('wpsc_add_submenu_page');
@@ -313,6 +313,76 @@ if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['lab
 do_action('wpsc_add_admin_page');
 }
 // END PATT Menu Items
+
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Support Agents', 'supportcandy' ),
+        __( 'Support Agents', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-support-agents',
+        array($this,'support_agents')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Custom Fields', 'supportcandy' ),
+        __( 'Custom Fields', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-custom-fields',
+        array($this,'custom_fields')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Ticket List', 'supportcandy' ),
+        __( 'Ticket List', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-ticket-list',
+        array($this,'ticket_list')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Email Notifications', 'supportcandy' ),
+        __( 'Email Notifications', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-email-notifications',
+        array($this,'email_notifications')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Appearance', 'supportcandy' ),
+        __( 'Appearance', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-appearance',
+        array($this,'appearance_settings')
+      );
+      
+      //PATT do_action('wpsc_add_submenu_page');
+      
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Settings', 'supportcandy' ),
+        __( 'Settings', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-settings',
+        array($this,'settings')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'License', 'supportcandy' ),
+        __( 'License', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-license',
+        array($this,'licenses')
+      );
+      add_submenu_page(
+        'wpsc-tickets',
+        __( 'Addons', 'supportcandy' ),
+        __( 'Addons', 'supportcandy' ),
+        'edit_published_posts',
+        'wpsc-add-ons',
+        array($this,'addons')
+      );
+    }
+  // PATT  
 ```
 COMMENT OUT
 ```

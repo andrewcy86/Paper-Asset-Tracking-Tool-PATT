@@ -57,7 +57,8 @@ $edit_btn_css = 'background-color:'.$wpsc_appearance_individual_ticket_page['wps
 			
 			$folderfile_essential_record = $folderfile_details->essential_record;
 			$folderfile_validation = $folderfile_details->validation;
-			$folderfile_validation_user = $folderfile_details->validation_user_id;				
+			$folderfile_validation_user = $folderfile_details->validation_user_id;	
+			$folderfile_rescan = $folderfile_details->rescan;
 		    $folderfile_destruction = $folderfile_details->unauthorized_destruction;
 		    $folderfile_identifier = $folderfile_details->folder_identifier;
 		    $folderfile_freeze = $folderfile_details->freeze;
@@ -119,7 +120,8 @@ WHERE wpqa_terms.term_id = wpqa_wpsc_epa_storage_location.digitization_center AN
         if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
         {
         ?>
-        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-check-circle"></i> Validate</button></button>
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_validation_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_rescan == 1 || ($folderfile_destruction > 0 && $folderfile_freeze == 0) || ($box_destruction > 0 && $folderfile_freeze == 0))? "disabled" : ""; ?>><i class="fas fa-check-circle"></i> Validate</button></button>
+        <button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_rescan_btn" style="<?php echo $action_default_btn_css?>"<?php echo ($folderfile_validation == 1 || ($folderfile_destruction > 0 && $folderfile_freeze == 0) || ($box_destruction > 0 && $folderfile_freeze == 0))? "disabled" : ""; ?>><i class="fas fa-times-circle"></i> Re-Scan</button></button>
     	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_destruction_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-flag"></i> Unauthorize Destruction</button></button>
     	<button type="button" class="btn btn-sm wpsc_action_btn" id="wpsc_individual_freeze_btn" style="<?php echo $action_default_btn_css?>"><i class="fas fa-snowflake"></i> Freeze</button></button>
         <?php
@@ -184,21 +186,27 @@ is marked as frozen.
 ?>
 
 <?php
-if($folderfile_validation > 0){
+if($folderfile_validation > 0 && $folderfile_rescan == 0){
 echo '
 <div class="alert alert-success" role="alert">
 <span style="font-size: 1.3em; color: #008000;"><i class="fas fa-check-circle" title="Validated"></i></span>';
 if ($folderfile_index_level == '1') { echo' Folder validated ('.$user->user_login.').'; }else{ echo' File validated ('.$user->user_login.').'; }
+echo '</div>';
+} elseif ($folderfile_rescan == 1) {
+echo '
+<div class="alert alert-danger" role="alert">
+<span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="Re-scan Needed"></i></span>';
+if ($folderfile_index_level == '1') { echo' Folder requires re-scanning.'; }else{ echo' File requires re-scanning.'; }
 echo '</div>';
 } else {
 echo '
 <div class="alert alert-danger" role="alert">
 <span style="font-size: 1.3em; color: #8b0000;"><i class="fas fa-times-circle" title="not validated"></i></span>';
 if ($folderfile_index_level == '1') { echo' Folder not validated.'; }else{ echo' File not validated.'; }
-echo '</div>';
+echo '</div>';    
 }
 ?>
-        
+
       <h3>
 	 	 <?php if(apply_filters('wpsc_show_hide_ticket_subject',true)){?>
 	 	 <?php if($box_destruction > 0 && $folderfile_freeze == 0){?>
@@ -325,6 +333,28 @@ echo '</div>';
 if (($agent_permissions['label'] == 'Administrator') || ($agent_permissions['label'] == 'Agent'))
 {
 ?>
+jQuery('#wpsc_individual_rescan_btn').on('click', function(e){
+		   jQuery.post(
+   '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_rescan.php',{
+postvarsfolderdocid : jQuery('#doc_id').val(),
+postvarpage : jQuery('#page').val()
+}, 
+   function (response) {
+      //if(!alert(response)){window.location.reload();}
+      wpsc_modal_open('Re-scan');
+		  var data = {
+		    action: 'wpsc_get_rescan_ffd',
+		    response_data: response,
+		    response_page: '<?php echo $GLOBALS['page']; ?>'
+		  };
+		  jQuery.post(wpsc_admin.ajax_url, data, function(response_str) {
+		    var response = JSON.parse(response_str);
+		    jQuery('#wpsc_popup_body').html(response.body);
+		    jQuery('#wpsc_popup_footer').html(response.footer);
+		    jQuery('#wpsc_cat_name').focus();
+		  }); 
+   });
+});
 jQuery('#wpsc_individual_validation_btn').on('click', function(e){
 		   jQuery.post(
    '<?php echo WPPATT_PLUGIN_URL; ?>includes/admin/pages/scripts/update_validate.php',{

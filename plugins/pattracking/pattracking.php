@@ -97,7 +97,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           update_option('wpsc_tl_agent_unresolve_statuses',array(3,4,670,5,63,64,672,671,65));
           update_option('wpsc_tl_customer_unresolve_statuses',array(3,4,670,5,63,64,672,671,65));
 
-          update_option('wpsc_close_ticket_group',array(673,674,66,67,68,69));
+          update_option('wpsc_close_ticket_group',array(673,674,743,66,67,68,69));
           
           // PDF Label Add Button
           $backend  = new wppatt_Admin();

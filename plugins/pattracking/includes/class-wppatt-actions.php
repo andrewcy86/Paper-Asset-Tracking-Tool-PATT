@@ -27,6 +27,8 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_digitization_center', array($this,'digitization_center'), 10, 3 );   
       add_action( 'wpppatt_after_validate_document', array($this,'validate_document'), 10, 2 );
       add_action( 'wpppatt_after_invalidate_document', array($this,'invalidate_document'), 10, 2 );
+      add_action( 'wpppatt_after_rescan_document', array($this,'rescan_document'), 10, 2 );
+      add_action( 'wpppatt_after_undo_rescan_document', array($this,'undo_rescan_document'), 10, 2 );
       add_action( 'wpppatt_after_add_request_shipping_tracking', array($this,'add_request_shipping_tracking'), 10, 2 );
       add_action( 'wpppatt_after_modify_request_shipping_tracking', array($this,'modify_request_shipping_tracking'), 10, 2 );
       add_action( 'wpppatt_after_remove_request_shipping_tracking', array($this,'remove_request_shipping_tracking'), 10, 2 );
@@ -42,6 +44,40 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       add_action( 'wpppatt_after_recall_cancelled', array( $this, 'recall_cancelled' ), 10, 2); 
       add_action( 'wpppatt_after_recall_created', array( $this, 'recall_created' ), 10, 3); 
       
+    }
+    
+    // Re-scan
+    function rescan_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s flagged Document ID: %2$s for re-scanning','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s flagged for re-scanning','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
+    }
+
+    // Undo Re-scan
+    function undo_rescan_document ( $ticket_id, $doc_id ){
+      global $wpscfunction, $current_user;
+      if($current_user->ID){
+        $log_str = sprintf( __('%1$s unflagged Document ID: %2$s for re-scanning','supportcandy'), '<strong>'.$current_user->display_name.'</strong>','<strong>'. $doc_id .'</strong>');
+      } else {
+        $log_str = sprintf( __('Document ID %1$s unflagged for re-scanning','supportcandy'), '<strong>'.$doc_id.'</strong>' );
+      }
+      $args = array(
+        'ticket_id'      => $ticket_id,
+        'reply_body'     => $log_str,
+        'thread_type'    => 'log'
+      );
+      $args = apply_filters( 'wpsc_thread_args', $args );
+      $wpscfunction->submit_ticket_thread($args);
     }
     
     // Freeze document
@@ -398,7 +434,7 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
       $wpscfunction->submit_ticket_thread($args);
     }
     
-    // NEW Recall Created - 
+
     function recall_created ( $ticket_id, $recall_id, $item_id ){
       global $wpscfunction, $current_user;
       if($current_user->ID){
@@ -416,9 +452,6 @@ if ( ! class_exists( 'WPPATT_Actions' ) ) :
     }
     
     
-    
-    
-    //Podbelski - END - Recall Tickets
     
 }
   

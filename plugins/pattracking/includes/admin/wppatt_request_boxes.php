@@ -152,6 +152,10 @@ if ($status_id == 743 && ($get_rescan_total_val == $get_rescan_count_val)) {
 $wpscfunction->change_status($ticket_id, 674);   
 }
 
+if ($status_id == 674 && ($get_rescan_total_val != $get_rescan_count_val)) {
+$wpscfunction->change_status($ticket_id, 743);   
+}
+
 $box_rescan = $wpdb->get_row("SELECT count(wpqa_wpsc_epa_folderdocinfo.id) as count
 FROM wpqa_wpsc_epa_boxinfo
 INNER JOIN wpqa_wpsc_epa_folderdocinfo ON wpqa_wpsc_epa_boxinfo.id = wpqa_wpsc_epa_folderdocinfo.box_id

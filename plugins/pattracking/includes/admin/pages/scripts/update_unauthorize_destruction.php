@@ -20,6 +20,16 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 $destruction_reversal = 0;
 $destruction_violation = 0;
 // Determine if violation occured
+$frozen = 0;
+
+foreach($folderdocid_arr as $key) {
+$get_frozen = $wpdb->get_row("SELECT freeze FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
+$get_frozen_val = $get_frozen->freeze;
+
+if ($get_frozen_val == 1) {
+$frozen++;
+}
+}
 
 $return_array = array();
 $recall_array = array();
@@ -62,7 +72,7 @@ $destruction_violation = 1;
 
 //echo $destruction_violation;
 
-if($page_id == 'boxdetails' || $page_id == 'folderfile') {
+if(($page_id == 'boxdetails' || $page_id == 'folderfile') && $frozen == 0 ) {
 foreach($folderdocid_arr as $key) {    
 $get_destruction = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
 $get_destruction_val = $get_destruction->unauthorized_destruction;
@@ -186,6 +196,8 @@ do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 }
 
 }
+} elseif($frozen > 0) {
+echo "A frozen folder/file has been selected and cannot be flagged as unauthorized destruction.<br />Please unselect the frozen folder/file.";
 }
 
 if($page_id == 'filedetails') {
@@ -262,7 +274,6 @@ $wpdb->update($table_ss , $sso_update, $sso_where);
 }
 do_action('wpppatt_after_unauthorized_destruction', $ticket_id, $key);
 }
-
 }
 
 $get_destruction_sum = $wpdb->get_row("SELECT sum(unauthorized_destruction) as sum FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = '".$box_id."'");
@@ -270,13 +281,13 @@ $get_destruction_sum = $wpdb->get_row("SELECT sum(unauthorized_destruction) as s
 $get_destruction_sum_val = $get_destruction_sum->sum;
 
 
-if ($page_id == 'boxdetails') {
+if ($page_id == 'boxdetails' && $frozen == 0) {
 if ($get_destruction_sum_val > 0) {
 
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
+echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. <br />Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {
@@ -297,11 +308,11 @@ echo "All unauthorized destruction flags removed";
 }
 }
 
-if ($page_id == 'filedetails' || $page_id == 'folderfile') {
+if ($page_id == 'filedetails' || $page_id == 'folderfile' && $frozen == 0) {
 if ($destruction_violation == 1) {
     //print_r($recall_array);
     //print_r($return_array);
-echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall.". PHP_EOL ."Please check your selection.";
+echo "A violation has occured and a folder/file you selected cannot be set to unauthorized destruction due to a return/recall. <br />Please check your selection.";
 } else {
 
 if ($destruction_reversal == 1 && $destruction_violation == 0) {

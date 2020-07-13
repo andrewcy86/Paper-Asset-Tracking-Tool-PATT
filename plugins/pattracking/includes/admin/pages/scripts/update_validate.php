@@ -120,12 +120,12 @@ do_action('wpppatt_after_validate_document', $ticket_id, $folderdocid_string);
 
 
 
-if ($get_rescan_val == 1 && $destroyed == 0) {
+if ($get_rescan_val == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
 echo "You must unflag document from re-scanning before validating";
-} elseif ($validation_reversal == 1 && $destroyed == 0) {
+} elseif ($validation_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
 //print_r($folderdocid_arr);
 echo "Validation has been updated. A validation has been reversed";
-} elseif ($validation_reversal == 0 && $destroyed == 0) {
+} elseif ($validation_reversal == 0 && $destroyed == 0 && $unathorized_destroy == 0) {
 echo "Validation has been updated";
 }
 

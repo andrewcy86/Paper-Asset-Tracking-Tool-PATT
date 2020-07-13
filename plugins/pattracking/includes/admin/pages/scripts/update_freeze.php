@@ -66,9 +66,9 @@ do_action('wpppatt_after_freeze', $ticket_id, $key);
 }
 
 } elseif($destroyed > 0) {
-echo "A destroyed folder/file has been selected and cannot be validated.<br />Please unselect the destroyed folder/file.";
+echo "A destroyed folder/file has been selected and cannot be frozen.<br />Please unselect the destroyed folder/file.";
 } elseif($unathorized_destroy > 0) {
-echo "A folder/file flagged as unauthorized destruction has been selected and cannot be validated.<br />Please unselect the folder/file flagged as unauthorized destruction folder/file.";
+echo "A folder/file flagged as unauthorized destruction has been selected and cannot be frozen.<br />Please unselect the folder/file flagged as unauthorized destruction folder/file.";
 }
 
 if($page_id == 'filedetails') {
@@ -98,23 +98,11 @@ do_action('wpppatt_after_freeze', $ticket_id, $folderdocid_string);
 
 }
 
-$get_freeze_sum = $wpdb->get_row("SELECT sum(freeze) as sum FROM wpqa_wpsc_epa_folderdocinfo WHERE box_id = '".$box_id."'");
-
-$get_freeze_sum_val = $get_freeze_sum->sum;
-
-
-if ($get_freeze_sum_val > 0) {
-    
-if ($validation_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
-echo "Freeze has been updated. A Freeze has been reversed";
-} elseif ($validation_reversal == 0 && $destroyed == 0 && $unathorized_destroy == 0) {
+if ($freeze_reversal == 1 && $destroyed == 0 && $unathorized_destroy == 0) {
+echo "Freeze has been updated. A Freeze flag has been reversed.";
+} elseif ($freeze_reversal == 0 && $destroyed == 0 && $unathorized_destroy == 0) {
 echo "Freeze has been updated";
 }
-
-} else {
-echo "All frozen flags removed";
-}
-
 
 } else {
    echo "Please select one or more items to mark as frozen.";

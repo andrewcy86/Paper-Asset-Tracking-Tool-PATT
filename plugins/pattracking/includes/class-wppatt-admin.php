@@ -115,7 +115,7 @@ if ($status_id != 3) {
     $tracking_num_display = mb_strimwidth($tracking_num, 0, 25, "...");
     $company_name = $row->company_name;
 
-    if ($row->shipped == 1) {
+    if ($row->shipped == 1 || $row->delivered == 1) {
         $shipped_status = ' <i class="fa fa-check-circle" style="color:#008000;"></i>';
     } else {
         $shipped_status = '';
@@ -168,9 +168,10 @@ switch ($company_name) {
 	}
 }
 
-    public function get_alert_replacement(){    
-    include WPPATT_ABSPATH . 'includes/ajax/get_alert_replacement.php';
-    die();
+
+	public function get_alert_replacement(){    	
+    include WPPATT_ABSPATH . 'includes/ajax/get_alert_replacement.php';	
+    die();	
     }
     
     public function get_shipping_details(){    
@@ -240,11 +241,11 @@ switch ($company_name) {
 	    die();
     }  
     
-    // Added function to 
-    public function recall_status_change(){
-	    include WPPATT_ABSPATH . 'includes/ajax/recall_status_change.php';    
-	    die();
-    }  
+    // functionality changed - file can be removed. 
+//    public function recall_status_change(){
+//	    include WPPATT_ABSPATH . 'includes/ajax/recall_status_change.php';    
+//	    die();
+//    }  
     
     // Added function to search and save recall returned date
     public function recall_edit_multi_shipping(){
@@ -261,6 +262,18 @@ switch ($company_name) {
     // Add settings pill for recall statuses 
     public function set_recall_settings(){
 	    include WPPATT_ABSPATH . 'includes/admin/pages/set_recall_settings.php';    
+	    die();
+    }  
+    
+    // Add edit recall status settings modal 
+    public function get_edit_recall_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/get_edit_recall_status.php';    
+	    die();
+    }  
+
+    // Add set recall status settings modal 
+    public function set_recall_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/set_recall_status_settings.php';    
 	    die();
     }  
     

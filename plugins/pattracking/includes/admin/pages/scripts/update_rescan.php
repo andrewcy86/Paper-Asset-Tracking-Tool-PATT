@@ -19,6 +19,7 @@ $table_name = 'wpqa_wpsc_epa_folderdocinfo';
 $rescan_reversal = 0;
 $destroyed = 0;
 $validate = 0;
+$unathorized_destroy = 0;
 
 foreach($folderdocid_arr as $key) {
 $get_validate = $wpdb->get_row("SELECT validation FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
@@ -38,7 +39,16 @@ $destroyed++;
 }
 }
 
-if($page_id == 'folderfile' && $destroyed == 0 && $validate == 0) {
+foreach($folderdocid_arr as $key) {
+$get_unathorized_destroy = $wpdb->get_row("SELECT unauthorized_destruction FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
+$get_unathorized_destroy_val = $get_unathorized_destroy->unauthorized_destruction;
+
+if ($get_unathorized_destroy_val == 1) {
+$unathorized_destroy++;
+}
+}
+
+if($page_id == 'folderfile' && $destroyed == 0 && $unathorized_destroy == 0 && $validate == 0) {
 foreach($folderdocid_arr as $key) {
 $get_rescan = $wpdb->get_row("SELECT rescan FROM wpqa_wpsc_epa_folderdocinfo WHERE folderdocinfo_id = '".$key."'");
 $get_rescan_val = $get_rescan->rescan;
@@ -78,6 +88,8 @@ echo "<strong>".$key."</strong> : Re-scan flag has been set<br />";
 
 } elseif($destroyed > 0) {
 echo "A destroyed folder/file has been selected and cannot be validated.<br />Please unselect the destroyed folder/file.";
+} elseif($unathorized_destroy > 0) {
+echo "A folder/file flagged as unauthorized destruction has been selected and cannot be validated.<br />Please unselect the folder/file flagged as unauthorized destruction folder/file.";
 } elseif($validate > 0) {
 echo "A folder/file has been selected that has been flagged as validated.<br />Please unselect the folder/file flagged as validated before flagging item as re-scan.";
 }

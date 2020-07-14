@@ -954,3 +954,4 @@ WHERE meta_key LIKE '%%_label_counts%%'
 ##### Allow users with the Author role in Wordpress edit access
 Download "Multifind", a program that allows multiple files to be edited at once. Zip supportcandy folder in wordpress3 and extract in Multifind. Find "manage_options" and replace with "edit_published_posts". Zip the supportcandy folder you have just edited and upload to wordpress3 and extract into wordpress3.  
 **Note:** manage_options is a Wordpress function that restricts access to Wordpress admins, Supportcandy has restricted most pages to Wordpress admins.
+**Note:** The re-scan ID is different in dev and staging. 743 vs 763.

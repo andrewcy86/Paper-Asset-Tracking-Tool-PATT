@@ -49,6 +49,11 @@ if ( ! class_exists( 'wppatt_Admin' ) ) :
       endif;
     }
     
+    // Added function to inject box status and assignment buttons
+    public function box_status_assignment_btnAfterClone(){
+    include WPPATT_ABSPATH . 'includes/admin/wppatt_get_box_status_assignment.php';    
+    }
+    
     // Added function to inject label button
     public function pdflabel_btnAfterClone(){
     include WPPATT_ABSPATH . 'includes/admin/wppatt_get_pdflabel_file.php';    
@@ -216,7 +221,7 @@ switch ($company_name) {
 	    die();
     }
     
-    // Added function to search for box/folder/file ID in Add Recall page 
+    // Added function to submit Recall on Add Recall page 
     public function recall_submit(){
 	    include WPPATT_ABSPATH . 'includes/ajax/submit_recall.php';    
 	    die();
@@ -259,11 +264,12 @@ switch ($company_name) {
 	    die();
     }  
     
+    // Removed - no longer required. 
     // Add settings pill for recall statuses 
-    public function set_recall_settings(){
-	    include WPPATT_ABSPATH . 'includes/admin/pages/set_recall_settings.php';    
-	    die();
-    }  
+//    public function set_recall_settings(){
+//	    include WPPATT_ABSPATH . 'includes/admin/pages/set_recall_settings.php';    
+//	    die();
+//    }  
     
     // Add edit recall status settings modal 
     public function get_edit_recall_status(){
@@ -283,14 +289,55 @@ switch ($company_name) {
 	    die();
     }
 
+	 // Added function to submit Return on Add Return page 
+    public function return_submit(){ 
+	    include WPPATT_ABSPATH . 'includes/ajax/submit_return.php';    
+	    die();
+    }
+    
+    // Add settings panel for return statuses 
+    public function get_return_settings(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/get_return_settings.php';    
+	    die();
+    }  
+    
+    // Add edit return status settings modal 
+    public function get_edit_return_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/get_edit_return_status.php';    
+	    die();
+    }  
+    // Add set return status settings modal 
+    public function set_return_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/set_return_status_settings.php';    
+	    die();
+    }  
+    
+    // Add settings panel for box statuses 
+    public function get_box_settings(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/get_box_settings.php';    
+	    die();
+    }  
+    
+    // Add edit box status settings modal 
+    public function get_edit_box_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/get_edit_box_status.php';    
+	    die();
+    }  
+    // Add set box status settings modal 
+    public function set_box_status(){
+	    include WPPATT_ABSPATH . 'includes/admin/pages/set_box_status_settings.php';    
+	    die();
+    }  
     
 
-    
+     // No longer needed. Left over from old 'Return' button on Boxes page
     // Added function to search and save recall returned date
+/*
     public function ticket_initiate_return(){
 	    include WPPATT_ABSPATH . 'includes/ajax/return_editor.php';    
 	    die();
     }  
+*/
 
     
     

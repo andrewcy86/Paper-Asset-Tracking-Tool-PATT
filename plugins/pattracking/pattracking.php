@@ -101,6 +101,7 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           
           // PDF Label Add Button
           $backend  = new wppatt_Admin();
+          add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'box_status_assignment_btnAfterClone'));
           add_action('wpsc_after_indidual_ticket_action_btn', array($backend, 'pdflabel_btnAfterClone'));
           add_action('wp_ajax_wpsc_get_pdf_label_field', array($backend, 'get_pdf_label_field'));
           
@@ -207,12 +208,39 @@ if ( ! class_exists( 'Patt_Tracking' ) ) :
           add_action('wp_ajax_wppatt_set_recall_status', array($backend, 'set_recall_status')); 
                     
           // Add Return Edit Returned 
-          add_action('wp_ajax_wppatt_initiate_return', array($backend, 'ticket_initiate_return'));
+          //add_action('wp_ajax_wppatt_initiate_return', array($backend, 'ticket_initiate_return'));
           
           // Add Recall Cancel Modal 
           add_action('wp_ajax_wppatt_recall_cancel', array($backend, 'recall_cancel'));
           
-
+          // Add Return Submit
+          add_action('wp_ajax_wppatt_return_submit', array($backend, 'return_submit')); 
+          
+		  // Add Return Setting Pill 
+          add_action('wpsc_after_setting_pills', array($frontend, 'return_settings_pill'));
+          
+          // Add Return Get Recall Settings Pill 
+          add_action('wp_ajax_wppatt_get_return_settings', array($backend, 'get_return_settings'));
+          
+          // Add Return Status Settings Edit Modal
+          add_action('wp_ajax_wppatt_get_edit_return_status', array($backend, 'get_edit_return_status')); 
+          
+          // Add Set Return Status Settings via Modal
+          add_action('wp_ajax_wppatt_set_return_status', array($backend, 'set_return_status'));   
+          
+		  // Add Box Status Setting Pill 
+          add_action('wpsc_after_setting_pills', array($frontend, 'box_settings_pill'));
+          
+          // Add Box Status Get Settings Panel 
+          add_action('wp_ajax_wppatt_get_box_settings', array($backend, 'get_box_settings'));
+          
+          // Add Box Status Settings Edit Modal
+          add_action('wp_ajax_wppatt_get_edit_box_status', array($backend, 'get_edit_box_status')); 
+          
+          // Add Set Box Status Settings via Modal
+          add_action('wp_ajax_wppatt_set_box_status', array($backend, 'set_box_status')); 
+		  
+		  
           // Set Barcode Scanning Page
           add_action( 'wpsc_add_admin_page', 'epa_admin_menu_items');
           

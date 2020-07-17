@@ -956,3 +956,9 @@ Download "Multifind", a program that allows multiple files to be edited at once.
 **Note:** manage_options is a Wordpress function that restricts access to Wordpress admins, Supportcandy has restricted most pages to Wordpress admins.
 
 **Note:** The re-scan ID is different in dev and staging. 743 vs 763.
+
+plugins/supportcandy/includes/class-wpsc-admin.php
+        __( 'Support', 'supportcandy' ),
+        __( 'Support','supportcandy'),
+	
+	Remove count in left navigation
